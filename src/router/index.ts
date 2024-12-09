@@ -1,23 +1,79 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import type { RouteRecordRaw } from 'vue-router'
+import { useAuthStore } from '@/stores/modules/auth'
+
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/login/index.vue'),
+    meta: {
+      requiresAuth: false,
+      title: '登录',
+    },
+  },
+  {
+    path: '/',
+    name: 'Layout',
+    component: () => import('@/views/layout/index.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index.vue'),
+        meta: {
+          requiresAuth: true,
+          title: '首页',
+        },
+      },
+      {
+        path: 'account-equity',
+        name: 'account-equity',
+        component: () => import('@/views/account-equity/index.vue'),
+        meta: {
+          requiresAuth: true,
+          title: '账户权益',
+        },
+      },
+      {
+        path: 'advertising-management',
+        name: 'advertising-management',
+        component: () => import('@/views/advertising-management/index.vue'),
+        meta: {
+          requiresAuth: true,
+          title: '广告管理',
+        },
+        children: [
+          {
+            path: 'add-editor/:id?',
+            name: 'advertising-add-editor',
+            component: () => import('@/views/advertising-management/add-editor/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '新增/编辑广告',
+            },
+          },
+        ],
+      },
+    ],
+  },
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-  ],
+  history: createWebHistory(),
+  routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router
