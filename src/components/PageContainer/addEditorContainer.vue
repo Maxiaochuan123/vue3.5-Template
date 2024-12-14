@@ -49,7 +49,7 @@ interface Emits {
   (e: 'submit'): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   submitText: '提交',
   loading: false,
 })

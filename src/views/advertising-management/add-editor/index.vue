@@ -1,6 +1,6 @@
 <template>
   <n-message-provider>
-    <PageContainer
+    <addEditorContainer
       :title="isEdit ? '编辑广告' : '新增广告'"
       :submit-text="isEdit ? '保存' : '提交'"
       :loading="loading"
@@ -26,7 +26,7 @@
         </n-form-item>
         <!-- 其他表单项 -->
       </n-form>
-    </PageContainer>
+    </addEditorContainer>
   </n-message-provider>
 </template>
 
@@ -35,7 +35,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NMessageProvider, NForm, NFormItem, NInput } from 'naive-ui'
 import type { FormInst } from 'naive-ui'
-import PageContainer from '@/components/PageContainer/addEditor.vue'
+import addEditorContainer from '@/components/PageContainer/addEditorContainer.vue'
 
 defineOptions({
   name: 'AdvertisingAddEditor',

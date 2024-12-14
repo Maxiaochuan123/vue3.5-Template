@@ -11,12 +11,18 @@ export const useAuthStore = defineStore(
     // 登录
     async function login(userName: string, password: string) {
       try {
-        const response = await authApi.login({ userName, password })
-        token.value = response.token
-        isAuthenticated.value = true
-        return response
+        const { code, data, msg } = await authApi.login({ userName, password })
+        console.log('response data: ', data)
+
+        if (code === 200) {
+          token.value = data
+          isAuthenticated.value = true
+
+          return token.value
+        }
+        throw new Error(msg)
       } catch (error) {
-        console.error('Login failed:', error)
+        console.error('Login failed:', error.response?.data || error)
         throw error
       }
     }

@@ -1,8 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { useMessage } from 'naive-ui'
-
-const message = useMessage()
+import { message } from '@/utils/message'
+import { useAuthStore } from '@/stores/modules/auth'
 
 // 创建 axios 实例
 const service: AxiosInstance = axios.create({
@@ -16,10 +15,9 @@ const service: AxiosInstance = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // 从 localStorage 获取 token
-    const token = localStorage.getItem('auth')
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${JSON.parse(token).token}`
+    const authStore = useAuthStore()
+    if (authStore.token) {
+      config.headers['Authorization'] = `${authStore.token}`
     }
     return config
   },
@@ -34,7 +32,7 @@ service.interceptors.response.use(
     const res = response.data
     // 这里可以根据实际接口返回格式修改
     if (res.code === 200) {
-      return res.data
+      return res
     } else {
       message.error(res.message || 'Error')
       return Promise.reject(new Error(res.message || 'Error'))
@@ -46,23 +44,47 @@ service.interceptors.response.use(
   },
 )
 
-// 封装请求方法
-export const request = {
-  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return service.get(url, config)
-  },
+export interface ApiResult<T> {
+  code: number
+  msg: string
+  data: T
+}
 
-  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    return service.post(url, data, config)
-  },
+/** 请求封装 */
+export async function get<T>(
+  url: string,
+  params?: any,
+  config?: AxiosRequestConfig,
+): Promise<ApiResult<T>> {
+  const response = await service.get<ApiResult<T>>(url, { ...config, params })
+  return response
+}
 
-  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    return service.put(url, data, config)
-  },
+export async function post<T>(
+  url: string,
+  data?: any,
+  config?: AxiosRequestConfig,
+): Promise<ApiResult<T>> {
+  const response = await service.post<ApiResult<T>>(url, data, config)
+  return response
+}
 
-  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    return service.delete(url, config)
-  },
+export async function put<T>(
+  url: string,
+  data?: any,
+  config?: AxiosRequestConfig,
+): Promise<ApiResult<T>> {
+  const response = await service.put<ApiResult<T>>(url, data, config)
+  return response
+}
+
+export async function del<T>(
+  url: string,
+  params?: any,
+  config?: AxiosRequestConfig,
+): Promise<ApiResult<T>> {
+  const response = await service.delete<ApiResult<T>>(url, { ...config, params })
+  return response
 }
 
 export default service

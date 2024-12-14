@@ -1,104 +1,131 @@
-<script setup lang="ts">
-import { ArrowBack } from '@vicons/ionicons5';
-import { NButton, NDrawer, NDrawerContent, NIcon } from 'naive-ui';
-defineOptions({
-  name: 'FormDrawer'
-});
-
-interface Props {
-  /** 抽屉标题 */
-  title?: string;
-  /** 抽屉宽度 */
-  width?: number | string;
-  /** 确认按钮文字 */
-  confirmText?: string;
-  /** 取消按钮文字 */
-  cancelText?: string;
-  /** 返回按钮文字 */
-  backText?: string;
-  /** 是否显示底部按钮 */
-  showFooter?: boolean;
-  /** 加载状态 */
-  loading?: boolean;
-  /** 页面标题 */
-  pageTitle?: string;
-}
-
-// 使用 withDefaults 定义默认值
-withDefaults(defineProps<Props>(), {
-  title: '',
-  width: 500,
-  confirmText: '确认',
-  cancelText: '取消',
-  backText: '返回',
-  showFooter: true,
-  loading: false,
-  pageTitle: '未知页面'
-});
-
-// 使用 defineModel 处理双向绑定
-const visible = defineModel('show', { type: Boolean, default: false });
-
-const emit = defineEmits(['cancel', 'confirm']);
-
-const handleClose = () => {
-  visible.value = false;
-  emit('cancel');
-};
-
-const handleConfirm = () => {
-  emit('confirm');
-};
-</script>
-
 <template>
   <NDrawer
-    v-model:show="visible"
+    v-model:show="modelValue"
     placement="top"
     :trap-focus="false"
     :block-scroll="false"
     height="100%"
     to=".n-card__content"
-    :width="width"
     @close="handleClose"
   >
     <NDrawerContent closable>
-      <!-- 返回按钮和页面标题 -->
+      <!-- Header Section -->
       <template #header>
-        <div class="flex items-center">
-          <div class="flex cursor-pointer items-center" @click="handleClose">
-            <NIcon :component="ArrowBack" :size="20" />
-            <span class="ml-1">{{ backText }}</span>
+        <div class="page-header">
+          <div class="left-section">
+            <NButton quaternary circle @click="handleClose">
+              <template #icon>
+                <NIcon>
+                  <ArrowBack />
+                </NIcon>
+              </template>
+            </NButton>
+            <h2 class="page-title">{{ title }}</h2>
           </div>
-          <div class="mx-4 h-4 w-[1px] bg-gray-300"></div>
-          <span class="text-base">{{ pageTitle }}</span>
         </div>
       </template>
 
-      <!-- 内容区域 -->
-      <div class="drawer-content flex-1">
+      <!-- Content Section -->
+      <div class="page-content">
         <slot></slot>
       </div>
 
-      <!-- 底部按钮 -->
+      <!-- Footer Section -->
       <template #footer>
-        <div v-if="showFooter" class="w-full flex justify-center">
-          <div class="flex gap-4">
-            <NButton :disabled="loading" size="large" @click="handleClose">
-              {{ cancelText }}
-            </NButton>
-            <NButton type="primary" :loading="loading" size="large" @click="handleConfirm">
-              {{ confirmText }}
-            </NButton>
-          </div>
+        <div v-if="showFooter" class="page-footer">
+          <NButton :disabled="loading" size="large" @click="handleClose"> 取消 </NButton>
+          <NButton type="primary" :loading="loading" size="large" @click="handleConfirm">
+            {{ submitText }}
+          </NButton>
         </div>
       </template>
     </NDrawerContent>
   </NDrawer>
 </template>
 
-<style scoped>
-.drawer-content {
+<script setup lang="ts">
+import { NDrawer, NDrawerContent, NButton, NIcon } from 'naive-ui'
+import { ArrowBack } from '@vicons/ionicons5'
+
+interface Props {
+  title: string
+  submitText?: string
+  loading?: boolean
+  showFooter?: boolean
+}
+
+interface Emits {
+  (e: 'submit'): void
+  (e: 'cancel'): void
+}
+
+const modelValue = defineModel({ type: Boolean, default: false })
+
+withDefaults(defineProps<Props>(), {
+  title: '未知 Title',
+  submitText: '提交',
+  loading: false,
+  showFooter: true,
+})
+
+const emit = defineEmits<Emits>()
+
+// 打开抽屉
+const open = () => {
+  modelValue.value = true
+}
+
+// 关闭抽屉
+const close = () => {
+  modelValue.value = false
+}
+
+// 处理关闭
+const handleClose = () => {
+  modelValue.value = false
+  emit('cancel')
+  close()
+}
+
+// 处理确认
+const handleConfirm = () => {
+  emit('submit')
+}
+
+// 暴露方法给父组件
+defineExpose({
+  open,
+  close,
+})
+</script>
+
+<style scoped lang="less">
+.page-header {
+  .left-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .page-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 0;
   min-height: 300px;
+}
+
+.page-footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
 </style>

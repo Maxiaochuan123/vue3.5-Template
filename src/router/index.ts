@@ -6,7 +6,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/login/index.vue'),
+    component: () => import('@/views/auth/login.vue'),
     meta: {
       requiresAuth: false,
       title: '登录',

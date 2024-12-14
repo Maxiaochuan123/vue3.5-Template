@@ -6,8 +6,8 @@
         <h2>Vue 3.5 Template</h2>
       </div>
       <n-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form">
-        <n-form-item path="username">
-          <n-input v-model:value="loginForm.username" placeholder="用户名">
+        <n-form-item path="userName">
+          <n-input v-model:value="loginForm.userName" placeholder="用户名">
             <template #prefix>
               <n-icon><PersonOutline /></n-icon>
             </template>
@@ -38,6 +38,7 @@ import { useMessage } from 'naive-ui'
 import { useAuthStore } from '@/stores/modules/auth'
 import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
 import type { FormInst } from 'naive-ui'
+// import { authApi } from '@/api/modules/auth'
 
 const router = useRouter()
 const message = useMessage()
@@ -45,22 +46,21 @@ const authStore = useAuthStore()
 const loading = ref(false)
 const loginFormRef = ref<FormInst | null>(null)
 const loginForm = ref({
-  username: 'admin',
+  userName: 'admin',
   password: 'bf04006d4d4054417a50c1ac6fa2e248',
 })
 
 const loginRules = {
-  username: { required: true, message: '请输入用户名', trigger: 'blur' },
+  userName: { required: true, message: '请输入用户名', trigger: 'blur' },
   password: { required: true, message: '请输入密码', trigger: 'blur' },
 }
 
 const handleLogin = async () => {
   if (!loginFormRef.value) return
-
   try {
     loading.value = true
     await loginFormRef.value.validate()
-    await authStore.login(loginForm.value.username, loginForm.value.password)
+    await authStore.login(loginForm.value.userName, loginForm.value.password)
     message.success('登录成功')
     router.push('/')
   } catch (error: any) {

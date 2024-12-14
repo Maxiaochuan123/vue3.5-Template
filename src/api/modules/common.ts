@@ -1,18 +1,13 @@
-import { request } from '../server'
+import { post } from '@/api/server'
 
 interface UploadFileResponse {
-  url: string
-  // 根据实际返回数据结构添加其他字段
+  token: string
 }
 
 export const commonApi = {
-  uploadFile(file: FormData) {
-    return request.post<UploadFileResponse>('/common/v1/mjActivity/uploadFile', file, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-  }
+  uploadToken() {
+    return post<UploadFileResponse>('/api/upload/uploadToken')
+  },
 }
 
 export default commonApi

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, ref } from 'vue'
+import { h, ref, onMounted } from 'vue'
 import type { DataTableColumns, FormInst } from 'naive-ui'
 import { NButton, NIcon, NSpace } from 'naive-ui'
 import { AddOutline } from '@vicons/ionicons5'
@@ -241,9 +241,14 @@ const columns: DataTableColumns<AdvertisingRecord> = [
 const showDrawer = ref(false)
 const drawerLoading = ref(false)
 
+onMounted(() => {
+  showDrawer.value = true
+})
+
 // 修改 handleAdd 函数
 const handleAdd = () => {
-  router.push({ name: 'advertising-add-editor' })
+  // router.push({ name: 'advertising-add-editor' })
+  showDrawer.value = true
 }
 
 // 添加抽屉确认处理函数
@@ -360,12 +365,12 @@ const tablePagination = {
       </div>
 
       <FormDrawer
-        v-model:show="showDrawer"
+        v-model="showDrawer"
         title="新增广告"
         page-title="广告管理"
         :loading="drawerLoading"
-        width="600"
-        @confirm="handleDrawerConfirm"
+        @submit="handleDrawerConfirm"
+        @cancel="(showDrawer = false)"
       >
         <AdvertisingForm ref="formRef" />
       </FormDrawer>

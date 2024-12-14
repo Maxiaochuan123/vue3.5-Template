@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, computed, watch } from 'vue'
+import { h, ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { MenuOutline, HomeOutline, LogOutOutline, WalletOutline } from '@vicons/ionicons5'
 import { NBreadcrumb, NBreadcrumbItem, NIcon } from 'naive-ui'
@@ -69,6 +69,11 @@ const route = useRoute()
 const authStore = useAuthStore()
 const isCollapse = ref(false)
 const activeMenu = ref(route.path)
+
+onMounted(() => {
+  activeMenu.value = '/advertising-management'
+  router.push('/advertising-management')
+})
 
 // 监听路由变化，更新菜单选中状态
 watch(
