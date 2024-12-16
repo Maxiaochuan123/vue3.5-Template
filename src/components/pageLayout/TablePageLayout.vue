@@ -1,15 +1,22 @@
-<script setup lang="ts">
-defineOptions({ name: 'TablePageLayout' })
-
-defineProps<{
-  // 是否显示hover效果，默认true
-  hoverable?: boolean
-}>()
-</script>
-
 <template>
   <div class="page-container">
-    <NCard class="page-card" :class="{ 'hover-effect': hoverable !== false }">
+    <NCard class="page-card">
+      <!-- 搜索表单区域 -->
+      <div class="search-form">
+        <slot name="search"></slot>
+      </div>
+
+      <!-- 工具栏区域 -->
+      <div class="table-header">
+        <slot name="toolbar"></slot>
+      </div>
+
+      <!-- 表格区域 -->
+      <div class="table-container">
+        <slot name="table"></slot>
+      </div>
+
+      <!-- 默认插槽 -->
       <slot></slot>
     </NCard>
   </div>
@@ -24,6 +31,7 @@ defineProps<{
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .page-card {
@@ -35,22 +43,39 @@ defineProps<{
   flex: 1;
   display: flex;
   flex-direction: column;
-
-  &.hover-effect:hover {
-    box-shadow: var(--n-box-shadow);
-  }
+  overflow: hidden;
 
   &:deep(.n-card__content) {
     height: 100%;
     flex: 1;
     display: flex;
     flex-direction: column;
-  }
+    min-width: 1000px;
+    overflow-x: auto;
+    overflow-y: hidden;
 
-  &:deep(.n-space) {
+    .search-form {
+      margin-bottom: 24px;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .table-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+    }
+  }
+  
+  :deep(.n-data-table) {
     flex: 1;
-    display: flex;
-    flex-direction: column;
   }
 }
 </style>

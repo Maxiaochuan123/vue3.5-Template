@@ -1,10 +1,16 @@
 <template>
   <div class="video-preview" @click="handlePlay">
     <div v-if="!isPlaying" class="preview-cover">
-      <img v-if="coverUrl" :src="coverUrl" class="cover-image" />
+      <template v-if="coverUrl && !imgError">
+        <img 
+          :src="coverUrl" 
+          class="cover-image"
+          @error="handleImgError"
+        />
+      </template>
       <div v-else class="no-cover">
-        <n-icon size="24" class="play-icon">
-          <VideocamOutline />
+        <n-icon size="24" class="placeholder-icon">
+          <VideocamOffSharp />
         </n-icon>
       </div>
       <div class="play-button">
@@ -27,7 +33,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { NIcon } from 'naive-ui'
-import { CaretForwardOutline, VideocamOutline } from '@vicons/ionicons5'
+import { CaretForwardOutline, VideocamOffSharp } from '@vicons/ionicons5'
 
 defineOptions({
   name: 'VideoPreview',
@@ -44,11 +50,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const isPlaying = ref(false)
 const videoRef = ref<HTMLVideoElement | null>(null)
+const imgError = ref(false)
 
 const handlePlay = () => {
+  if (imgError || !props.coverUrl) return
+  
   if (!isPlaying.value) {
     isPlaying.value = true
-    // 等待 DOM 更新后播放视频
     setTimeout(() => {
       if (videoRef.value) {
         videoRef.value.play()
@@ -59,6 +67,10 @@ const handlePlay = () => {
 
 const handleEnded = () => {
   isPlaying.value = false
+}
+
+const handleImgError = () => {
+  imgError.value = true
 }
 </script>
 

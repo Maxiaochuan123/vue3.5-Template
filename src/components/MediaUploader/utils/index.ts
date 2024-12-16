@@ -1,13 +1,18 @@
 import type { FileItem } from '../interface'
 
-export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B'
+export function parseBytes(str: string) {
+  const units = {
+    b: 1,
+    kb: 1024,
+    mb: 1024 * 1024,
+    gb: 1024 * 1024 * 1024,
+  }
 
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const match = str.toLowerCase().match(/^(\d+)\s*(b|kb|mb|gb)?$/)
+  if (!match) return 0
 
-  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
+  const [, num, unit = 'b'] = match
+  return Number(num) * (units[unit as keyof typeof units] || 1)
 }
 
 // 文件类型判断

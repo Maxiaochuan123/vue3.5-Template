@@ -75,7 +75,7 @@ const { searchForm, handleReset, handleSearch } = useSearch<SearchParams>({
 })
 
 // 类型选项
-const typeOptions = [
+const advertisementTypeOptions = [
   { label: '充值', value: 'deposit' },
   { label: '提现', value: 'withdraw' },
   { label: '赠送', value: 'bonus' },
@@ -150,7 +150,7 @@ const tablePagination = {
       <NFormItem label="变动类型">
         <NSelect
           v-model:value="searchForm.type"
-          :options="typeOptions"
+          :options="advertisementTypeOptions"
           clearable
           :style="{ width: '160px' }"
         />

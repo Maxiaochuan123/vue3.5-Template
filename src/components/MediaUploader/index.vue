@@ -18,22 +18,26 @@
         class="file-input"
         :multiple="props.maxCount > 1"
       />
-      <div class="upload-icon">+</div>
+      <div class="upload-icon">
+        <n-icon size="30">
+          <AddSVG />
+        </n-icon>
+      </div>
     </div>
 
     <!-- 文件列表 -->
     <div class="file-list">
       <div v-for="(file, index) in fileList" :key="file.url || index" class="file-item">
         <!-- 上传中状态 -->
-        <!-- <div v-if="file.status === 'uploading'" class="file-uploading">
-          <div class="progress-bar">
-            <div class="progress" :style="{ width: file.progress + '%' }"></div>
+        <div v-if="file.status === 'uploading'" class="file-uploading">
+          <div class="file-preview">
+            <img v-if="isImage(file)" :src="getPreviewUrl(file)" alt="preview" />
+            <video v-else-if="isVideo(file)" :src="getPreviewUrl(file)"></video>
           </div>
-        </div> -->
-
-        <!-- <div v-if="file.status === 'uploading'" class="file-uploading">
-          <n-progress type="circle" :percentage="file.progress"/>
-        </div> -->
+          <div class="upload-overlay">
+            <n-spin size="small" />
+          </div>
+        </div>
 
         <!-- 上传失败状态 -->
         <div v-if="file.status === 'error'" class="file-error">
@@ -85,12 +89,16 @@ import { ref, computed, onBeforeUnmount } from 'vue'
 import { useMessage } from 'naive-ui'
 import { qiniuUploader } from './plugins/qiniuUpload'
 import MediaPreview from './preview/index.vue'
-import { isImage, isVideo } from './utils'
+import { isImage, isVideo, parseBytes } from './utils'
+import AddSVG from './icons/Add.svg'
 import SeeSVG from './icons/See.svg'
 import PlaySVG from './icons/Play.svg'
 import DeleteSVG from './icons/Delete.svg'
 import Rotate360SVG from './icons/Rotate360.svg'
+import { useThemeVars } from 'naive-ui'
 import type { FileItem } from './interface'
+
+const themeVars = useThemeVars()
 
 // 文件类型映射
 const ACCEPT_MAPPING = {
@@ -163,6 +171,13 @@ const handleFileChange = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files) {
     const files = Array.from(input.files)
+    // 添加数量检查
+    if (fileList.value.length + files.length > props.maxCount) {
+      message.warning(`最多只能上传${props.maxCount}个文件`)
+      input.value = '' // 清空选择
+      return
+    }
+
     const validFiles = files.filter((file) => {
       if (!isValidFileType(file)) {
         message.warning(`只支持上传 ${props.accept} 类型的文件`)
@@ -180,6 +195,12 @@ const handleDragLeave = () => (isDragover.value = false)
 const handleDrop = (event: DragEvent) => {
   isDragover.value = false
   const files = Array.from(event.dataTransfer?.files || [])
+  // 添加数量检查
+  if (fileList.value.length + files.length > props.maxCount) {
+    message.warning(`最多只能上传${props.maxCount}个文件`)
+    return
+  }
+
   const validFiles = files.filter((file) => {
     if (!isValidFileType(file)) {
       message.warning(`只支持上传 ${props.accept} 类型的文件`)
@@ -209,11 +230,11 @@ const uploadFiles = async (files: File[]) => {
     fileList.value.push(fileItem)
 
     try {
-      console.log('开始上传文件:', file.name)
+      // console.log('开始上传文件:', file.name)
 
       // 先订阅状态变化
       const unsubscribe = qiniuUploader.subscribe((files) => {
-        console.log('上传状态更新:', files)
+        // console.log('上传状态更新:', files)
         const uploadFile = files.find((f) => f.file === file)
         if (uploadFile?.status === 'success' && uploadFile.url) {
           URL.revokeObjectURL(fileItem.url!)
@@ -234,7 +255,7 @@ const uploadFiles = async (files: File[]) => {
       // 再开始上传
       await qiniuUploader.upload(file)
     } catch (error) {
-      console.error('上传失败:', error)
+      // console.error('上传失败:', error)
       URL.revokeObjectURL(fileItem.url!)
       fileItem.status = 'error'
     }
@@ -254,6 +275,12 @@ const handleRemove = (file: FileItem) => {
   const index = fileList.value.findIndex((item) => item === file)
   if (index !== -1) {
     fileList.value.splice(index, 1)
+
+    // 更新 modelValue
+    modelValue.value = fileList.value
+      .filter((item) => item.status === 'success')
+      .map((item) => item.url!)
+
     // 清空文件输入框的值
     if (fileInput.value) {
       fileInput.value.value = ''
@@ -290,22 +317,6 @@ onBeforeUnmount(() => {
     }
   })
 })
-
-// 字节转换
-const parseBytes = (str: string): number => {
-  const units = {
-    b: 1,
-    kb: 1024,
-    mb: 1024 * 1024,
-    gb: 1024 * 1024 * 1024,
-  }
-
-  const match = str.toLowerCase().match(/^(\d+)\s*(b|kb|mb|gb)?$/)
-  if (!match) return 0
-
-  const [, num, unit = 'b'] = match
-  return Number(num) * (units[unit as keyof typeof units] || 1)
-}
 </script>
 
 <style scoped lang="less">
@@ -331,14 +342,14 @@ const parseBytes = (str: string): number => {
     color: #999;
 
     &:hover {
-      border-color: #1890ff;
-      color: #1890ff;
+      // border-color: #1890ff;
+      // color: #1890ff;
+      border-color: v-bind('themeVars.primaryColor');
+      color: v-bind('themeVars.primaryColor');
     }
 
-    .upload-icon {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
+    // .upload-icon {
+    // }
 
     .upload-text {
       font-size: 12px;
@@ -392,29 +403,38 @@ const parseBytes = (str: string): number => {
       }
     }
 
-    // .file-uploading {
-    //   position: absolute;
-    //   top: 0;
-    //   left: 0;
-    //   right: 0;
-    //   bottom: 0;
-    //   background: rgba(0, 0, 0, 0.45);
-    //   display: flex;
-    //   align-items: center;
-    //   justify-content: center;
+    .file-uploading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
 
-    //   .progress-bar {
-    //     width: 80%;
-    //     height: 2px;
-    //     background: rgba(255, 255, 255, 0.3);
+      .progress-text {
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
 
-    //     .progress {
-    //       height: 100%;
-    //       background: #fff;
-    //       transition: width 0.3s;
-    //     }
-    //   }
-    // }
+      .progress-bar {
+        width: 80%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 1px;
+        overflow: hidden;
+
+        .progress {
+          height: 100%;
+          background: #fff;
+          transition: width 0.3s ease;
+        }
+      }
+    }
 
     .file-error {
       position: absolute;
@@ -473,6 +493,19 @@ const parseBytes = (str: string): number => {
         opacity: 1;
       }
     }
+  }
+
+  .upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
   }
 }
 </style>

@@ -2,10 +2,9 @@
   <NDrawer
     v-model:show="modelValue"
     placement="top"
-    :trap-focus="false"
     :block-scroll="false"
-    height="100%"
     to=".n-card__content"
+    height="100%"
     @close="handleClose"
   >
     <NDrawerContent closable>
@@ -33,8 +32,14 @@
       <!-- Footer Section -->
       <template #footer>
         <div v-if="showFooter" class="page-footer">
-          <NButton :disabled="loading" size="large" @click="handleClose"> 取消 </NButton>
-          <NButton type="primary" :loading="loading" size="large" @click="handleConfirm">
+          <NButton :disabled="submitLoading" size="large" @click="handleClose"> 取消 </NButton>
+          <NButton
+            type="primary"
+            :loading="submitLoading"
+            size="large"
+            :disabled="submitDisabled"
+            @click="handleSubmit"
+          >
             {{ submitText }}
           </NButton>
         </div>
@@ -44,41 +49,34 @@
 </template>
 
 <script setup lang="ts">
-import { NDrawer, NDrawerContent, NButton, NIcon } from 'naive-ui'
+import { ref } from 'vue'
+import { NDrawer, NDrawerContent, NButton, NIcon, useMessage, type FormInst } from 'naive-ui'
 import { ArrowBack } from '@vicons/ionicons5'
 
 interface Props {
   title: string
   submitText?: string
-  loading?: boolean
   showFooter?: boolean
-}
-
-interface Emits {
-  (e: 'submit'): void
-  (e: 'cancel'): void
+  submitApi: (...args: any[]) => Promise<any> // 提交接口
+  formRef?: {
+    formRef: FormInst
+    formData: any
+  } | null
+  refreshList?: () => void // 刷新列表
 }
 
 const modelValue = defineModel({ type: Boolean, default: false })
+const submitLoading = ref(false)
+const submitDisabled = ref(false)
+const message = useMessage()
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   title: '未知 Title',
   submitText: '提交',
-  loading: false,
   showFooter: true,
 })
 
-const emit = defineEmits<Emits>()
-
-// 打开抽屉
-const open = () => {
-  modelValue.value = true
-}
-
-// 关闭抽屉
-const close = () => {
-  modelValue.value = false
-}
+const emit = defineEmits(['cancel', 'submit'])
 
 // 处理关闭
 const handleClose = () => {
@@ -87,9 +85,50 @@ const handleClose = () => {
   close()
 }
 
-// 处理确认
-const handleConfirm = () => {
-  emit('submit')
+// 关闭抽屉
+const close = () => {
+  modelValue.value = false
+  submitLoading.value = false
+  submitDisabled.value = false
+}
+
+// 打开抽屉
+const open = () => {
+  modelValue.value = true
+}
+
+// 处理提交
+const handleSubmit = async () => {
+  if (!props.submitApi || !props.formRef?.formRef) return
+  
+  try {
+    submitLoading.value = true
+    submitDisabled.value = true
+
+    // 表单验证
+    await props.formRef.formRef.validate()
+
+    // 获取表单数据
+    const formData = props.formRef.formData
+
+    console.log('formData: ', formData)
+
+    // 调用提交接口
+    await props.submitApi(formData)
+
+    // 提交成功提示
+    message.success('提交成功')
+
+    // 刷新列表
+    props.refreshList?.()
+
+    close()
+  } catch (error: any) {
+    message.error(error.message || '提交失败')
+    submitDisabled.value = false
+  } finally {
+    submitLoading.value = false
+  }
 }
 
 // 暴露方法给父组件
@@ -116,10 +155,11 @@ defineExpose({
 }
 
 .page-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 0;
-  min-height: 300px;
+  // min-width: 1040px;
+  // overflow-y: auto;
+  // flex: 1;
+  // overflow-y: auto;
+  height: 100%;
 }
 
 .page-footer {
