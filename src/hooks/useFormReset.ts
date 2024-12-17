@@ -2,8 +2,8 @@ import type { Ref } from 'vue';
 import type { FormInst } from 'naive-ui';
 
 interface UseFormResetOptions<T extends Record<string, any>> {
-  formRef: Ref<FormInst | null>;
-  defaultValues: Partial<T>;
+  formRef?: Ref<FormInst | null>;
+  defaultValues: T;
   formData: T;
   onReset?: (values: T) => void;
 }
@@ -12,8 +12,10 @@ export function useFormReset<T extends Record<string, any>>(options: UseFormRese
   const { formRef, defaultValues, formData, onReset } = options;
 
   const reset = () => {
+    console.log(formData);
+    
     // 重置表单验证
-    formRef.value?.restoreValidation();
+    formRef?.value?.restoreValidation();
 
     // 重置表单数据
     const defaultKeys = Object.keys(defaultValues);

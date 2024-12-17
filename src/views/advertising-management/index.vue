@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { h, ref, computed, onMounted } from 'vue'
 import type { DataTableColumns, FormInst } from 'naive-ui'
-import { NButton, NIcon, NSpace, NEllipsis } from 'naive-ui'
+import { NButton, NIcon, NSpace } from 'naive-ui'
 import { AddOutline } from '@vicons/ionicons5'
 import { useRouter } from 'vue-router'
-import { useSearch } from '@/hooks/useSearch'
-import { useTableData } from '@/hooks/useTableData'
 import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
 import type { RequestParams } from '@/hooks/useTableData'
 import FormDrawer from '@/components/FormDrawer/index.vue'
@@ -13,13 +11,16 @@ import AdvertisingForm from './components/AdvertisingForm.vue'
 import Phone from '@/components/MediaUploader/preview/components/ImgVideoPreviewPhone.vue'
 import { advertisementTypeOptions, statusOptions } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
+import SearchForm from '@/components/SearchForm/index.vue'
+import Table from '@/components/Table/index.vue'
+import { useSearch } from '@/hooks/useSearch'
 
 interface AdvertisingRecord {
   id: number
   title: string // 广告标题
   type: 'CPM' | 'CPC' | 'CPA' // 广告类型
   status: '审核通过' | '审核中' | '审核失败' // 审核状态
-  creator: string // 创建人
+  creator: string // 创建���
   createTime: string // 创建时间
   failReason?: string // 失败原因
   publishTime: string // 发布时间
@@ -28,88 +29,66 @@ interface AdvertisingRecord {
 }
 
 interface SearchParams extends RequestParams {
-  keyword: string // 添加关键词搜索
-  dateRange: [number, number] | null
-  type: string | null
-  status: string | null
+  keyword: string;
+  dateRange: [number, number] | null;
+  type: 'CPM' | 'CPC' | 'CPA' | null;
+  status: '审核通过' | '审核中' | '审核失败' | null;
 }
 
-// 表单 ref
-const searchFormRef = ref<FormInst | null>(null)
-
-// 使用 useTableData
-const { loading, data, pagination, loadData, handlePageChange, handlePageSizeChange } =
-  useTableData<AdvertisingRecord, SearchParams>({
-    async fetchData(_params: SearchParams) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            list: [
-              {
-                id: 1,
-                title: '这里是视频广告的标题，标题长度限制20个字这里是视频广告的标题，标题长度限制20个字这里是视频广告的标题，标题长度限制20个字',
-                type: 'CPM',
-                status: '审核通过',
-                creator: '张三',
-                createTime: '2023-12-31 21:00:03',
-                publishTime: '2023-12-31 21:00:03',
-                videoUrl: 'https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4',
-              },
-              {
-                id: 2,
-                title: '这里是视频广告的标题，标题长度限制20个字',
-                type: 'CPC',
-                status: '审核通过',
-                creator: '张三',
-                createTime: '2023-12-30 21:00:03',
-                publishTime: '2023-12-30 21:00:03',
-                videoUrl: 'https://example.com/video.mp4',
-              },
-              {
-                id: 3,
-                title: '这里是视频广告的标题，标题长度限制20个字',
-                type: 'CPA',
-                status: '审核中',
-                creator: '张三',
-                createTime: '2023-12-30 21:00:03',
-                publishTime: '2023-12-30 21:00:03',
-                videoUrl: 'https://example.com/video.mp4',
-              },
-              {
-                id: 4,
-                title: '这里是视频广告的标题，标题长度限制20个字',
-                type: 'CPA',
-                status: '审核失败',
-                creator: '张三',
-                createTime: '2023-12-30 21:00:03',
-                publishTime: '2023-12-30 21:00:03',
-                videoUrl: 'https://example.com/video.mp4',
-                failReason: '失败原因',
-              },
-            ],
-            total: 100,
-          })
-        }, 1000)
+// 定义获取数据的方法
+const fetchData = async (params: SearchParams): Promise<{ list: AdvertisingRecord[]; total: number }> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        list: [
+          {
+            id: 1,
+            title:
+              '这里是视频广告的标题，标题长度限制20个字这里是视频广告的标题，标题长度限制20个字这里是视频广告的标题，标题长度限制20个字',
+            type: 'CPM',
+            status: '审核通过',
+            creator: '张三',
+            createTime: '2023-12-31 21:00:03',
+            publishTime: '2023-12-31 21:00:03',
+            videoUrl: 'https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4',
+          },
+          {
+            id: 2,
+            title: '这里是视频广告的标题，标题长度限制20个字',
+            type: 'CPC',
+            status: '审核通过',
+            creator: '张三',
+            createTime: '2023-12-30 21:00:03',
+            publishTime: '2023-12-30 21:00:03',
+            videoUrl: 'https://example.com/video.mp4',
+          },
+          {
+            id: 3,
+            title: '这里是视频广告的标题，标题长度限制20个字',
+            type: 'CPA',
+            status: '审核中',
+            creator: '张三',
+            createTime: '2023-12-30 21:00:03',
+            publishTime: '2023-12-30 21:00:03',
+            videoUrl: 'https://example.com/video.mp4',
+          },
+          {
+            id: 4,
+            title: '这里是视频广告的标题，标题长度限制20个字',
+            type: 'CPA',
+            status: '审核失败',
+            creator: '张三',
+            createTime: '2023-12-30 21:00:03',
+            publishTime: '2023-12-30 21:00:03',
+            videoUrl: 'https://example.com/video.mp4',
+            failReason: '失败原因',
+          },
+        ],
+        total: 100,
       })
-    },
+    }, 1000)
   })
-
-// 用 useSearch
-const { searchForm, handleReset, handleSearch } = useSearch<SearchParams>({
-  defaultValues: {
-    keyword: '',
-    dateRange: null,
-    type: null,
-    status: null,
-  },
-  onSearch: (values) => {
-    loadData(values)
-  },
-  searchFormRef,
-})
-
-// 在 setup 中获取组件实例
-const advertisingInfoColumn = ref<InstanceType<typeof AdvertisingInfoColumn> | null>(null)
+}
 
 // 表格列定义
 const columns: DataTableColumns<AdvertisingRecord> = [
@@ -235,8 +214,8 @@ onMounted(() => {
   // drawerRef.value?.open()
 })
 
-const formRef = ref(null)
-const drawerRef = ref(null)
+const formRef = ref<FormInst | null>(null)
+const drawerRef = ref<InstanceType<typeof FormDrawer> | null>(null)
 
 // 打开抽屉
 const handleAdd = () => {
@@ -251,32 +230,53 @@ const mockSubmit = async (data: any) => {
 // 在 setup 中获取 router 实例
 const router = useRouter()
 
-// 表格分页配置
-const tablePagination = {
-  page: pagination.page,
-  pageSize: pagination.pageSize,
-  showSizePicker: pagination.showSizePicker,
-  pageSizes: pagination.pageSizes,
-  itemCount: pagination.itemCount,
-  onChange: handlePageChange,
-  onUpdatePageSize: handlePageSizeChange,
-}
-
 // 获取广告表单中的媒体链接
 const mediaUrl = computed(() => formRef.value?.media)
+
+// 添加 SearchTable 的 ref
+const searchTableRef = ref()
+
+// 表单数据
+const { searchForm, handleReset } = useSearch<SearchParams>({
+  defaultValues: {
+    keyword: '',
+    dateRange: null,
+    type: null,
+    status: null,
+    page: 1,
+    pageSize: 10
+  },
+  onSearch: (values) => {
+    console.log('搜索参数:', values);
+    tableRef.value?.loadData(values);
+  }
+});
+
+// 定义一个统一的搜索处理函数
+const handleSearch = (values: SearchParams) => {
+  console.log('搜索参数:', values);
+  tableRef.value?.loadData(values);
+};
+
+// 表格引用
+const tableRef = ref()
+
+// 修改抽屉刷新方法
+const handleDrawerRefresh = () => {
+  console.log('handleDrawerRefresh');
+  tableRef.value?.refresh()
+}
+
 </script>
 
 <template>
   <TablePageLayout>
     <!-- 搜索表单 -->
     <template #search>
-      <NForm
-        ref="searchFormRef"
+      <SearchForm
         :model="searchForm"
-        inline
-        :show-feedback="false"
-        :label-width="80"
-        size="medium"
+        :on-search="handleSearch"
+        :on-reset="handleReset"
       >
         <NFormItem label="关键词">
           <NInput
@@ -314,35 +314,25 @@ const mediaUrl = computed(() => formRef.value?.media)
             :style="{ width: '200px' }"
           />
         </NFormItem>
-
-        <NFormItem>
-          <NSpace>
-            <NButton type="primary" @click="handleSearch">查询</NButton>
-            <NButton @click="handleReset">重置</NButton>
-          </NSpace>
-        </NFormItem>
-      </NForm>
+      </SearchForm>
     </template>
 
     <!-- 工具栏 -->
     <template #toolbar>
       <NButton type="primary" @click="handleAdd">
         <template #icon>
-          <NIcon>
-            <AddOutline />
-          </NIcon>
+          <NIcon><AddOutline /></NIcon>
         </template>
         新增广告
       </NButton>
     </template>
 
-    <!-- 表格区域 -->
+    <!-- 表格 -->
     <template #table>
-      <NDataTable
+      <Table
+        ref="tableRef"
         :columns="columns"
-        :data="data"
-        :loading="loading"
-        :pagination="tablePagination"
+        :fetch-data="fetchData"
       />
     </template>
 
@@ -351,7 +341,7 @@ const mediaUrl = computed(() => formRef.value?.media)
       title="新增广告"
       :submit-api="mockSubmit"
       :form-ref="formRef"
-      :refresh-list="() => loadData(searchForm)"
+      :refresh-list="handleDrawerRefresh"
     >
       <div class="form-drawer-content">
         <div class="form-content">
@@ -366,56 +356,6 @@ const mediaUrl = computed(() => formRef.value?.media)
 </template>
 
 <style scoped lang="less">
-// .info-content {
-//   display: flex;
-//   flex-direction: column;
-//   gap: 8px;
-//   min-width: 0;
-
-//   .title-text {
-//     font-size: 14px;
-//     color: #333;
-//     line-height: 1.4;
-//     overflow: hidden;
-//     text-overflow: ellipsis;
-//     display: -webkit-box;
-//     -webkit-line-clamp: 2;
-//     -webkit-box-orient: vertical;
-//     word-break: break-all;
-//   }
-
-//   .publish-time {
-//     font-size: 12px;
-//     color: #999;
-//     line-height: 1.2;
-//   }
-// }
-.info-content {
-  display: flex;
-  align-items: center; // 垂直居中对齐
-  gap: 12px;
-  min-width: 0;
-  flex: 1;
-
-  .title-text {
-    flex: 1; // 让标题占据剩余空间
-    font-size: 14px;
-    color: #333;
-    line-height: 1.4;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .publish-time {
-    flex-shrink: 0; // 防止时间被压缩
-    font-size: 12px;
-    color: #999;
-    line-height: 1.2;
-    white-space: nowrap; // 防止时间换行
-  }
-}
-
 .form-drawer-content {
   width: 100%;
   display: flex;
