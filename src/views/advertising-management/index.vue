@@ -6,13 +6,13 @@ import { AddOutline } from '@vicons/ionicons5'
 import { useRouter } from 'vue-router'
 import { useSearch } from '@/hooks/useSearch'
 import { useTableData } from '@/hooks/useTableData'
-import TablePageLayout from '@/components/pageLayout/TablePageLayout.vue'
+import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
 import type { RequestParams } from '@/hooks/useTableData'
 import FormDrawer from '@/components/FormDrawer/index.vue'
 import AdvertisingForm from './components/AdvertisingForm.vue'
-import Phone from '@/components/MediaUploader/preview/Phone.vue'
-import VideoPreview from '@/components/preview/Video.vue'
+import Phone from '@/components/MediaUploader/preview/components/ImgVideoPreviewPhone.vue'
 import { advertisementTypeOptions, statusOptions } from '@/enum/options'
+import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
 
 interface AdvertisingRecord {
   id: number
@@ -53,8 +53,7 @@ const { loading, data, pagination, loadData, handlePageChange, handlePageSizeCha
                 creator: '张三',
                 createTime: '2023-12-31 21:00:03',
                 publishTime: '2023-12-31 21:00:03',
-                videoUrl: 'https://example.com/video.mp4',
-                coverUrl: 'https://example.com/cover.jpg',
+                videoUrl: 'https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4',
               },
               {
                 id: 2,
@@ -65,7 +64,6 @@ const { loading, data, pagination, loadData, handlePageChange, handlePageSizeCha
                 createTime: '2023-12-30 21:00:03',
                 publishTime: '2023-12-30 21:00:03',
                 videoUrl: 'https://example.com/video.mp4',
-                coverUrl: 'https://example.com/cover.jpg',
               },
               {
                 id: 3,
@@ -76,7 +74,6 @@ const { loading, data, pagination, loadData, handlePageChange, handlePageSizeCha
                 createTime: '2023-12-30 21:00:03',
                 publishTime: '2023-12-30 21:00:03',
                 videoUrl: 'https://example.com/video.mp4',
-                coverUrl: 'https://example.com/cover.jpg',
               },
               {
                 id: 4,
@@ -87,7 +84,6 @@ const { loading, data, pagination, loadData, handlePageChange, handlePageSizeCha
                 createTime: '2023-12-30 21:00:03',
                 publishTime: '2023-12-30 21:00:03',
                 videoUrl: 'https://example.com/video.mp4',
-                coverUrl: 'https://example.com/cover.jpg',
                 failReason: '失败原因',
               },
             ],
@@ -112,40 +108,17 @@ const { searchForm, handleReset, handleSearch } = useSearch<SearchParams>({
   searchFormRef,
 })
 
+// 在 setup 中获取组件实例
+const advertisingInfoColumn = ref<InstanceType<typeof AdvertisingInfoColumn> | null>(null)
+
 // 表格列定义
 const columns: DataTableColumns<AdvertisingRecord> = [
   {
     title: '广告信息',
     key: 'info',
     width: 400,
-    render: (row: AdvertisingRecord) => {
-      return h(
-        'div',
-        {
-          style: 'display: flex; align-items: center; gap: 16px; width: 100%;'
-        },
-        [
-          h(VideoPreview, {
-            videoUrl: row.videoUrl,
-            coverUrl: row.coverUrl,
-            style: 'width: 120px; flex-shrink: 0;'
-          }),
-          h('div', { 
-            style: 'flex: 1; max-width: calc(100% - 136px);'
-          }, [
-            h(NEllipsis, {  // 使用 NEllipsis 组件
-              style: 'width: 100%;'
-            }, {
-              default: () => row.title
-            }),
-            h('div', { 
-              style: 'font-size: 12px; color: #999; margin-top: 4px;'
-            }, row.createTime)
-          ])
-        ]
-      )
-    }
-},
+    render: renderAdvertisingInfo
+  },
   {
     title: '广告类型',
     key: 'type',
@@ -385,7 +358,7 @@ const mediaUrl = computed(() => formRef.value?.media)
           <AdvertisingForm ref="formRef" />
         </div>
         <div class="preview-content">
-          <Phone :media-url="mediaUrl" title="预览广告创意" />
+          <Phone :url="mediaUrl" title="预览广告创意" />
         </div>
       </div>
     </FormDrawer>

@@ -15,7 +15,13 @@
         }"
         @wheel="handleWheel"
       />
-      <video v-else-if="isVideo" :src="fileUrl" controls></video>
+      <Phone 
+        v-else-if="isVideo" 
+        ref="phoneRef"
+        :url="fileUrl" 
+        :showTitle="false" 
+        :showShadow="false" 
+      />
 
       <!-- 底部工具栏 -->
       <div class="preview-toolbar" v-if="isImage">
@@ -34,12 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, defineModel } from 'vue'
+import { ref, watch, computed, defineModel, nextTick } from 'vue'
 import RotateLeftSVG from '../icons/RotateLeft.svg'
 import RotateRightSVG from '../icons/RotateRight.svg'
 // import DownloadSVG from '../icons/Download.svg'
 import CloseSVG from '../icons/Close.svg'
-import { isImage, isVideo } from '../utils'
+import { isImage as isImageUtil, isVideo as isVideoUtil } from '../utils'
+import Phone from './components/ImgVideoPreviewPhone.vue'
 
 interface Props {
   file?: {
@@ -70,13 +77,24 @@ const isVideo = computed(() => {
 
 const fileUrl = computed(() => props.file?.url || '')
 
+// 添加 ref 来引用 Phone 组件
+const phoneRef = ref<InstanceType<typeof Phone> | null>(null)
+
+// 监听 modelValue 变化，当打开预览时自动播放视频
 watch(
   () => modelValue.value,
-  (val) => {
+  async (val) => {
     if (val) {
       document.body.style.overflow = 'hidden'
+      // 如果是视频，等待下一个 tick 后自动播放
+      if (isVideo.value) {
+        await nextTick()
+        phoneRef.value?.play()
+      }
     } else {
       document.body.style.overflow = 'auto'
+      rotation.value = 0
+      scale.value = 1
     }
   },
 )

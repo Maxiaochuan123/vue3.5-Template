@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import type { FormInst, FormItemRule } from 'naive-ui'
-import { advertisementTypeOptions } from '@/enum/options'
+import { advertisementTypeOptions, type AdvertisementType } from '@/enum/options'
 import MediaUploader from '@/components/MediaUploader/index.vue'
+import { useMediaUploaderValidator } from '@/hooks/useMediaUploaderValidator'
 
 interface FormState {
-  adType: 'CMP' | 'CPC' | 'CPA'
+  adType: AdvertisementType
   adIcon: string[]
   type: string
   media: string[]
@@ -20,7 +21,7 @@ interface FormState {
 const formRef = ref<FormInst | null>(null)
 
 const formData = reactive<FormState>({
-  adType: 'CMP',
+  adType: 'CPM',
   adIcon: [],
   type: '', 
   media: [], 
@@ -32,46 +33,35 @@ const formData = reactive<FormState>({
   iosUrl: ''
 })
 
+// 媒体文件最大数量
+const mediaMaxCount = 2
+const adIconMaxCount = 1
+
 const rules = {
   adType: { required: true, message: '请选择广告类型', trigger: 'change' },
-  media: {
-    required: true,
-    message: '请上传广告创意',
-    trigger: ['change', 'blur'],
-    validator: (rule: FormItemRule, value: string[]) => {
-      if (!Array.isArray(value) || value.length === 0) {
-        return new Error('请上传广告创意')
-      }
-    },
-  },
+  media: useMediaUploaderValidator(
+    formRef, 
+    () => formData.media, 
+    'media',
+    '请上传广告创意',
+    mediaMaxCount
+  ),
   title: [
-    {
-      required: true,
-      message: '请输入广告标题',
-      trigger: 'blur',
-    },
-    {
-      max: 20,
-      message: '标题最多20个字符',
-      trigger: 'input',
-    },
+    { required: true, message: '请输入广告标题', trigger: 'blur' },
+    { max: 20, message: '标题最多20个字符', trigger: 'input' },
   ],
-  adIcon: { required: true, message: '请上传广告图标', trigger: 'change' },
+  adIcon: useMediaUploaderValidator(
+    formRef, 
+    () => formData.adIcon, 
+    'adIcon', 
+    '请上传广告图标',
+    adIconMaxCount
+  ),
   buttonText: { required: true, message: '请输入按钮文案', trigger: 'blur' },
   landingUrl: { required: true, message: '请输入落地页URL', trigger: 'blur' },
   androidUrl: { required: true, message: '请输入安卓下载地址', trigger: 'blur' },
   iosUrl: { required: true, message: '请输入苹果下载地址', trigger: 'blur' }
 }
-
-watch(
-  () => formData.media,
-  (newVal) => {
-    if (newVal && newVal.length > 0 && formRef.value) {
-      formRef.value.validate(['media'])
-    }
-  },
-  { deep: true },
-)
 
 defineExpose({
   formRef,
@@ -82,7 +72,6 @@ defineExpose({
 
 <template>
   <n-form ref="formRef" :model="formData" :rules="rules" label-placement="left" label-width="120">
-    <p v-for="item in 100" :key="item">123</p>
     <!-- CPM/CPC/CPA 基础组件 -->
     <template v-if="['CPM', 'CPC', 'CPA'].includes(formData.adType)">
       <n-form-item label="广告类型" path="adType">
@@ -94,19 +83,23 @@ defineExpose({
         />
       </n-form-item>
 
-      <n-form-item label="广告创意" path="media" class="media-uploader-container">
+      <n-form-item label="广告创意" path="media" class="uploader-container">
         <media-uploader
           v-model="formData.media"
-          :max-count="1"
+          :max-count="mediaMaxCount"
           max-size="2GB"
           :accept="['img', 'video']"
-        />
-        <div class="decriton">
-          <span>视频大小不超过2GB，建议分辨率720p及以上；</span>
-          <span>仅支持MP4等常见格式；</span>
-          <span>视频和图片不能混合上传；</span>
-          <span>图片支持.jpg等常见格式，最多1张。</span>
-        </div>
+          direction="row"
+        >
+          <template #description>
+            <div class="decriton">
+              <span>视频大小不超过2GB，建议分辨率720p及以上；</span>
+              <span>仅支持MP4等常见格式；</span>
+              <span>视频和图片不能混合上传；</span>
+              <span>图片支持.jpg等常见格式，最多1张。</span>
+            </div>
+          </template>
+        </media-uploader>
       </n-form-item>
 
       <n-form-item label="广告标题" path="title">
@@ -131,14 +124,19 @@ defineExpose({
 
     <!-- CPC/CPA 共同组件 -->
     <template v-if="['CPC', 'CPA'].includes(formData.adType)">
-      <n-form-item label="广告图标" path="adIcon">
+      <n-form-item label="广告图标" path="adIcon" class="uploader-container">
         <media-uploader 
           v-model="formData.adIcon"
           accept="img"
-        />
-        <div class="decriton">
-          <span>建议480*480尺寸</span>
-        </div>
+          direction="row"
+          :max-count="adIconMaxCount"
+        >
+          <template #description>
+            <div class="decriton">
+              <span>建议480*480尺寸</span>
+            </div>
+          </template>
+        </media-uploader>
       </n-form-item>
 
       <n-form-item label="按钮文案" path="buttonText">
@@ -178,7 +176,7 @@ defineExpose({
 </template>
 
 <style scoped lang="less">
-  .media-uploader-container {
+  .uploader-container {
     .decriton {
       display: flex;
       flex-direction: column;

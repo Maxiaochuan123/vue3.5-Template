@@ -2,20 +2,22 @@
 import { ref, computed } from 'vue'
 import { NIcon } from 'naive-ui'
 import { PlayCircleOutline, PauseCircleOutline } from '@vicons/ionicons5'
-import { isVideo, isImage } from '../utils'
-import type { FileItem } from '../interface'
+import { isVideo, isImage } from '../../utils'
+import type { FileItem } from '../../interface'
 import { useThemeVars } from 'naive-ui'
 
 interface Props {
-  mediaUrl: string | null
+  url: string | null
   title?: string
   showTitle?: boolean
+  showShadow?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  mediaUrl: null,
+  url: null,
   title: '预览',
   showTitle: true,
+  showShadow: true,
 })
 
 const videoRef = ref<HTMLVideoElement | null>(null)
@@ -25,18 +27,18 @@ const duration = ref(0)
 const themeVars = useThemeVars()
 
 const fileItem = computed<FileItem>(() => ({
-  url: props.mediaUrl || '',
+  url: props.url || '',
 }))
 
 const mediaType = computed(() => {
-  if (!props.mediaUrl) return null
+  if (!props.url) return null
   if (isVideo(fileItem.value)) return 'video'
   if (isImage(fileItem.value)) return 'image'
   return null
 })
 
 const showPlayButton = computed(() => {
-  return mediaType.value === 'video' && props.mediaUrl
+  return mediaType.value === 'video' && props.url
 })
 
 const togglePlay = () => {
@@ -89,25 +91,53 @@ const formatTime = (time: number) => {
 // 格式化后的时间显示
 const formattedCurrentTime = computed(() => formatTime(currentTime.value))
 const formattedDuration = computed(() => formatTime(duration.value))
+
+// 添加视频结束处理函数
+const handleVideoEnded = () => {
+  // 重置播放状态
+  isPlaying.value = false
+  // 重置播放时间
+  if (videoRef.value) {
+    videoRef.value.currentTime = 0
+    currentTime.value = 0
+  }
+}
+
+// 添加 play 方法
+const play = async () => {
+  if (!videoRef.value) return
+  try {
+    await videoRef.value.play()
+    isPlaying.value = true
+  } catch (error) {
+    console.error('Failed to play video:', error)
+  }
+}
+
+// 暴露 play 方法给父组件
+defineExpose({
+  play
+})
 </script>
 
 <template>
   <span class="preview-title" v-if="showTitle">{{ title }}</span>
   <div class="preview-container">
-    <template v-if="mediaUrl">
+    <template v-if="url">
       <video
         v-if="mediaType === 'video'"
         ref="videoRef"
-        :src="mediaUrl"
+        :src="url"
         class="preview-media"
         @timeupdate="handleTimeUpdate"
         @loadedmetadata="handleLoadedMetadata"
+        @ended="handleVideoEnded"
       />
-      <img v-else-if="mediaType === 'image'" :src="mediaUrl" class="preview-media" />
+      <img v-else-if="mediaType === 'image'" :src="url" class="preview-media" />
 
-      <div v-if="showPlayButton" class="video-controls">
+      <div v-if="showPlayButton" class="video-controls" @click="togglePlay">
         <div class="overlay" :class="{ 'is-playing': isPlaying }">
-          <div class="play-button" @click="togglePlay">
+          <div class="play-button">
             <NIcon size="48">
               <PlayCircleOutline v-if="!isPlaying" />
               <PauseCircleOutline v-else />
@@ -135,9 +165,7 @@ const formattedDuration = computed(() => formatTime(duration.value))
   position: relative;
   overflow: hidden;
   border-radius: 24px;
-  box-shadow: 
-    20px 20px 40px #d1d1d1,
-    -20px -20px 40px #ffffff;
+  box-shadow: v-bind('props.showShadow ? "20px 20px 40px #d1d1d1, -20px -20px 40px #ffffff" : "none"');
   border: none;
 }
 
@@ -177,16 +205,25 @@ const formattedDuration = computed(() => formatTime(duration.value))
   inset: 0;
   display: flex;
   flex-direction: column;
+  border-radius: 24px;
 
   .overlay {
     position: absolute;
     inset: 0;
-    background-color: rgba(240, 240, 240, 0.3);
+    background-color: rgba(240, 240, 240, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 1;
     backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    border-radius: 24px;
+
+    &.is-playing {
+      background-color: transparent;
+      backdrop-filter: none;
+      opacity: 0;
+    }
 
     .play-button {
       display: flex;
@@ -203,15 +240,6 @@ const formattedDuration = computed(() => formatTime(duration.value))
         color: v-bind('themeVars.primaryColor');
       }
     }
-
-    &.is-playing {
-      opacity: 0;
-      transition: opacity 0.3s;
-
-      &:hover {
-        opacity: 1;
-      }
-    }
   }
 
   .progress-container {
@@ -220,19 +248,21 @@ const formattedDuration = computed(() => formatTime(duration.value))
     left: 0;
     right: 0;
     padding: 20px;
-    background: linear-gradient(transparent, rgba(240, 240, 240, 0.9));
+    background: linear-gradient(transparent, rgba(240, 240, 240, 0.3));
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 2;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
 
     .time-display {
-      color: #666;
+      color: rgba(0, 0, 0, 0.85);
       font-size: 12px;
       text-align: center;
-      text-shadow: 1px 1px 2px #ffffff;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
       font-family: monospace;
     }
 

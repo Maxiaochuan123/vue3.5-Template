@@ -38,7 +38,7 @@
             :loading="submitLoading"
             size="large"
             :disabled="submitDisabled"
-            @click="handleSubmit"
+            @click="handleFormSubmit"
           >
             {{ submitText }}
           </NButton>
@@ -52,6 +52,7 @@
 import { ref } from 'vue'
 import { NDrawer, NDrawerContent, NButton, NIcon, useMessage, type FormInst } from 'naive-ui'
 import { ArrowBack } from '@vicons/ionicons5'
+import { useFormSubmit } from '@/hooks/useFormSubmit'
 
 interface Props {
   title: string
@@ -65,18 +66,15 @@ interface Props {
   refreshList?: () => void // 刷新列表
 }
 
-const modelValue = defineModel({ type: Boolean, default: false })
-const submitLoading = ref(false)
-const submitDisabled = ref(false)
-const message = useMessage()
-
 const props = withDefaults(defineProps<Props>(), {
   title: '未知 Title',
   submitText: '提交',
   showFooter: true,
 })
 
+const modelValue = defineModel({ type: Boolean, default: false })
 const emit = defineEmits(['cancel', 'submit'])
+const { submitLoading, submitDisabled, handleSubmit } = useFormSubmit()
 
 // 处理关闭
 const handleClose = () => {
@@ -98,36 +96,21 @@ const open = () => {
 }
 
 // 处理提交
-const handleSubmit = async () => {
+const handleFormSubmit = async () => {
   if (!props.submitApi || !props.formRef?.formRef) return
-  
-  try {
-    submitLoading.value = true
-    submitDisabled.value = true
 
-    // 表单验证
-    await props.formRef.formRef.validate()
+  const success = await handleSubmit({
+    submitApi: props.submitApi,
+    formRef: props.formRef.formRef,
+    formData: props.formRef.formData,
+    onSuccess: () => {
+      props.refreshList?.()
+      close()
+    }
+  })
 
-    // 获取表单数据
-    const formData = props.formRef.formData
-
-    console.log('formData: ', formData)
-
-    // 调用提交接口
-    await props.submitApi(formData)
-
-    // 提交成功提示
-    message.success('提交成功')
-
-    // 刷新列表
-    props.refreshList?.()
-
-    close()
-  } catch (error: any) {
-    message.error(error.message || '提交失败')
+  if (!success) {
     submitDisabled.value = false
-  } finally {
-    submitLoading.value = false
   }
 }
 

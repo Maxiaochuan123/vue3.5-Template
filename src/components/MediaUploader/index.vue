@@ -1,94 +1,101 @@
 <template>
-  <div class="media-uploader">
-    <!-- 上传区域 -->
-    <div
-      v-if="fileList.length < props.maxCount"
-      class="upload-area"
-      @click="triggerUpload"
-      @dragover.prevent="handleDragOver"
-      @dragleave.prevent="handleDragLeave"
-      @drop.prevent="handleDrop"
-      :class="{ 'is-dragover': isDragover }"
-    >
-      <input
-        ref="fileInput"
-        type="file"
-        :accept="actualAccept"
-        @change="handleFileChange"
-        class="file-input"
-        :multiple="props.maxCount > 1"
-      />
-      <div class="upload-icon">
-        <n-icon size="30">
-          <AddSVG />
-        </n-icon>
-      </div>
-    </div>
-
-    <!-- 文件列表 -->
-    <div class="file-list">
-      <div v-for="(file, index) in fileList" :key="file.url || index" class="file-item">
-        <!-- 上传中状态 -->
-        <div v-if="file.status === 'uploading'" class="file-uploading">
-          <div class="file-preview">
-            <img v-if="isImage(file)" :src="getPreviewUrl(file)" alt="preview" />
-            <video v-else-if="isVideo(file)" :src="getPreviewUrl(file)"></video>
-          </div>
-          <div class="upload-overlay">
-            <n-spin size="small" />
-          </div>
+  <div class="media-uploader-wrapper" :class="{ 'direction-row': direction === 'row' }">
+    <div class="media-uploader">
+      <!-- 上传区域 -->
+      <div
+        v-if="fileList.length < props.maxCount"
+        class="upload-area"
+        @click="triggerUpload"
+        @dragover.prevent="handleDragOver"
+        @dragleave.prevent="handleDragLeave"
+        @drop.prevent="handleDrop"
+        :class="{ 'is-dragover': isDragover }"
+      >
+        <input
+          ref="fileInput"
+          type="file"
+          :accept="actualAccept"
+          @change="handleFileChange"
+          class="file-input"
+          :multiple="props.maxCount > 1"
+        />
+        <div class="upload-icon">
+          <n-icon size="30">
+            <AddSVG />
+          </n-icon>
         </div>
-
-        <!-- 上传失败状态 -->
-        <div v-if="file.status === 'error'" class="file-error">
-          <div class="error-actions">
-            <n-icon size="30">
-              <Rotate360SVG @click="retryUpload(file)" />
-            </n-icon>
-            <n-icon size="30">
-              <DeleteSVG @click="handleRemove(file)" />
-            </n-icon>
-          </div>
-        </div>
-
-        <!-- 上传成功状态 -->
-        <template v-else>
-          <div class="file-preview">
-            <img v-if="isImage(file)" :src="getPreviewUrl(file)" alt="preview" />
-            <video v-else-if="isVideo(file)" :src="getPreviewUrl(file)"></video>
-          </div>
-          <!-- 添加类型标签 -->
-          <div class="file-type-tag">
-            <n-tag :type="isImage(file) ? 'success' : 'warning'" size="small">
-              {{ isImage(file) ? '图片' : '视频' }}
-            </n-tag>
-          </div>
-          <!-- 操作 -->
-          <div class="file-actions">
-            <n-icon size="30" v-if="isImage(file)">
-              <SeeSVG @click="handlePreview(file)" />
-            </n-icon>
-            <n-icon size="30" v-if="isVideo(file)">
-              <PlaySVG @click="handlePreview(file)" />
-            </n-icon>
-            <n-icon size="30">
-              <DeleteSVG @click="handleRemove(file)" />
-            </n-icon>
-          </div>
-        </template>
       </div>
-    </div>
 
-    <!-- 预览组件 -->
-    <MediaPreview v-model="previewVisible" :file="currentPreviewFile" />
+      <!-- 文件列表 -->
+      <div class="file-list">
+        <div v-for="(file, index) in fileList" :key="file.url || index" class="file-item">
+          <!-- 上传中状态 -->
+          <div v-if="file.status === 'uploading'" class="file-uploading">
+            <div class="file-preview">
+              <img v-if="isImage(file)" :src="getPreviewUrl(file)" alt="preview" />
+              <video v-else-if="isVideo(file)" :src="getPreviewUrl(file)"></video>
+            </div>
+            <div class="upload-overlay">
+              <n-spin size="small" />
+            </div>
+          </div>
+
+          <!-- 上传失败状态 -->
+          <div v-if="file.status === 'error'" class="file-error">
+            <div class="error-actions">
+              <n-icon size="30">
+                <Rotate360SVG @click="retryUpload(file)" />
+              </n-icon>
+              <n-icon size="30">
+                <DeleteSVG @click="handleRemove(file)" />
+              </n-icon>
+            </div>
+          </div>
+
+          <!-- 上传成功状态 -->
+          <template v-else>
+            <div class="file-preview">
+              <img v-if="isImage(file)" :src="getPreviewUrl(file)" alt="preview" />
+              <video v-else-if="isVideo(file)" :src="getPreviewUrl(file)"></video>
+            </div>
+            <!-- 添加类型标签 -->
+            <div class="file-type-tag">
+              <n-tag :type="isImage(file) ? 'success' : 'warning'" size="small">
+                {{ isImage(file) ? '图片' : '视频' }}
+              </n-tag>
+            </div>
+            <!-- 操作 -->
+            <div class="file-actions">
+              <n-icon size="30" v-if="isImage(file)">
+                <SeeSVG @click="handlePreview(file)" />
+              </n-icon>
+              <n-icon size="30" v-if="isVideo(file)">
+                <PlaySVG @click="handlePreview(file)" />
+              </n-icon>
+              <n-icon size="30">
+                <DeleteSVG @click="handleRemove(file)" />
+              </n-icon>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- 预览组件 -->
+      <Preview v-model="previewVisible" :file="currentPreviewFile" />
+    </div>
+    
+    <!-- 添加描述插槽 -->
+    <div class="media-uploader-description" v-if="$slots.description">
+      <slot name="description"></slot>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount } from 'vue'
+import { ref, computed, onBeforeUnmount, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import { qiniuUploader } from './plugins/qiniuUpload'
-import MediaPreview from './preview/index.vue'
+import Preview from './preview/index.vue'
 import { isImage, isVideo, parseBytes } from './utils'
 import AddSVG from './icons/Add.svg'
 import SeeSVG from './icons/See.svg'
@@ -112,12 +119,14 @@ interface Props {
   maxCount?: number
   maxSize?: string
   accept?: AcceptType
+  direction?: 'row' | 'column'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   maxCount: 1,
   maxSize: '10mb',
   accept: () => 'img' as const,
+  direction: 'column'
 })
 
 const message = useMessage()
@@ -130,7 +139,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const isDragover = ref(false)
 const fileList = ref<FileItem[]>([])
 const previewVisible = ref(false)
-const currentPreviewFile = ref<FileItem>()
+const currentPreviewFile = ref<{ url: string; file?: File }>()
 
 // 计算实际接受的文件类型
 const actualAccept = computed(() => {
@@ -142,6 +151,10 @@ const actualAccept = computed(() => {
 
 // 触发文件选择
 const triggerUpload = () => {
+  // 先清空文件输入框的值，这样选择相同文件时也会触发 change 事件
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
   fileInput.value?.click()
 }
 
@@ -166,6 +179,23 @@ const isValidFileType = (file: File): boolean => {
   })
 }
 
+// 添加检查重复文件的函数
+const isDuplicateFile = (file: File): boolean => {
+  return fileList.value.some(existingFile => {
+    // 如果是正在上传的文件，比较文件名和大小
+    if (existingFile.file) {
+      return existingFile.file.name === file.name && existingFile.file.size === file.size
+    }
+    // 如果已经上传成功的文件，比较文件大小和类型
+    if (existingFile.url) {
+      // 检查当前文件列表中是否已存在相同的文件（通过名称和大小）
+      const currentFiles = modelValue.value
+      return currentFiles.includes(existingFile.url)
+    }
+    return false
+  })
+}
+
 // 处理文件选择
 const handleFileChange = (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -174,13 +204,17 @@ const handleFileChange = (event: Event) => {
     // 添加数量检查
     if (fileList.value.length + files.length > props.maxCount) {
       message.warning(`最多只能上传${props.maxCount}个文件`)
-      input.value = '' // 清空选择
       return
     }
 
     const validFiles = files.filter((file) => {
       if (!isValidFileType(file)) {
         message.warning(`只支持上传 ${props.accept} 类型的文件`)
+        return false
+      }
+      // 添加重复文件检查
+      if (isDuplicateFile(file)) {
+        message.warning(`文件 ${file.name} 已存在，请勿重复上传`)
         return false
       }
       return true
@@ -204,6 +238,11 @@ const handleDrop = (event: DragEvent) => {
   const validFiles = files.filter((file) => {
     if (!isValidFileType(file)) {
       message.warning(`只支持上传 ${props.accept} 类型的文件`)
+      return false
+    }
+    // 添加重复文件检查
+    if (isDuplicateFile(file)) {
+      message.warning(`文件 ${file.name} 已存在`)
       return false
     }
     return true
@@ -276,10 +315,10 @@ const handleRemove = (file: FileItem) => {
   if (index !== -1) {
     fileList.value.splice(index, 1)
 
-    // 更新 modelValue
-    modelValue.value = fileList.value
-      .filter((item) => item.status === 'success')
-      .map((item) => item.url!)
+    // 更新 modelValue，过滤掉被删除的文件
+    if (file.url) {
+      modelValue.value = modelValue.value.filter(url => url !== file.url)
+    }
 
     // 清空文件输入框的值
     if (fileInput.value) {
@@ -304,8 +343,13 @@ const getPreviewUrl = (file: FileItem) => {
 
 // 打开预览
 const handlePreview = (file: FileItem) => {
-  currentPreviewFile.value = file
-  previewVisible.value = true
+  if (file.url) {
+    currentPreviewFile.value = {
+      url: file.url,
+      file: file.file
+    }
+    previewVisible.value = true
+  }
 }
 
 // 添加清理函数
@@ -317,142 +361,194 @@ onBeforeUnmount(() => {
     }
   })
 })
+
+// 添加 watch 来处理 modelValue 的初始值
+watch(
+  modelValue,
+  (newVal) => {
+    if (newVal && newVal.length > 0 && fileList.value.length === 0) {
+      // 将初始值转换为 FileItem 格式
+      fileList.value = newVal.map((url) => ({
+        url,
+        status: 'success' as const,
+        progress: 100,
+      }))
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped lang="less">
-.media-uploader {
+.media-uploader-wrapper {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 8px;
 
-  .upload-area {
-    order: 2;
-    width: 100px;
-    height: 100px;
-    border: 1px dashed #d9d9d9;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: border-color 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-
-    &:hover {
-      // border-color: #1890ff;
-      // color: #1890ff;
-      border-color: v-bind('themeVars.primaryColor');
-      color: v-bind('themeVars.primaryColor');
-    }
-
-    // .upload-icon {
-    // }
-
-    .upload-text {
-      font-size: 12px;
-    }
-
-    input {
-      display: none;
-    }
+  &.direction-row {
+    flex-direction: row;
+    align-items: flex-start;
   }
 
-  .file-list {
+  .media-uploader {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 8px;
-    order: 1;
-  }
 
-  .file-item {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid #d9d9d9;
-    flex-shrink: 0;
-
-    .file-type-tag {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      z-index: 2;
-
-      :deep(.n-tag) {
-        padding: 0 6px;
-        font-size: 12px;
-        border-radius: 2px;
-      }
-    }
-
-    .file-preview {
-      width: 100%;
-      height: 100%;
-
-      img,
-      video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-
-    .file-uploading {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.45);
+    .upload-area {
+      order: 2;
+      width: 100px;
+      height: 100px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.3s;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      color: #fff;
+      color: #999;
 
-      .progress-text {
-        margin-bottom: 8px;
-        font-size: 14px;
+      &:hover {
+        // border-color: #1890ff;
+        // color: #1890ff;
+        border-color: v-bind('themeVars.primaryColor');
+        color: v-bind('themeVars.primaryColor');
       }
 
-      .progress-bar {
-        width: 80%;
-        height: 2px;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 1px;
-        overflow: hidden;
+      // .upload-icon {
+      // }
 
-        .progress {
-          height: 100%;
-          background: #fff;
-          transition: width 0.3s ease;
+      .upload-text {
+        font-size: 12px;
+      }
+
+      input {
+        display: none;
+      }
+    }
+
+    .file-list {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 8px;
+      order: 1;
+    }
+
+    .file-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid #d9d9d9;
+      flex-shrink: 0;
+
+      .file-type-tag {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        z-index: 2;
+
+        :deep(.n-tag) {
+          padding: 0 6px;
+          font-size: 12px;
+          border-radius: 2px;
         }
       }
-    }
 
-    .file-error {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      .file-preview {
+        width: 100%;
+        height: 100%;
 
-      .error-actions {
+        img,
+        video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .file-uploading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.45);
         display: flex;
-        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
         color: #fff;
 
+        .progress-text {
+          margin-bottom: 8px;
+          font-size: 14px;
+        }
+
+        .progress-bar {
+          width: 80%;
+          height: 2px;
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 1px;
+          overflow: hidden;
+
+          .progress {
+            height: 100%;
+            background: #fff;
+            transition: width 0.3s ease;
+          }
+        }
+      }
+
+      .file-error {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .error-actions {
+          display: flex;
+          gap: 8px;
+          color: #fff;
+
+          .n-icon {
+            cursor: pointer;
+            transition: transform 0.3s;
+
+            &:hover {
+              transform: scale(1.1);
+            }
+          }
+        }
+      }
+
+      .file-actions {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s;
+
         .n-icon {
+          color: #fff;
           cursor: pointer;
           transition: transform 0.3s;
 
@@ -461,51 +557,30 @@ onBeforeUnmount(() => {
           }
         }
       }
+
+      &:hover {
+        .file-actions {
+          opacity: 1;
+        }
+      }
     }
 
-    .file-actions {
+    .upload-overlay {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(255, 255, 255, 0.8);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      opacity: 0;
-      transition: opacity 0.3s;
-
-      .n-icon {
-        color: #fff;
-        cursor: pointer;
-        transition: transform 0.3s;
-
-        &:hover {
-          transform: scale(1.1);
-        }
-      }
-    }
-
-    &:hover {
-      .file-actions {
-        opacity: 1;
-      }
+      z-index: 2;
     }
   }
 
-  .upload-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
+  .media-uploader-description {
+    flex-shrink: 0;
   }
 }
 </style>

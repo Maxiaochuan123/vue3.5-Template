@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import type { DataTableColumns, FormInst } from 'naive-ui'
 import { useSearch } from '@/hooks/useSearch'
 import { useTableData } from '@/hooks/useTableData'
-import TablePageLayout from '@/components/pageLayout/TablePageLayout.vue'
+import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
 import type { RequestParams } from '@/hooks/useTableData'
 
 interface EquityRecord {
