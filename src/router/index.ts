@@ -46,17 +46,6 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           title: '广告管理',
         },
-        children: [
-          {
-            path: 'add-editor/:id?',
-            name: 'advertising-add-editor',
-            component: () => import('@/views/advertising-management/add-editor/index.vue'),
-            meta: {
-              requiresAuth: true,
-              title: '新增/编辑广告',
-            },
-          },
-        ],
       },
     ],
   },

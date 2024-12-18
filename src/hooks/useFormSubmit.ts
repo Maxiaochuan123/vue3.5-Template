@@ -9,6 +9,9 @@ interface FormSubmitOptions {
   onSuccess?: () => void
   successMessage?: string
   errorMessage?: string
+  formType?: 'add' | 'edit'
+  extraFields?: string[]
+  originalData?: Record<string, any>
 }
 
 export function useFormSubmit() {
@@ -23,7 +26,10 @@ export function useFormSubmit() {
       formData,
       onSuccess,
       successMessage = '提交成功',
-      errorMessage = '提交失败'
+      errorMessage = '提交失败',
+      formType,
+      extraFields,
+      originalData
     } = options
 
     if (!submitApi || !formRef) return
@@ -35,8 +41,19 @@ export function useFormSubmit() {
       // 表单验证
       await formRef.validate()
 
+      // 处理提交数据
+      const submitData = {
+        ...formData,
+        // 如果是编辑模式且有额外字段，则添加额外字段
+        ...(formType === 'edit' && extraFields && originalData
+          ? Object.fromEntries(
+              extraFields.map(field => [field, originalData[field]])
+            )
+          : {})
+      }
+      
       // 调用提交接口
-      await submitApi(formData)
+      await submitApi(submitData)
 
       // 提交成功提示
       message.success(successMessage)

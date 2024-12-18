@@ -28,6 +28,8 @@ const themeVars = useThemeVars()
 
 const fileItem = computed<FileItem>(() => ({
   url: props.url || '',
+  status: 'success',
+  progress: 100,
 }))
 
 const mediaType = computed(() => {

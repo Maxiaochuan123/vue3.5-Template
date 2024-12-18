@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onBeforeUnmount, onMounted, watch } from 'vue'
 import { useMessage } from 'naive-ui'
 import { qiniuUploader } from './plugins/qiniuUpload'
 import Preview from './preview/index.vue'
@@ -134,12 +134,43 @@ const message = useMessage()
 // v-model
 const modelValue = defineModel<string[]>({ default: () => [] })
 
+// 定义 emit
+const emit = defineEmits<{
+  'upload-success': []  // 添加上传成功事件
+}>()
+
 // 状态
 const fileInput = ref<HTMLInputElement | null>(null)
 const isDragover = ref(false)
 const fileList = ref<FileItem[]>([])
 const previewVisible = ref(false)
 const currentPreviewFile = ref<{ url: string; file?: File }>()
+
+// 重置组件状态的方法
+const reset = () => {
+  fileList.value = []
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
+}
+
+// 初始化或更新文件列表
+const initializeFileList = () => {
+  if (modelValue.value && modelValue.value.length > 0) {
+    fileList.value = modelValue.value.map((url) => ({
+      url,
+      status: 'success' as const,
+      progress: 100,
+    }))
+  } else {
+    reset()
+  }
+}
+
+// 监听 modelValue 的变化
+watch(modelValue, () => {
+  initializeFileList()
+}, { immediate: true })
 
 // 计算实际接受的文件类型
 const actualAccept = computed(() => {
@@ -281,6 +312,7 @@ const uploadFiles = async (files: File[]) => {
           fileItem.status = 'success'
           fileItem.progress = 100
           modelValue.value = [...modelValue.value, uploadFile.url]
+          emit('upload-success')
           unsubscribe()
         } else if (uploadFile?.status === 'error') {
           URL.revokeObjectURL(fileItem.url!)
@@ -361,22 +393,6 @@ onBeforeUnmount(() => {
     }
   })
 })
-
-// 添加 watch 来处理 modelValue 的初始值
-watch(
-  modelValue,
-  (newVal) => {
-    if (newVal && newVal.length > 0 && fileList.value.length === 0) {
-      // 将初始值转换为 FileItem 格式
-      fileList.value = newVal.map((url) => ({
-        url,
-        status: 'success' as const,
-        progress: 100,
-      }))
-    }
-  },
-  { immediate: true }
-)
 </script>
 
 <style scoped lang="less">

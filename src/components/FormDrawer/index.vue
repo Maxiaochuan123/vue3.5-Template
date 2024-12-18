@@ -1,56 +1,5 @@
-<template>
-  <NDrawer
-    v-model:show="modelValue"
-    placement="top"
-    :block-scroll="false"
-    to=".n-card__content"
-    height="100%"
-    @close="handleClose"
-  >
-    <NDrawerContent closable>
-      <!-- Header Section -->
-      <template #header>
-        <div class="page-header">
-          <div class="left-section">
-            <NButton quaternary circle @click="handleClose">
-              <template #icon>
-                <NIcon>
-                  <ArrowBack />
-                </NIcon>
-              </template>
-            </NButton>
-            <h2 class="page-title">{{ title }}</h2>
-          </div>
-        </div>
-      </template>
-
-      <!-- Content Section -->
-      <div class="page-content">
-        <slot></slot>
-      </div>
-
-      <!-- Footer Section -->
-      <template #footer>
-        <div v-if="showFooter" class="page-footer">
-          <NButton :disabled="submitLoading" size="large" @click="handleClose"> 取消 </NButton>
-          <NButton
-            type="primary"
-            :loading="submitLoading"
-            size="large"
-            :disabled="submitDisabled"
-            @click="handleFormSubmit"
-          >
-            {{ submitText }}
-          </NButton>
-        </div>
-      </template>
-    </NDrawerContent>
-  </NDrawer>
-</template>
-
 <script setup lang="ts">
-import { ref } from 'vue'
-import { NDrawer, NDrawerContent, NButton, NIcon, useMessage, type FormInst } from 'naive-ui'
+import { NDrawer, NDrawerContent, NButton, NIcon, type FormInst } from 'naive-ui'
 import { ArrowBack } from '@vicons/ionicons5'
 import { useFormSubmit } from '@/hooks/useFormSubmit'
 
@@ -59,10 +8,7 @@ interface Props {
   submitText?: string
   showFooter?: boolean
   submitApi: (...args: any[]) => Promise<any> // 提交接口
-  formRef?: {
-    formRef: FormInst
-    formData: any
-  } | null
+  formRef?: FormInst | null  // 改为直接使用 FormInst 类型
   refreshList?: () => void // 刷新列表
 }
 
@@ -97,12 +43,12 @@ const open = () => {
 
 // 处理提交
 const handleFormSubmit = async () => {
-  if (!props.submitApi || !props.formRef?.formRef) return
+  if (!props.submitApi || !props.formRef) return
 
   const success = await handleSubmit({
     submitApi: props.submitApi,
-    formRef: props.formRef.formRef,
-    formData: props.formRef.formData,
+    formRef: props.formRef,
+    formData: (props.formRef as any).model,
     onSuccess: () => {
       props.refreshList?.()
       close()
@@ -121,12 +67,75 @@ defineExpose({
 })
 </script>
 
+<template>
+  <NDrawer
+  v-model:show="modelValue"
+  placement="top"
+  :block-scroll="false"
+  to=".n-card__content"
+  height="100%"
+  @close="handleClose"
+  >
+  <NDrawerContent closable>
+    <!-- Header Section -->
+    <template #header>
+        <div class="page-header">
+          <div class="left-section">
+            <div class="back-button" @click="handleClose">
+              <NIcon>
+                <ArrowBack />
+              </NIcon>
+            </div>
+            <h2 class="page-title">{{ title }}</h2>
+          </div>
+        </div>
+      </template>
+
+      <!-- Content Section -->
+      <div class="page-content">
+        <slot></slot>
+      </div>
+
+      <!-- Footer Section -->
+      <template #footer>
+        <div v-if="showFooter" class="page-footer">
+          <NButton :disabled="submitLoading" size="large" @click="handleClose"> 取消 </NButton>
+          <NButton
+            type="primary"
+            :loading="submitLoading"
+            size="large"
+            :disabled="submitDisabled"
+            @click="handleFormSubmit"
+          >
+            {{ submitText }}
+          </NButton>
+        </div>
+      </template>
+    </NDrawerContent>
+  </NDrawer>
+</template>
+
 <style scoped lang="less">
 .page-header {
   .left-section {
     display: flex;
     align-items: center;
     gap: 8px;
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+      }
+    }
 
     .page-title {
       margin: 0;
@@ -138,10 +147,6 @@ defineExpose({
 }
 
 .page-content {
-  // min-width: 1040px;
-  // overflow-y: auto;
-  // flex: 1;
-  // overflow-y: auto;
   height: 100%;
 }
 

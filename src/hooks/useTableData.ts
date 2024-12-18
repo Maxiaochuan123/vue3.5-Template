@@ -88,11 +88,11 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
     currentParams.value = params; // 保存当前查询参数
 
     try {
-      // 合并分页参数和查询参数
+      // 分页参数由内部管理，与外部查询参数合并
       const requestParams = {
+        ...params,           // 先放查询参数
         page: pagination.page,
         pageSize: pagination.pageSize,
-        ...params
       };
 
       // 转换参数（如果提供了转换函数）
