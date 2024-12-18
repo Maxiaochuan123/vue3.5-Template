@@ -51,7 +51,7 @@ export function useFormSubmit() {
             )
           : {})
       }
-      
+      console.log('useFormSubmit 中的数据:', submitData)  // 添加这行日志
       // 调用提交接口
       await submitApi(submitData)
 

@@ -7,14 +7,14 @@ import type { RequestParams } from '@/hooks/useTableData'
 
 interface TableProps<T, P = RequestParams> {
   columns: DataTableColumns<T>
-  fetchData: (params: P) => Promise<{ list: T[]; total: number }>
+  fetchApi: (params: P) => Promise<{ list: T[]; total: number }>
 }
 
 const props = defineProps<TableProps<any, any>>()
 
 // 使用 useTableData
 const { loading, data, pagination, loadData, handlePageChange, handlePageSizeChange } = useTableData({
-  fetchData: props.fetchData
+  fetchApi: props.fetchApi
 })
 
 // 表格分页配置

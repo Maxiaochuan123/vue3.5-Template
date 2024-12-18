@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, ref, onMounted, reactive } from 'vue'
+import { h, ref, onMounted, reactive, computed, watch } from 'vue'
 import { NButton, NIcon, NSpace, type DataTableColumns } from 'naive-ui'
 import { AddOutline } from '@vicons/ionicons5'
 import { useRouter } from 'vue-router'
@@ -9,8 +9,9 @@ import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
 import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
 import SearchForm from '@/components/SearchForm/index.vue'
 import Table from '@/components/Table/index.vue'
+import FormDrawer from '@/components/FormDrawer/index.vue'
 
-type AdvertisingRecord = Record<string, any>
+type TableDataRecord = Record<string, any>
 
 interface SearchParams {
   keyword: string
@@ -20,9 +21,7 @@ interface SearchParams {
 }
 
 // 定义获取数据的方法
-const fetchData = async (
-  params: SearchParams,
-): Promise<{ list: AdvertisingRecord[]; total: number }> => {
+const tableFetchApi = async ( params: SearchParams ): Promise<{ list: TableDataRecord[]; total: number }> => {
   // 打印完整的搜索参数
   console.log('搜索参数:', params)
 
@@ -34,7 +33,7 @@ const fetchData = async (
           adType: 'CPM',
           media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
           title:
-            '这里是视频广告的标题，标题长度限制20个字这里是视频广告的标题，标题长度限制20个字这里是视频广告的标题，标题长度限制20个字',
+            '这里是视频广视频广告长度限制20个字',
           description:
             '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
           adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
@@ -66,7 +65,8 @@ const columns: DataTableColumns<Record<string, any>> = [
     key: 'adType',
     width: 150,
     render: (row) => {
-      const typeMap = {
+      // 定义广告类型映射
+      const typeMap: Record<string, string> = {
         CPM: '展示广告',
         CPC: '可点击广告',
         CPA: '可下载广告',
@@ -76,7 +76,8 @@ const columns: DataTableColumns<Record<string, any>> = [
         {
           style: 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;',
         },
-        `${row.adType} ${typeMap[row.adType]}`,
+        // 使用类型断言确保 row.adType 是有效的键
+        `${row.adType} ${typeMap[row.adType as keyof typeof typeMap]}`,
       )
     },
   },
@@ -101,7 +102,7 @@ const columns: DataTableColumns<Record<string, any>> = [
     key: 'actions',
     width: 200,
     fixed: 'right',
-    render: (row: AdvertisingRecord) => {
+    render: (row: TableDataRecord) => {
       return h(
         NSpace,
         { justify: 'center', align: 'center' },
@@ -140,13 +141,19 @@ onMounted(() => {
   // drawerRef.value?.open()
 })
 
+const drawerRef = ref<InstanceType<typeof FormDrawer> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingForm> | null>(null)
+
+// 抽屉标题
+const drawerTitle = computed(() => {
+  return formType.value === 'edit' ? '编辑广告' : '新增广告'
+})
 
 // 打开抽屉
 const handleAdd = () => {
   formType.value = 'add'
   editData.value = {}
-  formRef.value?.show()
+  drawerRef.value?.open()
 }
 
 // 在 setup 中获取 router 实例
@@ -160,7 +167,7 @@ const defaultSearchForm = reactive<SearchParams>({
   status: null,
 })
 
-// 定义一个统一的搜索处理函数
+// 搜索
 const handleSearch = (values: SearchParams) => {
   tableRef.value?.loadData(values)
 }
@@ -168,29 +175,29 @@ const handleSearch = (values: SearchParams) => {
 // 表格引用
 const tableRef = ref()
 
-// 修改 handleEdit 函数
+// 编辑处理
 const handleEdit = (row: Record<string, any>) => {
-  formType.value = 'edit'
-  // 确保所有数据都有默认值
-  editData.value = {
-    adType: row.adType || 'CPM',
-    title: row.title || '',
-    media: Array.isArray(row.media) ? [...row.media] : [],
-    adIcon: Array.isArray(row.adIcon) ? [...row.adIcon] : [],
-    description: row.description || '',
-    buttonText: row.buttonText || '',
-    landingUrl: row.landingUrl || '',
-    androidUrl: row.androidUrl || '',
-    iosUrl: row.iosUrl || '',
-    // 保留原始数据中的其他字段
+  const formattedData = {
     ...row,
+    media: Array.isArray(row.media) ? row.media : [],
+    adIcon: Array.isArray(row.adIcon) ? row.adIcon : []
   }
-  formRef.value?.show()
+  
+  formType.value = 'edit'
+  editData.value = formattedData
+  drawerRef.value?.open()
 }
 
 // 在 script setup 顶部添加这些状态变量
 const formType = ref<'add' | 'edit'>('add')
 const editData = ref<Partial<FormState>>({})
+
+// 表单提交
+const onSubmit = async (formData: any) => {
+  console.log('提交的数据:', formData)
+  return Promise.resolve()
+}
+
 </script>
 
 <template>
@@ -250,16 +257,21 @@ const editData = ref<Partial<FormState>>({})
 
     <!-- 表格 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-data="fetchData" />
+      <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
     </template>
 
     <!-- 新增/编辑广告 -->
-    <AdvertisingForm
-      ref="formRef"
-      :form-type="formType"
-      :data="editData"
-      :extra-fields="['id']"
-      :on-success="tableRef?.refresh"
-    />
+    <FormDrawer
+      ref="drawerRef"
+      :title="drawerTitle"
+      :submit-api="onSubmit"
+      :form-ref="formRef"
+    >
+      <AdvertisingForm
+        ref="formRef"
+        :form-type="formType"
+        :data="editData"
+      />
+    </FormDrawer>
   </TablePageLayout>
 </template>

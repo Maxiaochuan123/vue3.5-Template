@@ -7,9 +7,9 @@ interface Props {
   title: string
   submitText?: string
   showFooter?: boolean
-  submitApi: (...args: any[]) => Promise<any> // 提交接口
-  formRef?: FormInst | null  // 改为直接使用 FormInst 类型
-  refreshList?: () => void // 刷新列表
+  submitApi: (...args: any[]) => Promise<any>
+  formRef?: FormInst | null | { validate: () => Promise<void>; formData: any }
+  refreshList?: () => void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -45,10 +45,15 @@ const open = () => {
 const handleFormSubmit = async () => {
   if (!props.submitApi || !props.formRef) return
 
+  if (!('validate' in props.formRef) || !('formData' in props.formRef)) {
+    console.error('Invalid form reference')
+    return
+  }
+
   const success = await handleSubmit({
     submitApi: props.submitApi,
     formRef: props.formRef,
-    formData: (props.formRef as any).model,
+    formData: props.formRef.formData,
     onSuccess: () => {
       props.refreshList?.()
       close()

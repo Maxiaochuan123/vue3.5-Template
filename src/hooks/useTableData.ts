@@ -26,7 +26,7 @@ export interface PaginationProps {
 
 // Hook 配置项接口
 export interface UseTableDataOptions<T, P = RequestParams> {
-  fetchData: (params: P) => Promise<ResponseData<T>>;  // 获取数据的方法
+  fetchApi: (params: P) => Promise<ResponseData<T>>;  // 获取数据的方法
   defaultPageSize?: number;                            // 默认每页条数
   defaultPagination?: Partial<PaginationProps>;        // 默认分页配置
   transformParams?: (params: any) => P;                // 请求参数转换函数
@@ -53,7 +53,7 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
   options: UseTableDataOptions<T, P>
 ): UseTableDataReturn<T> {
   const {
-    fetchData,
+    fetchApi,
     defaultPageSize = 10,
     defaultPagination = {},
     transformParams
@@ -97,7 +97,7 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
 
       // 转换参数（如果提供了转换函数）
       const finalParams = transformParams ? transformParams(requestParams) : requestParams;
-      const { list, total } = await fetchData(finalParams as P);
+      const { list, total } = await fetchApi(finalParams as P);
 
       data.value = list;
       pagination.itemCount = total;
