@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import type { FormInst } from 'naive-ui'
+import { Search } from '@vicons/ionicons5'
 import { useSearch } from '@/hooks/useSearch'
 import { ChevronDown, ChevronUp } from '@vicons/ionicons5'
 import { useTableHeightProvider } from '@/hooks/useTableHeight'
@@ -9,8 +10,6 @@ const props = defineProps<{
   model: Record<string, any>
   onSearch?: (values: any) => void
   transformParams?: (params: any) => any
-  /** 默认显示的表单项数量（不包括按钮） */
-  defaultShowCount?: number
 }>()
 
 const formRef = ref<FormInst | null>(null)
@@ -34,7 +33,7 @@ const handleSearch = async () => {
     await props.onSearch?.(props.transformParams ? props.transformParams(searchForm) : searchForm)
   } finally {
     // 确保loading状态至少显示300ms
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, 200))
     loading.value = false
   }
 }
@@ -74,11 +73,6 @@ onMounted(() => {
   checkOverflow()
   observeFormItems()
 })
-
-// 定义 emit
-const emit = defineEmits<{
-  'expand-change': [expanded: boolean]
-}>()
 </script>
 
 <template>
@@ -115,11 +109,18 @@ const emit = defineEmits<{
             {{ isExpanded ? '收起' : '展开' }}
           </n-button>
           <div class="action-buttons">
+
             <n-button 
               type="primary" 
               @click="handleSearch"
               :loading="loading"
-            >查询</n-button>
+            >
+              <template #icon>
+                <NIcon><Search /></NIcon>
+              </template>
+              查询
+            </n-button>
+
             <n-button @click="handleReset">重置</n-button>
           </div>
         </div>

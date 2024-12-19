@@ -2,20 +2,52 @@
 import { NDrawer, NDrawerContent, NButton, NIcon, type FormInst } from 'naive-ui'
 import { ArrowBack } from '@vicons/ionicons5'
 import { useFormSubmit } from '@/hooks/useFormSubmit'
+import { provide, ref, watch, computed } from 'vue'
 
 interface Props {
-  title: string
   submitText?: string
   showFooter?: boolean
   submitApi: (...args: any[]) => Promise<any>
   formRef?: FormInst | null | { validate: () => Promise<void>; formData: any }
   refreshList?: () => void
+  formType?: 'add' | 'edit' | 'view'
+  cancelText?: string
+  extraFields?: string[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '未知 Title',
   submitText: '提交',
   showFooter: true,
+  formType: 'add',
+  cancelText: '取消',
+  extraFields: () => []
+})
+
+// 创建响应式的 formType
+const currentFormType = ref(props.formType)
+
+// 监听 props.formType 的变化
+watch(
+  () => props.formType,
+  (newType) => {
+    currentFormType.value = newType
+  },
+  { immediate: true }
+)
+
+// 提供响应式的 formType 给子组件
+provide('formType', currentFormType)
+
+// 抽屉标题
+const drawerTitle = computed(() => {
+  switch (currentFormType.value) {
+    case 'edit':
+      return '编辑'
+    case 'view':
+      return '详情'
+    default:
+      return '新增'
+  }
 })
 
 const modelValue = defineModel({ type: Boolean, default: false })
@@ -49,6 +81,10 @@ const handleFormSubmit = async () => {
     submitApi: props.submitApi,
     formRef: props.formRef,
     formData: props.formRef.formData,
+    formType: currentFormType.value,
+    initialData: (props.formRef as any).initialData,
+    extraFields: props.extraFields,
+    originalData: props.formRef.formData,
     onSuccess: () => {
       props.refreshList?.()
       close()
@@ -69,12 +105,12 @@ defineExpose({
 
 <template>
   <NDrawer
-  v-model:show="modelValue"
-  placement="top"
-  :block-scroll="false"
-  to=".n-card__content"
-  height="100%"
-  @close="handleClose"
+    v-model:show="modelValue"
+    placement="top"
+    :block-scroll="false"
+    to=".n-card__content"
+    height="100%"
+    @close="handleClose"
   >
   <NDrawerContent closable>
     <!-- Header Section -->
@@ -86,7 +122,7 @@ defineExpose({
                 <ArrowBack />
               </NIcon>
             </div>
-            <h2 class="page-title">{{ title }}</h2>
+            <h2 class="page-title">{{ drawerTitle }}</h2>
           </div>
         </div>
       </template>
@@ -99,8 +135,11 @@ defineExpose({
       <!-- Footer Section -->
       <template #footer>
         <div v-if="showFooter" class="page-footer">
-          <NButton :disabled="submitLoading" size="large" @click="handleClose"> 取消 </NButton>
+          <NButton :disabled="submitLoading" size="large" @click="handleClose">
+            {{ props.formType === 'view' ? '关闭' : cancelText }}
+          </NButton>
           <NButton
+            v-if="props.formType !== 'view'"
             type="primary"
             :loading="submitLoading"
             size="large"

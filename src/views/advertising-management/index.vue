@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { h, ref, onMounted, reactive, computed } from 'vue'
+import { h, ref, onMounted, reactive } from 'vue'
 import { NButton, NIcon, NSpace, type DataTableColumns } from 'naive-ui'
-import { AddOutline } from '@vicons/ionicons5'
-import { useRouter } from 'vue-router'
 import { advertisementTypeOptions, statusOptions } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
 import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
-import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
 import SearchForm from '@/components/SearchForm/index.vue'
 import Table from '@/components/Table/index.vue'
 import FormDrawer from '@/components/FormDrawer/index.vue'
+import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
+import { getOptionLabel } from '@/enum/options'
+import { AddOutline } from '@vicons/ionicons5'
+import TableActions from '@/components/TableActions/index.vue'
 
 type TableDataRecord = Record<string, any>
 
@@ -31,7 +32,7 @@ const defaultSearchForm = reactive<SearchParams>({
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const drawerRef = ref<InstanceType<typeof FormDrawer> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingForm> | null>(null)
-const formType = ref<'add' | 'edit'>('add')
+const formType = ref<'add' | 'edit' | 'view'>('add')
 const editData = ref<Partial<FormState>>({})
 
 // 搜索
@@ -52,10 +53,8 @@ const tableFetchApi = async ( params: SearchParams ): Promise<{ list: TableDataR
             id: 1,
             adType: 'CPM',
             media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
+            title: 'AAA',
+            description: '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
             adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
             buttonText: '立即下载',
             landingUrl: 'https://www.baidu.com',
@@ -65,466 +64,7 @@ const tableFetchApi = async ( params: SearchParams ): Promise<{ list: TableDataR
             creator: '张三',
             createTime: '2023-12-31 21:00:03',
             publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },{
-            id: 1,
-            adType: 'CPM',
-            media: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            title:
-              '这里是视频广视频广告长度限制20个字',
-            description:
-              '这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字这里是视频广告的描述，描述长度限制200个字',
-            adIcon: ['https://file.moujiang.com/moujiang/1734412010818-WeChat_20241126193121.mp4'],
-            buttonText: '立即下载',
-            landingUrl: 'https://www.baidu.com',
-            androidUrl: 'https://www.baidu.com',
-            iosUrl: 'https://www.baidu.com',
-            status: '审核通过',
-            creator: '张三',
-            createTime: '2023-12-31 21:00:03',
-            publishTime: '2023-12-31 21:00:03',
-          },
+          }
         ],
         total: 100,
       })
@@ -545,20 +85,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     key: 'adType',
     width: 150,
     render: (row) => {
-      // 定义广告类型映射
-      const typeMap: Record<string, string> = {
-        CPM: '展示广告',
-        CPC: '可点击广告',
-        CPA: '可下载广告',
-      }
-      return h(
-        'div',
-        {
-          style: 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis;',
-        },
-        // 使用类型断言确保 row.adType 是有效的键
-        `${row.adType} ${typeMap[row.adType as keyof typeof typeMap]}`,
-      )
+      return getOptionLabel(advertisementTypeOptions, row.adType)
     },
   },
   {
@@ -583,47 +110,29 @@ const columns: DataTableColumns<TableDataRecord> = [
     width: 200,
     fixed: 'right',
     render: (row: TableDataRecord) => {
-      return h(
-        NSpace,
-        { justify: 'center', align: 'center' },
-        {
-          default: () => [
-            h(
-              NButton,
-              {
-                size: 'small',
-                quaternary: true,
-                type: 'primary',
-                onClick: () => handleEdit(row),
-              },
-              { default: () => '编辑' },
-            ),
-            h(
-              NButton,
-              {
-                size: 'small',
-                quaternary: true,
-                type: 'error',
-                onClick: () => {
-                  console.log('删除', row)
-                },
-              },
-              { default: () => '删除' },
-            ),
-          ],
+      return h(TableActions, {
+        row,
+        deleteConfig: {
+          content: '确定要删除该广告吗？删除后不可恢复',
         },
-      )
+        onAction: (type, rowData) => {
+          switch (type) {
+            case 'edit':
+            case 'view':
+              handleAdvertisingForm(rowData, type)
+              break
+            case 'delete':
+              console.log('删除', rowData)
+              break
+          }
+        }
+      })
     },
   },
 ]
 
 onMounted(() => {
   // drawerRef.value?.open()
-})
-
-// 抽屉标题
-const drawerTitle = computed(() => {
-  return formType.value === 'edit' ? '编辑广告' : '新增广告'
 })
 
 // 打开抽屉
@@ -634,25 +143,23 @@ const handleAdd = () => {
 }
 
 const refreshList = () => {
-  console.log('refreshList called', tableRef.value)
   if (tableRef.value) {
     tableRef.value.refresh()
   }
 }
 
 // 编辑处理
-const handleEdit = (row: Record<string, any>) => {
+const handleAdvertisingForm = (row: Record<string, any>, type: 'edit' | 'view') => {
   const formattedData = {
     ...row,
     media: Array.isArray(row.media) ? row.media : [],
     adIcon: Array.isArray(row.adIcon) ? row.adIcon : []
   }
   
-  formType.value = 'edit'
+  formType.value = type
   editData.value = formattedData
   drawerRef.value?.open()
 }
-
 // 表单提交
 const onSubmit = async (formData: FormState) => {
   console.log('提交的数据:', formData)
@@ -697,30 +204,6 @@ const onSubmit = async (formData: FormState) => {
               clearable
             />
           </NFormItem>
-          <NFormItem label="审核状态" data-width="sm">
-            <NSelect
-              v-model:value="form.status"
-              :options="statusOptions"
-              placeholder="请选择审核状态"
-              clearable
-            />
-          </NFormItem>
-          <NFormItem label="审核状态" data-width="sm">
-            <NSelect
-              v-model:value="form.status"
-              :options="statusOptions"
-              placeholder="请选择审核状态"
-              clearable
-            />
-          </NFormItem>
-          <NFormItem label="审核状态" data-width="sm">
-            <NSelect
-              v-model:value="form.status"
-              :options="statusOptions"
-              placeholder="请选择审核状态"
-              clearable
-            />
-          </NFormItem>
         </template>
       </SearchForm>
     </template>
@@ -743,14 +226,14 @@ const onSubmit = async (formData: FormState) => {
     <!-- 新增/编辑广告 -->
     <FormDrawer
       ref="drawerRef"
-      :title="drawerTitle"
-      :submit-api="onSubmit"
+      :formType="formType"
       :form-ref="formRef"
+      :submit-api="onSubmit"
       :refresh-list="refreshList"
+      :extra-fields="['id']"
     >
       <AdvertisingForm
         ref="formRef"
-        :form-type="formType"
         :data="editData"
       />
     </FormDrawer>

@@ -2,9 +2,16 @@ import { ref } from 'vue'
 import { type FormInst } from 'naive-ui'
 import { useMessage } from 'naive-ui'
 
+// 定义通用表单组件接口
+interface CustomFormInst {
+  validate: () => Promise<void>
+  formData: any
+  initialData?: Record<string, any>
+}
+
 interface FormSubmitOptions {
   submitApi: (...args: any[]) => Promise<any>
-  formRef: FormInst | null
+  formRef: FormInst | CustomFormInst | null
   formData: any
   onSuccess?: () => void
   successMessage?: string
@@ -12,6 +19,7 @@ interface FormSubmitOptions {
   formType?: 'add' | 'edit'
   extraFields?: string[]
   originalData?: Record<string, any>
+  initialData?: Record<string, any>
 }
 
 export function useFormSubmit() {
@@ -29,7 +37,8 @@ export function useFormSubmit() {
       errorMessage = '提交失败',
       formType,
       extraFields,
-      originalData
+      originalData,
+      initialData
     } = options
 
     if (!submitApi || !formRef) return
@@ -42,16 +51,28 @@ export function useFormSubmit() {
       await formRef.validate()
 
       // 处理提交数据
-      const submitData = {
-        ...formData,
-        // 如果是编辑模式且有额外字段，则添加额外字段
-        ...(formType === 'edit' && extraFields && originalData
-          ? Object.fromEntries(
-              extraFields.map(field => [field, originalData[field]])
-            )
-          : {})
+      let submitData: Record<string, any> = {}
+
+      // 使用初始数据结构作为字段过滤依据
+      const formFields = Object.keys(initialData || formData)
+      
+      // 只包含初始表单结构中定义的字段
+      formFields.forEach(field => {
+        if (formData[field] !== undefined) {
+          submitData[field] = formData[field]
+        }
+      })
+
+      // 如果是编辑模式且有需要保留的额外字段，则添加这些字段
+      if (formType === 'edit' && extraFields && originalData) {
+        extraFields.forEach(field => {
+          if (originalData[field] !== undefined) {
+            submitData[field] = originalData[field]
+          }
+        })
       }
-      console.log('useFormSubmit 中的数据:', submitData)  // 添加这行日志
+
+      console.log('useFormSubmit 中的数据:', submitData)
       // 调用提交接口
       await submitApi(submitData)
 

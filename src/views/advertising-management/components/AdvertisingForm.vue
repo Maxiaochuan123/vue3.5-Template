@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed, inject } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { advertisementTypeOptions, type AdvertisementType } from '@/enum/options'
 import { useMediaUploaderValidator } from '@/hooks/useUploaderValidator'
@@ -20,11 +20,13 @@ export interface FormState {
 }
 
 interface Props {
-  formType: 'add' | 'edit'
   data?: Partial<FormState>
 }
 
 const props = defineProps<Props>()
+
+// 注入响应式的 formType
+const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
 
 const formRef = ref<FormInst | null>(null)
 
@@ -79,7 +81,9 @@ const rules = {
 watch(
   () => props.data,
   (newData) => {
-    if (props.formType === 'edit' && newData) {
+    console.log('current formType:', formType.value)
+    
+    if (formType.value === 'edit' || formType.value === 'view' && newData) {
       fillForm(newData)
     }
   },
@@ -92,6 +96,8 @@ defineExpose({
   formData,
   validate: () => formRef.value?.validate()
 })
+
+const isViewMode = computed(() => formType.value === 'view')
 </script>
 
 <template>
@@ -103,6 +109,7 @@ defineExpose({
         :rules="rules"
         label-placement="left"
         label-width="120"
+        :disabled="isViewMode"
       >
         <!-- CPM/CPC/CPA 基础组件 -->
         <template v-if="['CPM', 'CPC', 'CPA'].includes(formData.adType)">
@@ -122,6 +129,7 @@ defineExpose({
               :accept="['img', 'video']"
               max-size="2GB"
               direction="row"
+              :is-delete="isViewMode"
               @upload-success="mediaValidator.revalidate"
             >
               <template #description>
@@ -163,6 +171,7 @@ defineExpose({
               accept="img"
               direction="row"
               :max-count="adIconMaxCount"
+              :is-delete="isViewMode"
             >
               <template #description>
                 <div class="decriton">

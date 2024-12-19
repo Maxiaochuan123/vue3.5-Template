@@ -1,6 +1,23 @@
+/**
+ * utils
+ */
 // 添加类型提取工具
 export type ExtractOptionsValue<T extends { value: any }[]> = T[number]['value']
 
+// 添加选项类型定义
+export type Option = {
+  label: string
+  value: any
+}
+
+// 添加值映射方法
+export function getOptionLabel(options: Option[], value: any): string {
+  return options.find(option => option.value === value)?.label || ''
+}
+
+/**
+ * 枚举
+ */
 // 广告类型选项
 export const advertisementTypeOptions = [
   { label: 'CPM: 展示广告', value: 'CPM' },

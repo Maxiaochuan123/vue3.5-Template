@@ -51,7 +51,6 @@
               </n-icon>
             </div>
           </div>
-
           <!-- 上传成功状态 -->
           <template v-else>
             <div class="file-preview">
@@ -66,13 +65,13 @@
             </div>
             <!-- 操作 -->
             <div class="file-actions">
-              <n-icon size="30" v-if="isImage(file)">
+              <n-icon size="30" v-if="isImage(file)" class="file-preview-icon">
                 <SeeSVG @click="handlePreview(file)" />
               </n-icon>
-              <n-icon size="30" v-if="isVideo(file)">
+              <n-icon size="30" v-if="isVideo(file)" class="file-preview-icon">
                 <PlaySVG @click="handlePreview(file)" />
               </n-icon>
-              <n-icon size="30">
+              <n-icon size="30" v-if="!props.isDelete" class="file-delete-icon">
                 <DeleteSVG @click="handleRemove(file)" />
               </n-icon>
             </div>
@@ -120,13 +119,15 @@ interface Props {
   maxSize?: string
   accept?: AcceptType
   direction?: 'row' | 'column'
+  isDelete?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   maxCount: 1,
   maxSize: '10mb',
   accept: () => 'img' as const,
-  direction: 'column'
+  direction: 'column',
+  isDelete: false
 })
 
 const message = useMessage()
@@ -571,6 +572,14 @@ onBeforeUnmount(() => {
           &:hover {
             transform: scale(1.1);
           }
+        }
+
+        .file-preview-icon:hover {
+          color: v-bind('themeVars.primaryColor');
+        }
+
+        .file-delete-icon:hover {
+          color: v-bind('themeVars.errorColor');
         }
       }
 

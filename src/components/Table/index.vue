@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-import { useTableData, type RequestParams } from '@/hooks/useTableData'
+import { useTableData } from '@/hooks/useTableData'
 import { useTableHeight } from '@/hooks/useTableHeight'
-import { useMessage } from 'naive-ui'
+import { useMessage, type DataTableInst } from 'naive-ui'
 
-interface TableProps {
+interface TableProps<T = any, P = any> {
   /** 获取表格数据的 API 函数 */
-  fetchApi: (params: RequestParams) => Promise<{ list: any[]; total: number }>
+  fetchApi: (params: P) => Promise<{ list: T[]; total: number }>
 }
 
 const props = defineProps<TableProps>()
 const message = useMessage()
 
 /** 表格 DOM 引用 */
-const tableRef = ref<HTMLElement>()
+const tableRef = ref<DataTableInst | null>(null)
 /** 表格最大高度 */
 const maxTableHeight = ref()
 
