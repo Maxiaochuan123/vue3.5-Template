@@ -26,12 +26,10 @@
 .page-container {
   padding: 8px;
   width: 100%;
-  height: 100%;
-  min-height: calc(100vh - 64px);
+  height: calc(100vh - 64px);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .page-card {
@@ -43,7 +41,6 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 
   &:deep(.n-card__content) {
     height: 100%;
@@ -51,11 +48,9 @@
     display: flex;
     flex-direction: column;
     min-width: 1000px;
-    overflow-x: auto;
-    overflow-y: hidden;
 
     .search-form {
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .table-header {

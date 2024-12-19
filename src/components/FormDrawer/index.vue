@@ -19,13 +19,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const modelValue = defineModel({ type: Boolean, default: false })
-const emit = defineEmits(['cancel', 'submit'])
+// const emit = defineEmits(['cancel', 'submit'])
 const { submitLoading, submitDisabled, handleSubmit } = useFormSubmit()
 
 // 处理关闭
 const handleClose = () => {
   modelValue.value = false
-  emit('cancel')
+  // emit('cancel')
   close()
 }
 
@@ -43,12 +43,7 @@ const open = () => {
 
 // 处理提交
 const handleFormSubmit = async () => {
-  if (!props.submitApi || !props.formRef) return
-
-  if (!('validate' in props.formRef) || !('formData' in props.formRef)) {
-    console.error('Invalid form reference')
-    return
-  }
+  if (!props.formRef) return
 
   const success = await handleSubmit({
     submitApi: props.submitApi,

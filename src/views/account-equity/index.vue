@@ -1,78 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref,reactive } from 'vue'
 import type { DataTableColumns, FormInst } from 'naive-ui'
-import { useSearch } from '@/hooks/useSearch'
-import { useTableData } from '@/hooks/useTableData'
+import SearchForm from '@/components/SearchForm/index.vue'
+import Table from '@/components/Table/index.vue'
 import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
-import type { RequestParams } from '@/hooks/useTableData'
 
-interface EquityRecord {
-  id: number
-  type: string
-  status: string
-  principalChange: number
-  totalChange: number
-  operator: string
-  operateTime: string
-}
+type TableDataRecord = Record<string, any>
 
-interface SearchParams extends RequestParams {
+interface SearchParams {
   dateRange: [number, number] | null
   type: string | null
   status: string | null
 }
 
-// 先初始化 useTableData
-const { loading, data, pagination, loadData, handlePageChange, handlePageSizeChange } =
-  useTableData<EquityRecord, SearchParams>({
-    async fetchData(_params: SearchParams) {
-      // API 调用
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            list: [
-              {
-                id: 1,
-                type: '充值',
-                status: '成功',
-                principalChange: 1000,
-                totalChange: 1100,
-                operator: 'admin',
-                operateTime: '2024-03-20 10:00:00',
-              },
-            ],
-            total: 100,
-          })
-        }, 1000)
-      })
-    },
-    // 可选：转换请求参数
-    transformParams: (params) => {
-      const { dateRange, ...rest } = params
-      return {
-        ...rest,
-        startTime: dateRange?.[0],
-        endTime: dateRange?.[1],
-      }
-    },
-    // 默认为 true，页面加载时就获取数据
-  })
-
-// 添加表单 ref
-const searchFormRef = ref<FormInst | null>(null)
-
-// 使用 useSearch 时传入 searchFormRef
-const { searchForm, handleReset, handleSearch } = useSearch<SearchParams>({
-  defaultValues: {
-    dateRange: null,
-    type: null,
-    status: null,
-  },
-  onSearch: (values) => {
-    loadData(values)
-  },
-  searchFormRef, // 传入表单 ref
+// 定义默认搜索表单值
+const defaultSearchForm = reactive<SearchParams>({
+  dateRange: null,
+  type: null,
+  status: null,
 })
+
+const tableRef = ref<InstanceType<typeof Table> | null>(null)
 
 // 类型选项
 const advertisementTypeOptions = [
@@ -89,7 +37,7 @@ const statusOptions = [
 ]
 
 // 表列定义
-const columns: DataTableColumns<EquityRecord> = [
+const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '变动类型',
     key: 'type',
@@ -116,97 +64,186 @@ const columns: DataTableColumns<EquityRecord> = [
   },
 ]
 
-// 在使用 pagination 之前确保所有必需的属性都有正确的类型
-const tablePagination = {
-  page: pagination.page,
-  pageSize: pagination.pageSize,
-  showSizePicker: pagination.showSizePicker,
-  pageSizes: pagination.pageSizes,
-  itemCount: pagination.itemCount,
-  onChange: handlePageChange,
-  onUpdatePageSize: handlePageSizeChange,
+// 搜索
+const handleSearch = (values: SearchParams) => {
+  tableRef.value?.loadData(values)
+}
+
+// 定义获取数据的方法
+const tableFetchApi = async ( params: SearchParams ): Promise<{ list: TableDataRecord[]; total: number }> => {
+  // 打印完整的搜索参数
+  console.log('搜索参数:', params)
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        list: [
+          {
+            id: 1,
+            type: '充值',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值2',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值3',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值4',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值5',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值6',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值7',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值8',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值9',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值10',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值11',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值12',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值13',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+          {
+            id: 1,
+            type: '充值14',
+            status: '成功',
+            principalChange: 1000,
+            totalChange: 1100,
+            operator: 'admin',
+            operateTime: '2024-03-20 10:00:00',
+          },
+        ],
+        total: 100,
+      })
+    }, 1000)
+  })
 }
 </script>
 
 <template>
   <TablePageLayout>
-    <!-- 搜索表单 -->
-    <NForm
-      ref="searchFormRef"
-      :model="searchForm"
-      inline
-      :show-feedback="false"
-      :label-width="80"
-      medium
-    >
-      <NFormItem label="日期范围">
-        <NDatePicker
-          v-model:value="searchForm.dateRange"
-          type="daterange"
-          clearable
-          :style="{ width: '320px' }"
-        />
-      </NFormItem>
-      <NFormItem label="变动类型">
-        <NSelect
-          v-model:value="searchForm.type"
-          :options="advertisementTypeOptions"
-          clearable
-          :style="{ width: '160px' }"
-        />
-      </NFormItem>
-      <NFormItem label="变动状态">
-        <NSelect
-          v-model:value="searchForm.status"
-          :options="statusOptions"
-          clearable
-          :style="{ width: '140px' }"
-        />
-      </NFormItem>
-      <NFormItem>
-        <NSpace>
-          <NButton type="primary" @click="handleSearch">查询</NButton>
-          <NButton @click="handleReset">重置</NButton>
-        </NSpace>
-      </NFormItem>
-    </NForm>
+    <template #search>
+      <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
+        <template #default="{ form }">
+          <NFormItem label="日期范围" data-width="lg">
+            <NDatePicker
+              v-model:value="form.dateRange"
+              type="daterange"
+              clearable
+            />
+            </NFormItem>
+            <NFormItem label="变动类型">
+              <NSelect
+                v-model:value="form.type"
+                :options="advertisementTypeOptions"
+                clearable
+              />
+            </NFormItem>
+            <NFormItem label="变动状态">
+            <NSelect
+              v-model:value="form.status"
+              :options="statusOptions"
+              clearable
+            />
+          </NFormItem>
+        </template>
+      </SearchForm>
+    </template>
 
     <!-- 表格区域 -->
-    <div class="table-container">
-      <NDataTable
-        :columns="columns"
-        :data="data"
-        :loading="loading"
-        :pagination="tablePagination"
-      />
-    </div>
+    <template #table>
+      <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
+    </template>
   </TablePageLayout>
 </template>
-
-<style scoped lang="less">
-.search-form {
-  display: flex;
-  gap: 16px;
-  align-items: flex-end;
-  margin-bottom: 24px;
-}
-
-.table-container {
-  flex: 1;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
-}
-
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-:deep(.n-data-table) {
-  flex: 1;
-}
-</style>

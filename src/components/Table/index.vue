@@ -1,45 +1,92 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { NDataTable } from 'naive-ui'
-import type { DataTableColumns } from 'naive-ui'
-import { useTableData } from '@/hooks/useTableData'
-import type { RequestParams } from '@/hooks/useTableData'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useTableData, type RequestParams } from '@/hooks/useTableData'
+import { useTableHeight } from '@/hooks/useTableHeight'
+import { useMessage } from 'naive-ui'
 
-interface TableProps<T, P = RequestParams> {
-  columns: DataTableColumns<T>
-  fetchApi: (params: P) => Promise<{ list: T[]; total: number }>
+interface TableProps {
+  /** 获取表格数据的 API 函数 */
+  fetchApi: (params: RequestParams) => Promise<{ list: any[]; total: number }>
 }
 
-const props = defineProps<TableProps<any, any>>()
+const props = defineProps<TableProps>()
+const message = useMessage()
 
-// 使用 useTableData
-const { loading, data, pagination, loadData, handlePageChange, handlePageSizeChange } = useTableData({
-  fetchApi: props.fetchApi
+/** 表格 DOM 引用 */
+const tableRef = ref<HTMLElement>()
+/** 表格最大高度 */
+const maxTableHeight = ref()
+
+/**
+ * 计算表格的最大高度
+ * 根据表格顶部到视窗顶部的距离和视窗高度来计算
+ */
+const calculateMaxHeight = () => {
+  const tableElement = tableRef.value?.$el as HTMLElement
+  if (tableElement) {
+    const tableTop = tableElement.getBoundingClientRect().top
+    const viewportHeight = window.innerHeight
+    const bottomPadding = 120 // 预留底部空间（分页器等）
+    maxTableHeight.value = viewportHeight - tableTop - bottomPadding
+  }
+}
+
+// 组件挂载时初始化
+onMounted(async () => {
+  await nextTick()
+  calculateMaxHeight()
+  // 监听窗口大小变化
+  window.addEventListener('resize', calculateMaxHeight)
 })
 
-// 表格分页配置
-const tablePagination = {
-  page: pagination.page,
-  pageSize: pagination.pageSize,
-  showSizePicker: pagination.showSizePicker,
-  pageSizes: pagination.pageSizes,
-  itemCount: pagination.itemCount,
-  onChange: handlePageChange,
-  onUpdatePageSize: handlePageSizeChange,
-}
+// 组件卸载时清理
+onUnmounted(() => {
+  window.removeEventListener('resize', calculateMaxHeight)
+})
+
+// 使用 useTableData 处理表格数据逻辑
+const {
+  loading,
+  data,
+  pagination,
+  loadData,
+  handlePageChange,
+  handlePageSizeChange,
+  refresh,
+  reset
+} = useTableData({
+  fetchApi: props.fetchApi,
+  message
+})
 
 // 暴露方法给父组件
 defineExpose({
   loadData,
-  refresh: () => loadData()
+  refresh,
+  reset,
+  recalculateHeight: calculateMaxHeight
+})
+
+// 注册表格高度更新回调
+// 当其他组件（如 SearchForm）触发高度更新时执行
+useTableHeight(async () => {
+  await nextTick()
+  // 等待下一帧动画执行时再计算高度，确保获取到正确的 DOM 尺寸
+  requestAnimationFrame(() => {
+    calculateMaxHeight()
+  })
 })
 </script>
 
 <template>
   <NDataTable
-    :columns="columns"
-    :data="data"
+    ref="tableRef"
+    v-bind="$attrs"
     :loading="loading"
-    :pagination="tablePagination"
+    :data="data"
+    :pagination="pagination"
+    :max-height="maxTableHeight"
+    @update:page="handlePageChange"
+    @update:page-size="handlePageSizeChange"
   />
-</template> 
+</template>

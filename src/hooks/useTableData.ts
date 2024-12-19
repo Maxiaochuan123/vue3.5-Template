@@ -1,5 +1,4 @@
-import { reactive, ref } from 'vue';
-import type { Ref } from 'vue';
+import { reactive, ref, type Ref } from 'vue';
 
 // 通用的请求参数接口，包含分页相关参数
 export interface RequestParams {
@@ -30,6 +29,9 @@ export interface UseTableDataOptions<T, P = RequestParams> {
   defaultPageSize?: number;                            // 默认每页条数
   defaultPagination?: Partial<PaginationProps>;        // 默认分页配置
   transformParams?: (params: any) => P;                // 请求参数转换函数
+  message?: {
+    error: (msg: string) => void;  // 添加 message 接口
+  };
 }
 
 // Hook 返回值接口
@@ -56,7 +58,8 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
     fetchApi,
     defaultPageSize = 10,
     defaultPagination = {},
-    transformParams
+    transformParams,
+    message
   } = options;
 
   // 状态定义
@@ -83,9 +86,15 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
    */
   const loadData = async (params = {}) => {
     // console.log('loadData', params);
+
+    // 添加参数验证和清理
+    const cleanParams = Object.fromEntries(
+      Object.entries(params).filter(([_, value]) => value != null)
+    )
     
     loading.value = true;
-    currentParams.value = params; // 保存当前查询参数
+    // currentParams.value = params; // 保存当前查询参数
+    currentParams.value = cleanParams; // 保存当前查询参数
 
     try {
       // 分页参数由内部管理，与外部查询参数合并
@@ -102,7 +111,8 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
       data.value = list;
       pagination.itemCount = total;
     } catch (error) {
-      console.error('加载数据失败:', error);
+      // message.error(error instanceof Error ? error.message : '加载数据失败')
+      if (message) message.error(error instanceof Error ? error.message : '加载数据失败');
       data.value = [];
       pagination.itemCount = 0;
     } finally {

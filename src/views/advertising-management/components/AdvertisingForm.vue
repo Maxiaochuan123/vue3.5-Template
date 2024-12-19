@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive, computed, nextTick, watch } from 'vue'
-import type { FormInst, FormItemRule } from 'naive-ui'
+import { ref, watch } from 'vue'
+import type { FormInst } from 'naive-ui'
 import { advertisementTypeOptions, type AdvertisementType } from '@/enum/options'
-import MediaUploader from '@/components/MediaUploader/index.vue'
 import { useMediaUploaderValidator } from '@/hooks/useUploaderValidator'
-import Phone from '@/components/MediaUploader/preview/components/ImgVideoPreviewPhone.vue'
-import { useFormSubmit } from '@/hooks/useFormSubmit'
 import { useFormData } from '@/hooks/useFormData'
+import MediaUploader from '@/components/MediaUploader/index.vue'
+import Phone from '@/components/MediaUploader/preview/components/ImgVideoPreviewPhone.vue'
 
 export interface FormState {
   adType: AdvertisementType
@@ -24,6 +23,8 @@ interface Props {
   formType: 'add' | 'edit'
   data?: Partial<FormState>
 }
+
+const props = defineProps<Props>()
 
 const formRef = ref<FormInst | null>(null)
 
@@ -73,11 +74,7 @@ const rules = {
   iosUrl: { required: true, message: '请输入苹果下载地址', trigger: 'blur' }
 }
 
-const emit = defineEmits<{
-  success: []
-}>()
 
-const props = defineProps<Props>()
 // 监听 data 变化进行回填
 watch(
   () => props.data,
