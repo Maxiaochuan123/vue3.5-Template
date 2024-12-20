@@ -173,10 +173,11 @@ const submitApi = async (formData: FormState) => {
     <template #search>
       <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
         <template #default="{ searchForm }">
-          <NFormItem label="关键词">
+          <NFormItem label="关键词" data-width="md">
             <NInput
               v-model:value="searchForm.keyword"
               placeholder="请输入标题关键词"
+              clearable
             />
           </NFormItem>
 

@@ -55,8 +55,14 @@ const toggleExpand = () => {
 // 检查是否需要显示展开按钮
 const checkOverflow = () => {
   if (formItemsRef.value) {
-    const containerHeight = formItemsRef.value.scrollHeight
-    showExpandButton.value = containerHeight > 60 // 一行的高度
+    const containerWidth = formItemsRef.value.clientWidth - 200 // 减去右侧操作栏预留空间
+    const contentWidth = Array.from(formItemsRef.value.children).reduce((total, item) => {
+      const width = item.clientWidth
+      const marginRight = 20 // gap 值
+      return total + width + marginRight
+    }, 0)
+    
+    showExpandButton.value = contentWidth > containerWidth
   }
 }
 
@@ -82,10 +88,8 @@ onMounted(() => {
   <NForm 
     ref="formRef" 
     :model="searchForm"
-    :show-feedback="false" 
-    :label-width="80" 
-    size="medium"
-  >
+    :show-feedback="false"
+    >
     <div class="search-form-container">
       <div class="search-form-content">
         <div 
@@ -151,7 +155,7 @@ onMounted(() => {
     transition: max-height 0.2s ease;
     overflow: hidden;
     max-height: 60px; // 默认显示一行
-    padding-right: 200px; // 为操作栏预留空间
+    padding-right: 230px; // 为操作栏预留空间
 
     &.is-expanded {
       max-height: 800px;
@@ -196,7 +200,7 @@ onMounted(() => {
   .search-form-actions {
     position: absolute;
     right: 0;
-    top: 25px;
+    top: 24px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
