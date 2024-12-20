@@ -204,6 +204,10 @@ defineExpose({
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 20px;
+
+  .n-button {
+    padding: 0 44px;
+  }
 }
 </style>
