@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, inject } from 'vue'
+import { ref, watch, computed, inject, toRef } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { advertisementTypeOptions, type AdvertisementType } from '@/enum/options'
 import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
@@ -20,7 +20,7 @@ export interface FormState {
 }
 
 interface Props {
-  data?: Partial<FormState>
+  editData?: Partial<FormState>
 }
 
 const props = defineProps<Props>()
@@ -30,7 +30,11 @@ const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
 
 const formRef = ref<FormInst | null>(null)
 
-const { formData, fillForm } = useFormData<FormState>({
+// 媒体文件最大数量
+const mediaMaxCount = 1
+const adIconMaxCount = 1
+
+const { formData, initialData } = useFormData<FormState>({
   initialData: {
     adType: 'CPM',
     title: '',
@@ -41,13 +45,11 @@ const { formData, fillForm } = useFormData<FormState>({
     landingUrl: '',
     androidUrl: '',
     iosUrl: ''
-  }
+  },
+  editData: toRef(props, 'editData')
 })
 
-// 媒体文件最大数量
-const mediaMaxCount = 1
-const adIconMaxCount = 1
-
+// 媒体验证器
 const mediaValidator = useMediaUploaderValidator({
   formRef,
   key: 'media',
@@ -56,44 +58,51 @@ const mediaValidator = useMediaUploaderValidator({
   requiredCount: mediaMaxCount
 })
 
+// 图标验证器
+const adIconMediaValidator = useMediaUploaderValidator({
+  formRef,
+  key: 'adIcon',
+  required: computed(() => ['CPC', 'CPA'].includes(formData.adType)), 
+  message: '请上传广告图标',
+  requiredCount: adIconMaxCount
+})
+
+// 表单验证规则
 const rules = {
-  adType: { required: false, message: '请选择广告类型', trigger: 'change' },
+  adType: { required: true, message: '请选择广告类型', trigger: 'change' },
   media: mediaValidator.rule,
   title: [
     { required: true, message: '请输入广告标题', trigger: 'blur' },
     { max: 20, message: '标题最多20个字符', trigger: 'input' },
   ],
-  adIcon: useMediaUploaderValidator({
-    formRef,
-    key: 'adIcon',
-    required: false, 
-    message: '请上传广告图标',
-    requiredCount: adIconMaxCount
-  }),
-  buttonText: { required: true, message: '请输入按钮文案', trigger: 'blur' },
-  landingUrl: { required: true, message: '请输入落地页URL', trigger: 'blur' },
-  androidUrl: { required: true, message: '请输入安卓下载地址', trigger: 'blur' },
-  iosUrl: { required: true, message: '请输入苹果下载地址', trigger: 'blur' }
-}
-
-
-// 监听 data 变化进行回填
-watch(
-  () => props.data,
-  (newData) => {
-    console.log('current formType:', formType.value)
-    
-    if (formType.value === 'edit' || formType.value === 'view' && newData) {
-      fillForm(newData)
-    }
+  adIcon: adIconMediaValidator.rule,
+  buttonText: { 
+    required: computed(() => ['CPC', 'CPA'].includes(formData.adType)),
+    message: '请输入按钮文案',
+    trigger: 'blur'
   },
-  { immediate: true }
-)
+  landingUrl: {
+    required: computed(() => formData.adType === 'CPC'),
+    message: '请输入落地页URL',
+    trigger: 'blur'
+  },
+  androidUrl: {
+    required: computed(() => formData.adType === 'CPA'),
+    message: '请输入安卓下载地址',
+    trigger: 'blur'
+  },
+  iosUrl: {
+    required: computed(() => formData.adType === 'CPA'),
+    message: '请输入苹果下载地址',
+    trigger: 'blur'
+  }
+}
 
 // 暴露给父组件的方法和数据
 defineExpose({
   formRef,
   formData,
+  initialData,
   validate: () => formRef.value?.validate()
 })
 
@@ -172,6 +181,7 @@ const isViewMode = computed(() => formType.value === 'view')
               direction="row"
               :max-count="adIconMaxCount"
               :is-delete="isViewMode"
+              @upload-success="adIconMediaValidator.revalidate"
             >
               <template #description>
                 <div class="decriton">

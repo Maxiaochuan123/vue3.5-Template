@@ -21,7 +21,7 @@ interface SearchParams {
 }
 
 // 定义默认搜索表单值
-const defaultSearchForm = reactive<SearchParams>({
+const defaultSearchForm = reactive({
   keyword: null,
   dateRange: null,
   adType: null,
@@ -33,6 +33,10 @@ const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingForm> | null>(null)
 const formType = ref<'add' | 'edit' | 'view'>('add')
 const editData = ref<Partial<FormState>>({})
+        
+onMounted(() => {
+// drawerRef.value?.open()
+})
 
 // 搜索
 const handleSearch = (values: SearchParams) => {
@@ -130,9 +134,6 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
 ]
 
-onMounted(() => {
-  // drawerRef.value?.open()
-})
 
 // 打开抽屉
 const handleAdd = () => {
@@ -159,8 +160,9 @@ const handleAdvertisingForm = (row: Record<string, any>, type: 'edit' | 'view') 
   editData.value = formattedData
   drawerRef.value?.open()
 }
+
 // 表单提交
-const onSubmit = async (formData: FormState) => {
+const submitApi = async (formData: FormState) => {
   console.log('提交的数据:', formData)
   return Promise.resolve()
 }
@@ -170,17 +172,17 @@ const onSubmit = async (formData: FormState) => {
   <TablePageLayout>
     <template #search>
       <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
-        <template #default="{ form }">
+        <template #default="{ searchForm }">
           <NFormItem label="关键词">
             <NInput
-              v-model:value="form.keyword"
+              v-model:value="searchForm.keyword"
               placeholder="请输入标题关键词"
             />
           </NFormItem>
 
           <NFormItem label="创建时间" data-width="lg">
             <NDatePicker
-              v-model:value="form.dateRange"
+              v-model:value="searchForm.dateRange"
               type="daterange"
               clearable
             />
@@ -188,7 +190,7 @@ const onSubmit = async (formData: FormState) => {
 
           <NFormItem label="广告类型" data-width="sm">
             <NSelect
-              v-model:value="form.type"
+              v-model:value="searchForm.adType"
               :options="advertisementTypeOptions"
               placeholder="请选择广告类型"
               clearable
@@ -197,7 +199,7 @@ const onSubmit = async (formData: FormState) => {
 
           <NFormItem label="审核状态" data-width="sm">
             <NSelect
-              v-model:value="form.status"
+              v-model:value="searchForm.status"
               :options="statusOptions"
               placeholder="请选择审核状态"
               clearable
@@ -220,16 +222,14 @@ const onSubmit = async (formData: FormState) => {
     <!-- 新增/编辑广告 -->
     <DrawerForm
       ref="drawerRef"
-      :formType="formType"
       :form-ref="formRef"
-      :submit-api="onSubmit"
+      :formType="formType"
+      :submit-api="submitApi"
       :refresh-list="refreshList"
       :extra-fields="['id']"
+      :edit-data="editData"
     >
-      <AdvertisingForm
-        ref="formRef"
-        :data="editData"
-      />
+      <AdvertisingForm ref="formRef" />
     </DrawerForm>
   </TablePageLayout>
 </template>

@@ -93,7 +93,7 @@ onMounted(() => {
           class="search-form-items" 
           :class="{ 'is-expanded': isExpanded }"
         >
-          <slot :form="searchForm" />
+          <slot :searchForm="searchForm" />
         </div>
         
         <div class="search-form-actions">

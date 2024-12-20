@@ -1,42 +1,54 @@
 <script setup lang="ts">
-import { provide, ref, watch, computed } from 'vue'
+import { provide, ref, watch, computed, toRef } from 'vue'
 import { NDrawer, NDrawerContent, NButton, NIcon, type FormInst } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
 import { ArrowBack } from '@vicons/ionicons5'
 
+type FormType = 'add' | 'edit' | 'view'
+
+interface CustomFormInst {
+  validate: () => Promise<void>
+  formData: Record<string, any>
+  initialData?: Record<string, any>
+}
+
 interface Props {
-  submitText?: string
-  showFooter?: boolean
+  formRef?: FormInst | CustomFormInst | null
   submitApi: (...args: any[]) => Promise<any>
-  formRef?: FormInst | null | { validate: () => Promise<void>; formData: any }
+  formType?: FormType
   refreshList?: () => void
-  formType?: 'add' | 'edit' | 'view'
-  cancelText?: string
   extraFields?: string[]
+  showFooter?: boolean
+  submitText?: string
+  cancelText?: string
+  editData?: Record<string, any>
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  submitText: '提交',
-  showFooter: true,
   formType: 'add',
+  submitText: '提交',
   cancelText: '取消',
+  showFooter: true,
   extraFields: () => []
 })
 
 // 创建响应式的 formType
-const currentFormType = ref(props.formType)
+const currentFormType = ref<FormType>(props.formType)
 
 // 监听 props.formType 的变化
 watch(
   () => props.formType,
   (newType) => {
-    currentFormType.value = newType
+    if (newType) {
+      currentFormType.value = newType
+    }
   },
   { immediate: true }
 )
 
-// 提供响应式的 formType 给子组件
+// 提供响应式的 formType 和 editData 给子组件
 provide('formType', currentFormType)
+provide('editData', toRef(props, 'editData'))
 
 // 抽屉标题
 const drawerTitle = computed(() => {
@@ -51,14 +63,35 @@ const drawerTitle = computed(() => {
 })
 
 const modelValue = defineModel({ type: Boolean, default: false })
-// const emit = defineEmits(['cancel', 'submit'])
 const { submitLoading, submitDisabled, handleSubmit } = useFormSubmit()
 
-// 处理关闭
-const handleClose = () => {
-  modelValue.value = false
-  // emit('cancel')
-  close()
+// 处理提交
+const handleFormSubmit = async () => {
+  if (!props.formRef) return
+  
+  try {
+    const formInstance = props.formRef as CustomFormInst
+    const success = await handleSubmit({
+      submitApi: props.submitApi,
+      formRef: props.formRef,
+      formData: formInstance.formData,
+      formType: currentFormType.value,
+      initialData: formInstance.initialData,
+      extraFields: props.extraFields,
+      originalData: formInstance.formData,
+      onSuccess: () => {
+        props.refreshList?.()
+        close()
+      }
+    })
+
+    if (!success) {
+      submitDisabled.value = false
+    }
+  } catch (error) {
+    submitDisabled.value = false
+    console.error('Form submission error:', error)
+  }
 }
 
 // 关闭抽屉
@@ -71,29 +104,6 @@ const close = () => {
 // 打开抽屉
 const open = () => {
   modelValue.value = true
-}
-
-// 处理提交
-const handleFormSubmit = async () => {
-  if (!props.formRef) return
-
-  const success = await handleSubmit({
-    submitApi: props.submitApi,
-    formRef: props.formRef,
-    formData: props.formRef.formData,
-    formType: currentFormType.value,
-    initialData: (props.formRef as any).initialData,
-    extraFields: props.extraFields,
-    originalData: props.formRef.formData,
-    onSuccess: () => {
-      props.refreshList?.()
-      close()
-    }
-  })
-
-  if (!success) {
-    submitDisabled.value = false
-  }
 }
 
 // 暴露方法给父组件
@@ -110,14 +120,14 @@ defineExpose({
     :block-scroll="false"
     to=".n-card__content"
     height="100%"
-    @close="handleClose"
+    @close="close"
   >
-  <NDrawerContent closable>
-    <!-- Header Section -->
-    <template #header>
+    <NDrawerContent closable>
+      <!-- Header Section -->
+      <template #header>
         <div class="page-header">
           <div class="left-section">
-            <div class="back-button" @click="handleClose">
+            <div class="back-button" @click="close">
               <NIcon>
                 <ArrowBack />
               </NIcon>
@@ -129,20 +139,21 @@ defineExpose({
 
       <!-- Content Section -->
       <div class="page-content">
-        <slot></slot>
+        <slot />
       </div>
 
       <!-- Footer Section -->
       <template #footer>
         <div v-if="showFooter" class="page-footer">
-          <NButton :disabled="submitLoading" size="large" @click="handleClose">
+          <NButton :disabled="submitLoading" size="large" @click="close">
             {{ props.formType === 'view' ? '关闭' : cancelText }}
           </NButton>
+          
           <NButton
             v-if="props.formType !== 'view'"
             type="primary"
-            :loading="submitLoading"
             size="large"
+            :loading="submitLoading"
             :disabled="submitDisabled"
             @click="handleFormSubmit"
           >
@@ -193,6 +204,6 @@ defineExpose({
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 40px;
 }
 </style>

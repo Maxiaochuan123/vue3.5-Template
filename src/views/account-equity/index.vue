@@ -215,24 +215,24 @@ const tableFetchApi = async ( params: SearchParams ): Promise<{ list: TableDataR
   <TablePageLayout>
     <template #search>
       <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
-        <template #default="{ form }">
+        <template #default="{ searchForm }">
           <NFormItem label="日期范围" data-width="lg">
             <NDatePicker
-              v-model:value="form.dateRange"
+              v-model:value="searchForm.dateRange"
               type="daterange"
               clearable
             />
-            </NFormItem>
-            <NFormItem label="变动类型">
-              <NSelect
-                v-model:value="form.type"
-                :options="advertisementTypeOptions"
-                clearable
-              />
-            </NFormItem>
-            <NFormItem label="变动状态">
+          </NFormItem>
+          <NFormItem label="变动类型">
             <NSelect
-              v-model:value="form.status"
+              v-model:value="searchForm.type"
+              :options="advertisementTypeOptions"
+              clearable
+            />
+          </NFormItem>
+          <NFormItem label="变动状态">
+            <NSelect
+              v-model:value="searchForm.status"
               :options="statusOptions"
               clearable
             />
