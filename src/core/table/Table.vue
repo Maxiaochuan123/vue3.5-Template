@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-import { useTableData } from '@/hooks/useTableData'
-import { useTableHeight } from '@/hooks/useTableHeight'
+import { ref, onMounted, onUnmounted, nextTick, provide } from 'vue'
 import { useMessage, type DataTableInst } from 'naive-ui'
+import { useTableData } from './hooks/useTableData'
+import { useTableHeight, TABLE_HEIGHT_KEY } from './hooks/useTableHeight'
 
 interface TableProps<T = any, P = any> {
   /** 获取表格数据的 API 函数 */
@@ -30,6 +30,9 @@ const calculateMaxHeight = () => {
     maxTableHeight.value = viewportHeight - tableTop - bottomPadding
   }
 }
+
+// 直接提供回调函数
+provide(TABLE_HEIGHT_KEY, calculateMaxHeight)
 
 // 组件挂载时初始化
 onMounted(async () => {

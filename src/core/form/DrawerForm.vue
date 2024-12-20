@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { NDrawer, NDrawerContent, NButton, NIcon, type FormInst } from 'naive-ui'
-import { ArrowBack } from '@vicons/ionicons5'
-import { useFormSubmit } from '@/hooks/useFormSubmit'
 import { provide, ref, watch, computed } from 'vue'
+import { NDrawer, NDrawerContent, NButton, NIcon, type FormInst } from 'naive-ui'
+import { useFormSubmit } from './hooks/useFormSubmit'
+import { ArrowBack } from '@vicons/ionicons5'
 
 interface Props {
   submitText?: string

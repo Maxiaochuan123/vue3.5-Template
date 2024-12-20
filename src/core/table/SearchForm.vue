@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick, inject } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { Search } from '@vicons/ionicons5'
-import { useSearch } from '@/hooks/useSearch'
+import { useSearch } from './hooks/useSearch'
+import { TABLE_HEIGHT_KEY } from './hooks/useTableHeight'
 import { ChevronDown, ChevronUp } from '@vicons/ionicons5'
-import { useTableHeightProvider } from '@/hooks/useTableHeight'
 
 const props = defineProps<{
   model: Record<string, any>
@@ -38,15 +38,18 @@ const handleSearch = async () => {
   }
 }
 
-const { updateTableHeight } = useTableHeightProvider()
+// 获取表格高度更新函数
+const updateTableHeight = inject(TABLE_HEIGHT_KEY, () => {})
 
 // 切换展开/收起状态
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value
-  // 使用 setTimeout 等待过渡动画完成
-  setTimeout(() => {
-    updateTableHeight()
-  }, 300)
+  // 使用 nextTick 等待 DOM 更新完成
+  nextTick(() => {
+    setTimeout(() => {
+      updateTableHeight()
+    }, 300) // 等待过渡动画完成
+  })
 }
 
 // 检查是否需要显示展开按钮

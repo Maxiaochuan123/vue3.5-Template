@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { h, ref, onMounted, reactive } from 'vue'
 import { NButton, NIcon, NSpace, type DataTableColumns } from 'naive-ui'
-import { advertisementTypeOptions, statusOptions } from '@/enum/options'
+import TablePageLayout from '@/core/table/TableLayout.vue'
+import SearchForm from '@/core/table/SearchForm.vue'
+import Table from '@/core/table/Table.vue'
+import DrawerForm from '@/core/form/DrawerForm.vue'
+import TableToolbarActions from '@/core/table/TableToolbarActions.vue'
+import TableActions from '@/core/table/TableActions.vue'
+import { advertisementTypeOptions, statusOptions, getOptionLabel } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
-import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
-import SearchForm from '@/components/SearchForm/index.vue'
-import Table from '@/components/Table/index.vue'
-import FormDrawer from '@/components/FormDrawer/index.vue'
 import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
-import { getOptionLabel } from '@/enum/options'
-import { AddOutline } from '@vicons/ionicons5'
-import TableActions from '@/components/TableActions/index.vue'
 
 type TableDataRecord = Record<string, any>
 
@@ -30,7 +29,7 @@ const defaultSearchForm = reactive<SearchParams>({
 })
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
-const drawerRef = ref<InstanceType<typeof FormDrawer> | null>(null)
+const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingForm> | null>(null)
 const formType = ref<'add' | 'edit' | 'view'>('add')
 const editData = ref<Partial<FormState>>({})
@@ -113,7 +112,7 @@ const columns: DataTableColumns<TableDataRecord> = [
       return h(TableActions, {
         row,
         deleteConfig: {
-          content: '确定要删除该广告吗？删除后不可恢复',
+          content: '确定要删除该广告吗？删除后不可恢复！',
         },
         onAction: (type, rowData) => {
           switch (type) {
@@ -210,12 +209,7 @@ const onSubmit = async (formData: FormState) => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <NButton type="primary" @click="handleAdd">
-        <template #icon>
-          <NIcon><AddOutline /></NIcon>
-        </template>
-        新增广告
-      </NButton>
+      <TableToolbarActions :on-add="handleAdd" />
     </template>
 
     <!-- 表格 -->
@@ -224,7 +218,7 @@ const onSubmit = async (formData: FormState) => {
     </template>
 
     <!-- 新增/编辑广告 -->
-    <FormDrawer
+    <DrawerForm
       ref="drawerRef"
       :formType="formType"
       :form-ref="formRef"
@@ -236,6 +230,6 @@ const onSubmit = async (formData: FormState) => {
         ref="formRef"
         :data="editData"
       />
-    </FormDrawer>
+    </DrawerForm>
   </TablePageLayout>
 </template>

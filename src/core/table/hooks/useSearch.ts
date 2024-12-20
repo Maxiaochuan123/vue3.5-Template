@@ -1,7 +1,6 @@
-import { reactive } from 'vue';
-import type { Ref } from 'vue';
-import type { FormInst } from 'naive-ui';
+import { reactive, type Ref } from 'vue';
 import { useDebounceFn } from '@vueuse/core'
+import type { FormInst } from 'naive-ui';
 
 /**
  * 搜索表单配置选项接口

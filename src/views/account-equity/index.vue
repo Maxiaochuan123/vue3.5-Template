@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref,reactive } from 'vue'
 import type { DataTableColumns, FormInst } from 'naive-ui'
-import SearchForm from '@/components/SearchForm/index.vue'
-import Table from '@/components/Table/index.vue'
-import TablePageLayout from '@/components/PageLayout/TablePageLayout.vue'
+import SearchForm from '@/core/table/SearchForm.vue'
+import Table from '@/core/table/Table.vue'
+import TablePageLayout from '@/core/table/TableLayout.vue'
 
 type TableDataRecord = Record<string, any>
 

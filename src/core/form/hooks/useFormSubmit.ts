@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { type FormInst } from 'naive-ui'
 import { useMessage } from 'naive-ui'
+import { useDebounceFn } from '@vueuse/core'
 
 // 定义通用表单组件接口
 interface CustomFormInst {
@@ -27,7 +28,7 @@ export function useFormSubmit() {
   const submitDisabled = ref(false)
   const message = useMessage()
 
-  const handleSubmit = async (options: FormSubmitOptions) => {
+  const handleSubmit = useDebounceFn(async (options: FormSubmitOptions) => {
     const {
       submitApi,
       formRef,
@@ -90,7 +91,7 @@ export function useFormSubmit() {
     } finally {
       submitLoading.value = false
     }
-  }
+  }, 300) // 300ms 的防抖时间
 
   return {
     submitLoading,

@@ -1,35 +1,8 @@
-<template>
-    <div class="video-preview">
-      <div class="preview-cover" @click="handlePlay">
-        <div class="no-cover" v-if="!videoUrl">
-          <n-icon size="24" class="placeholder-icon">
-            <VideocamOffSharp />
-          </n-icon>
-        </div>
-        <template v-else>
-          <video 
-            ref="videoRef"
-            :src="videoUrl"
-            class="video-background"
-            preload="metadata"
-          />
-          <div class="play-button">
-            <n-icon size="24" class="play-icon">
-              <CaretForwardOutline />
-            </n-icon>
-          </div>
-        </template>
-      </div>
-  
-      <Preview v-model="showPreview" :file="{ url: videoUrl }" />
-    </div>
-  </template>
-  
-  <script setup lang="ts">
+<script setup lang="ts">
   import { ref } from 'vue'
   import { NIcon } from 'naive-ui'
   import { CaretForwardOutline, VideocamOffSharp } from '@vicons/ionicons5'
-  import Preview from '@/components/MediaUploader/preview/index.vue'
+  import MediaPreviewMask from './MediaPreviewMask.vue'
   
   defineOptions({
     name: 'VideoPreview',
@@ -47,9 +20,36 @@
     if (!props.videoUrl) return
     showPreview.value = true
   }
-  </script>
+</script>
+
+<template>
+  <div class="video-preview">
+    <div class="preview-cover" @click="handlePlay">
+      <div class="no-cover" v-if="!videoUrl">
+        <n-icon size="24" class="placeholder-icon">
+          <VideocamOffSharp />
+        </n-icon>
+      </div>
+      <template v-else>
+        <video 
+          ref="videoRef"
+          :src="videoUrl"
+          class="video-background"
+          preload="metadata"
+        />
+        <div class="play-button">
+          <n-icon size="24" class="play-icon">
+            <CaretForwardOutline />
+          </n-icon>
+        </div>
+      </template>
+    </div>
+
+    <MediaPreviewMask v-model="showPreview" :file="{ url: videoUrl }" />
+  </div>
+</template>
   
-  <style scoped lang="less">
+<style scoped lang="less">
   .video-preview {
     width: 120px;
     height: 80px;
@@ -108,5 +108,5 @@
       }
     }
   }
-  </style>
+</style>
   

@@ -2,10 +2,10 @@
 import { ref, watch, computed, inject } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { advertisementTypeOptions, type AdvertisementType } from '@/enum/options'
-import { useMediaUploaderValidator } from '@/hooks/useUploaderValidator'
-import { useFormData } from '@/hooks/useFormData'
-import MediaUploader from '@/components/MediaUploader/index.vue'
-import Phone from '@/components/MediaUploader/preview/components/ImgVideoPreviewPhone.vue'
+import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
+import { useFormData } from '@/core/form/hooks/useFormData'
+import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
+import MediaPreviewPhone from '@/core/upload/media-upload/preview/MediaPreviewPhone.vue'
 
 export interface FormState {
   adType: AdvertisementType
@@ -103,7 +103,7 @@ const isViewMode = computed(() => formType.value === 'view')
 <template>
   <div class="form-drawer-content">
     <div class="form-content">
-      <n-form
+      <NForm
         ref="formRef"
         :model="formData"
         :rules="rules"
@@ -113,17 +113,17 @@ const isViewMode = computed(() => formType.value === 'view')
       >
         <!-- CPM/CPC/CPA 基础组件 -->
         <template v-if="['CPM', 'CPC', 'CPA'].includes(formData.adType)">
-          <n-form-item label="广告类型" path="adType">
-            <n-select
+          <NFormItem label="广告类型" path="adType">
+            <NSelect
               v-model:value="formData.adType"
               :options="advertisementTypeOptions"
               placeholder="请选择广告类型"
               clearable
             />
-          </n-form-item>
+          </NFormItem>
 
-          <n-form-item label="广告创意" path="media" class="uploader-container">
-            <media-uploader
+          <NFormItem label="广告创意" path="media" class="uploader-container">
+            <MediaUpload
               v-model="formData.media"
               :max-count="mediaMaxCount"
               :accept="['img', 'video']"
@@ -140,33 +140,33 @@ const isViewMode = computed(() => formType.value === 'view')
                   <span>图片支持.jpg等常见格式，最多1张。</span>
                 </div>
               </template>
-            </media-uploader>
-          </n-form-item>
+            </MediaUpload>
+          </NFormItem>
 
-          <n-form-item label="广告标题" path="title">
-            <n-input
+          <NFormItem label="广告标题" path="title">
+            <NInput
               v-model:value="formData.title"
               placeholder="视频广告主要内容，建议6-20个字符"
               :maxlength="20"
               show-count
             />
-          </n-form-item>
+          </NFormItem>
 
-          <n-form-item label="广告描述">
-            <n-input
+          <NFormItem label="广告描述">
+            <NInput
               v-model:value="formData.description"
               type="textarea"
               placeholder="请输入广告描述"
               :maxlength="200"
               show-count
             />
-          </n-form-item>
+          </NFormItem>
         </template>
 
         <!-- CPC/CPA 共同组件 -->
         <template v-if="['CPC', 'CPA'].includes(formData.adType)">
-          <n-form-item label="广告图标" path="adIcon" class="uploader-container">
-            <media-uploader 
+          <NFormItem label="广告图标" path="adIcon" class="uploader-container">
+            <MediaUpload 
               v-model="formData.adIcon"
               accept="img"
               direction="row"
@@ -178,46 +178,46 @@ const isViewMode = computed(() => formType.value === 'view')
                   <span>建议480*480尺寸</span>
                 </div>
               </template>
-            </media-uploader>
-          </n-form-item>
+            </MediaUpload>
+          </NFormItem>
 
-          <n-form-item label="按钮文案" path="buttonText">
-            <n-input
+          <NFormItem label="按钮文案" path="buttonText">
+            <NInput
               v-model:value="formData.buttonText"
               placeholder="默认为直达官网"
             />
-          </n-form-item>
+          </NFormItem>
         </template>
 
         <!-- CPC 特有组件 -->
         <template v-if="formData.adType === 'CPC'">
-          <n-form-item label="落地页URL" path="landingUrl">
-            <n-input
+          <NFormItem label="落地页URL" path="landingUrl">
+            <NInput
               v-model:value="formData.landingUrl"
               placeholder="请录入正确的外部落地页URL地址"
             />
-          </n-form-item>
+          </NFormItem>
         </template>
 
         <!-- CPA 特有组件 -->
         <template v-if="formData.adType === 'CPA'">
-          <n-form-item label="安卓下载地址" path="androidUrl">
-            <n-input
+          <NFormItem label="安卓下载地址" path="androidUrl">
+            <NInput
               v-model:value="formData.androidUrl"
               placeholder="请录入正确的安卓应用下载URL地址"
             />
-          </n-form-item>
-          <n-form-item label="苹果下载地址" path="iosUrl">
-            <n-input
+          </NFormItem>
+          <NFormItem label="苹果下载地址" path="iosUrl">
+            <NInput
               v-model:value="formData.iosUrl"
               placeholder="请录入正确的苹果应用下载URL地址"
             />
-          </n-form-item>
+          </NFormItem>
         </template>
-      </n-form>
+      </NForm>
     </div>
     <div class="preview-content">
-      <Phone :url="formData.media[0]" title="预览广告创意" />
+      <MediaPreviewPhone :url="formData.media[0]" title="预览广告创意" />
     </div>
   </div>
 </template>

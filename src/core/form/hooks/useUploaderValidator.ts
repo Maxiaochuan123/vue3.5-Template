@@ -1,5 +1,5 @@
-import type { FormItemRule, FormInst } from 'naive-ui'
 import type { Ref } from 'vue'
+import type { FormItemRule, FormInst } from 'naive-ui'
 
 /**
  * MediaUploader 组件验证器的配置选项接口
