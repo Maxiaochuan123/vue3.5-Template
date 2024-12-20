@@ -59,7 +59,7 @@
   <script setup lang="ts">
   import { h, ref, computed, watch, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
-  import { MenuOutline, HomeOutline, LogOutOutline, WalletOutline } from '@vicons/ionicons5'
+  import { MenuOutline, HomeOutline, LogOutOutline, WalletOutline, DocumentTextOutline, PersonOutline, KeyOutline, ListOutline } from '@vicons/ionicons5'
   import { NBreadcrumb, NBreadcrumbItem, NIcon } from 'naive-ui'
   import type { MenuOption } from 'naive-ui'
   import { useAuthStore } from '@/stores/modules/auth'
@@ -70,10 +70,10 @@
   const isCollapse = ref(false)
   const activeMenu = ref(route.path)
   
-  onMounted(() => {
-    activeMenu.value = '/advertising-management'
-    router.push('/advertising-management')
-  })
+  // onMounted(() => {
+  //   activeMenu.value = '/advertising-management'
+  //   router.push('/advertising-management')
+  // })
   
   // 监听路由变化，更新菜单选中状态
   watch(
@@ -102,6 +102,40 @@
       label: '广告管理',
       key: '/advertising-management',
       icon: renderIcon(MenuOutline),
+    },
+    {
+      label: '财务管理',
+      key: 'financial',
+      icon: renderIcon(WalletOutline),
+      children: [
+        {
+          label: '票据管理',
+          key: '/financial/bill-management',
+          icon: renderIcon(DocumentTextOutline),
+        },
+      ],
+    },
+    {
+      label: '权限管理',
+      key: 'permission',
+      icon: renderIcon(KeyOutline),
+      children: [
+        {
+          label: '账号管理',
+          key: '/permission/account',
+          icon: renderIcon(PersonOutline),
+        },
+        {
+          label: '角色管理',
+          key: '/permission/role',
+          icon: renderIcon(KeyOutline),
+        },
+        {
+          label: '系统日志',
+          key: '/permission/log',
+          icon: renderIcon(ListOutline),
+        },
+      ],
     },
   ]
   

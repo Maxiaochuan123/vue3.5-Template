@@ -47,6 +47,62 @@ const routes: RouteRecordRaw[] = [
           title: '广告管理',
         },
       },
+      {
+        path: 'financial',
+        name: 'financial',
+        meta: {
+          requiresAuth: true,
+          title: '财务管理',
+        },
+        children: [
+          {
+            path: 'bill-management',
+            name: 'bill-management',
+            component: () => import('@/views/financial/bill-management/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '票据管理',
+            },
+          },
+        ],
+      },
+      {
+        path: 'permission',
+        name: 'permission',
+        meta: {
+          requiresAuth: true,
+          title: '权限管理',
+        },
+        children: [
+          {
+            path: 'account',
+            name: 'permission-account',
+            component: () => import('@/views/permission/account/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '账号管理',
+            },
+          },
+          {
+            path: 'role',
+            name: 'permission-role',
+            component: () => import('@/views/permission/role/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '角色管理',
+            },
+          },
+          {
+            path: 'log',
+            name: 'permission-log',
+            component: () => import('@/views/permission/log/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '系统日志',
+            },
+          },
+        ],
+      },
     ],
   },
 ]

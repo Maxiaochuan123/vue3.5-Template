@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
-import { NDrawer, NDrawerContent, NButton, NIcon, type FormInst } from 'naive-ui'
+import { NModal, NButton, NIcon, type FormInst } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
 import { ArrowBack } from '@vicons/ionicons5'
 
@@ -22,6 +22,7 @@ interface Props {
   submitText?: string
   cancelText?: string
   editData?: Record<string, any>
+  width?: number | string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -29,7 +30,8 @@ const props = withDefaults(defineProps<Props>(), {
   submitText: '提交',
   cancelText: '取消',
   showFooter: true,
-  extraFields: () => []
+  extraFields: () => [],
+  width: 600,
 })
 
 // 创建响应式的 formType
@@ -50,8 +52,8 @@ watch(
 provide('formType', currentFormType)
 provide('editData', toRef(props, 'editData'))
 
-// 抽屉标题
-const drawerTitle = computed(() => {
+// 对话框标题
+const modalTitle = computed(() => {
   switch (currentFormType.value) {
     case 'edit':
       return '编辑'
@@ -94,14 +96,14 @@ const handleFormSubmit = async () => {
   }
 }
 
-// 关闭抽屉
+// 关闭对话框
 const close = () => {
   visible.value = false
   submitLoading.value = false
   submitDisabled.value = false
 }
 
-// 打开抽屉
+// 打开对话框
 const open = () => {
   visible.value = true
 }
@@ -114,59 +116,54 @@ defineExpose({
 </script>
 
 <template>
-  <NDrawer
+  <NModal
     v-model:show="visible"
-    placement="top"
-    :block-scroll="false"
-    to=".n-card__content"
-    height="100%"
-    @close="close"
+    :title="modalTitle"
+    :style="{ width: typeof width === 'number' ? `${width}px` : width }"
+    preset="dialog"
+    :show-close="true"
   >
-    <NDrawerContent closable>
-      <!-- Header Section -->
-      <template #header>
-        <div class="page-header">
-          <div class="left-section">
-            <div class="back-button" @click="close">
-              <NIcon>
-                <ArrowBack />
-              </NIcon>
-            </div>
-            <h2 class="page-title">{{ drawerTitle }}</h2>
+    <template #header>
+      <div class="modal-header">
+        <div class="left-section">
+          <div class="back-button" @click="close">
+            <NIcon>
+              <ArrowBack />
+            </NIcon>
           </div>
+          <h2 class="page-title">{{ modalTitle }}</h2>
         </div>
-      </template>
-
-      <!-- Content Section -->
-      <div class="page-content">
-        <slot />
       </div>
+    </template>
 
-      <!-- Footer Section -->
-      <template #footer>
-        <div v-if="showFooter" class="page-footer">
-          <NButton :disabled="submitLoading" size="large" @click="close">
-            {{ props.formType === 'view' ? '关闭' : cancelText }}
-          </NButton>
-          
-          <NButton
-            v-if="props.formType !== 'view'"
-            type="primary"
-            size="large"
-            :loading="submitLoading"
-            :disabled="submitDisabled"
-            @click="handleFormSubmit"
-          >
-            {{ submitText }}
-          </NButton>
-        </div>
-      </template>
-    </NDrawerContent>
-  </NDrawer>
+    <!-- Content Section -->
+    <div class="page-content">
+      <slot />
+    </div>
+
+    <template #action>
+      <div v-if="showFooter" class="page-footer">
+        <NButton :disabled="submitLoading" size="large" @click="close">
+          {{ props.formType === 'view' ? '关闭' : cancelText }}
+        </NButton>
+        
+        <NButton
+          v-if="props.formType !== 'view'"
+          type="primary"
+          size="large"
+          :loading="submitLoading"
+          :disabled="submitDisabled"
+          @click="handleFormSubmit"
+        >
+          {{ submitText }}
+        </NButton>
+      </div>
+    </template>
+  </NModal>
 </template>
 
 <style scoped lang="less">
-.page-header {
+.modal-header {
   .left-section {
     display: flex;
     align-items: center;
@@ -197,7 +194,7 @@ defineExpose({
 }
 
 .page-content {
-  height: 100%;
+  padding: 16px 0;
 }
 
 .page-footer {
@@ -210,4 +207,4 @@ defineExpose({
     padding: 0 44px;
   }
 }
-</style>
+</style> 
