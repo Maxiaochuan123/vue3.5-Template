@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, h } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
-import { NInput, NSelect, NFormItem, NTag } from 'naive-ui'
+import { NInput, NFormItem, NTag } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
@@ -122,14 +122,14 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        actions: ['edit', 'delete'],
         deleteConfig: {
           content: '确定要删除该角色吗？删除后不可恢复！',
         },
         onAction: (type, rowData) => {
           switch (type) {
             case 'edit':
-              handleRoleForm(rowData, 'edit')
+            case 'view':
+              handleRoleForm(rowData, type)
               break
             case 'delete':
               console.log('删除', rowData)

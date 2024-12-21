@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
-import { NModal, NButton, NIcon, type FormInst } from 'naive-ui'
+import { NModal, NButton, type FormInst } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
-import { ArrowBack } from '@vicons/ionicons5'
 
 type FormType = 'add' | 'edit' | 'view'
 
@@ -120,28 +119,14 @@ defineExpose({
     v-model:show="visible"
     :title="modalTitle"
     :style="{ width: typeof width === 'number' ? `${width}px` : width }"
-    preset="dialog"
-    :show-close="true"
+    preset="card"
   >
-    <template #header>
-      <div class="modal-header">
-        <div class="left-section">
-          <div class="back-button" @click="close">
-            <NIcon>
-              <ArrowBack />
-            </NIcon>
-          </div>
-          <h2 class="page-title">{{ modalTitle }}</h2>
-        </div>
-      </div>
-    </template>
-
     <!-- Content Section -->
     <div class="page-content">
       <slot />
     </div>
 
-    <template #action>
+    <template #footer>
       <div v-if="showFooter" class="page-footer">
         <NButton :disabled="submitLoading" size="large" @click="close">
           {{ props.formType === 'view' ? '关闭' : cancelText }}
@@ -163,39 +148,9 @@ defineExpose({
 </template>
 
 <style scoped lang="less">
-.modal-header {
-  .left-section {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    .back-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.06);
-      }
-    }
-
-    .page-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 500;
-      color: #333;
-    }
+  .page-content {
+    padding: 16px 0;
   }
-}
-
-.page-content {
-  padding: 16px 0;
-}
 
 .page-footer {
   width: 100%;
