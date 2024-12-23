@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/modules/auth'
-import { 
-  HomeOutline, 
+import {
+  HomeOutline,
   WalletOutline,
   MegaphoneOutline,
   CashOutline,
@@ -11,7 +11,8 @@ import {
   KeyOutline,
   PersonOutline,
   ShieldOutline,
-  DocumentLockOutline
+  DocumentLockOutline,
+  AppsOutline,
 } from '@vicons/ionicons5'
 
 const routes: RouteRecordRaw[] = [
@@ -134,6 +135,16 @@ const routes: RouteRecordRaw[] = [
             },
           },
         ],
+      },
+      {
+        path: 'robot-management',
+        name: 'robot-management',
+        component: () => import('@/views/robot-management/index.vue'),
+        meta: {
+          requiresAuth: true,
+          title: '机器人管理',
+          icon: AppsOutline,
+        },
       },
     ],
   },
