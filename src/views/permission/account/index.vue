@@ -5,8 +5,8 @@ import { NInput, NSelect, NFormItem, NSwitch } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
-import TableToolbarActions from '@/core/table/TableToolbarActions.vue'
-import TableActions from '@/core/table/TableActions.vue'
+import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
+import TableActions from '@/core/table/table-actions/index.vue'
 
 type TableDataRecord = Record<string, any>
 

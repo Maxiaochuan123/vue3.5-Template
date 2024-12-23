@@ -5,8 +5,8 @@ import { NInput, NDatePicker, NSelect, NFormItem } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
-import TableToolbarActions from '@/core/table/TableToolbarActions.vue'
-import TableActions from '@/core/table/TableActions.vue'
+import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
+import TableActions from '@/core/table/table-actions/index.vue'
 
 type TableDataRecord = Record<string, any>
 
@@ -27,17 +27,18 @@ const defaultSearchForm = reactive<SearchParams>({
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 
-// 票据类型选项
-const billTypeOptions = [
-  { label: '发票', value: 'invoice' },
-  { label: '收据', value: 'receipt' },
+// 发票类型选项
+const typeOptions = [
+  { label: '增值税专用发票', value: 'special' },
+  { label: '增值税普通发票', value: 'normal' },
+  { label: '电子发票', value: 'electronic' },
 ]
 
 // 状态选项
 const statusOptions = [
-  { label: '待处理', value: 'pending' },
-  { label: '已处理', value: 'processed' },
-  { label: '已作废', value: 'voided' },
+  { label: '已开具', value: 'issued' },
+  { label: '已作废', value: 'cancelled' },
+  { label: '已红冲', value: 'reversed' },
 ]
 
 // 搜索
@@ -55,10 +56,11 @@ const tableFetchApi = async (params: SearchParams): Promise<{ list: TableDataRec
         list: [
           {
             id: 1,
-            billNo: 'BL2024032001',
-            type: '发票',
+            invoiceNo: 'FP2024032001',
+            type: '增值税专用发票',
             amount: 1000.00,
-            status: '待处理',
+            status: '已开具',
+            issueDate: '2024-03-20',
             creator: 'admin',
             createTime: '2024-03-20 10:00:00',
           },
@@ -73,18 +75,23 @@ const tableFetchApi = async (params: SearchParams): Promise<{ list: TableDataRec
 // 表列定义
 const columns: DataTableColumns<TableDataRecord> = [
   {
-    title: '票据编号',
-    key: 'billNo',
+    title: '发票号码',
+    key: 'invoiceNo',
     width: 150,
   },
   {
-    title: '票据类型',
+    title: '发票类型',
     key: 'type',
-    width: 120,
+    width: 150,
   },
   {
     title: '金额',
     key: 'amount',
+    width: 120,
+  },
+  {
+    title: '开票日期',
+    key: 'issueDate',
     width: 120,
   },
   {
@@ -112,16 +119,18 @@ const columns: DataTableColumns<TableDataRecord> = [
         row,
         actions: ['view', 'edit', 'delete'],
         deleteConfig: {
-          content: '确定要删除该票据吗？删除后不可恢复！',
+          content: '确定要删除该发票吗？删除后不可恢复！',
         },
         onAction: (type, rowData) => {
           switch (type) {
             case 'view':
+              console.log('查看发票', rowData)
+              break
             case 'edit':
-              console.log(type, rowData)
+              console.log('编辑发票', rowData)
               break
             case 'delete':
-              console.log('删除', rowData)
+              console.log('删除发票', rowData)
               break
           }
         }
@@ -130,11 +139,15 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
 ]
 
-// 新增票据
+// 新增发票
 const handleAdd = () => {
-  console.log('新增票据')
+  console.log('新增发票')
 }
 
+// 导出发票
+const handleExport = () => {
+  console.log('导出发票')
+}
 </script>
 
 <template>
@@ -145,12 +158,12 @@ const handleAdd = () => {
           <NFormItem label="关键词" data-width="md">
             <NInput
               v-model:value="searchForm.keyword"
-              placeholder="请输入票据编号"
+              placeholder="请输入发票号码"
               clearable
             />
           </NFormItem>
 
-          <NFormItem label="创建时间" data-width="lg">
+          <NFormItem label="开票时间" data-width="lg">
             <NDatePicker
               v-model:value="searchForm.dateRange"
               type="daterange"
@@ -158,11 +171,11 @@ const handleAdd = () => {
             />
           </NFormItem>
 
-          <NFormItem label="票据类型">
+          <NFormItem label="发票类型">
             <NSelect
               v-model:value="searchForm.type"
-              :options="billTypeOptions"
-              placeholder="请选择票据类型"
+              :options="typeOptions"
+              placeholder="请选择发票类型"
               clearable
             />
           </NFormItem>
@@ -181,7 +194,7 @@ const handleAdd = () => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <TableToolbarActions :on-add="handleAdd" />
+      <TableToolbarActions :on-add="handleAdd" :on-export="handleExport" />
     </template>
 
     <!-- 表格区域 -->

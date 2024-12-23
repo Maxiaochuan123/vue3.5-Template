@@ -16,8 +16,8 @@ const service: AxiosInstance = axios.create({
 service.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore()
-    if (authStore.token) {
-      config.headers['Authorization'] = `${authStore.token}`
+    if (authStore.auth.token) {
+      config.headers['Authorization'] = `${authStore.auth.token}`
     }
     return config
   },

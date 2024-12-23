@@ -82,7 +82,7 @@ const handleFormSubmit = async () => {
       originalData: formInstance.formData,
       onSuccess: () => {
         props.refreshList?.()
-        close()
+        // close()
       }
     })
 

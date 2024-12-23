@@ -1,11 +1,31 @@
+<template>
+  <NSpace justify="center" align="center">
+    <template v-for="action in actions" :key="action">
+      <EditButton 
+        v-if="action === 'edit' && hasPermission('edit')" 
+        @click="handleAction('edit')" 
+      />
+      <ViewButton 
+        v-if="action === 'view' && hasPermission('view')" 
+        @click="handleAction('view')" 
+      />
+      <DeleteButton 
+        v-if="action === 'delete' && hasPermission('delete')" 
+        v-bind="deleteConfig"
+        @click="handleAction('delete')" 
+      />
+    </template>
+  </NSpace>
+</template>
+
 <script setup lang="ts">
-import { h } from 'vue'
-import { NSpace, NButton, NPopconfirm } from 'naive-ui'
+import { NSpace } from 'naive-ui'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/modules/auth'
-import { permissionMap } from '@/permissions'
+import EditButton from './components/EditButton.vue'
+import ViewButton from './components/ViewButton.vue'
+import DeleteButton from './components/DeleteButton.vue'
 
-// 表格行操作类型
 type RowActionType = 'edit' | 'view' | 'delete'
 
 interface Props {
@@ -30,25 +50,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const route = useRoute()
 const authStore = useAuthStore()
-
-// 按钮配置
-const buttonConfig: Record<RowActionType, { text: string; type: 'primary' | 'default' | 'error'; permission: RowActionType }> = {
-  edit: {
-    text: permissionMap.edit,
-    type: 'primary',
-    permission: 'edit'
-  },
-  view: {
-    text: permissionMap.view,
-    type: 'default',
-    permission: 'view'
-  },
-  delete: {
-    text: permissionMap.delete,
-    type: 'error',
-    permission: 'delete'
-  }
-} as const
 
 // 递归查找当前页面的权限配置
 const findCurrentPagePermission = (permissions: any[], routeMeta: any): any | null => {
@@ -94,50 +95,8 @@ const hasPermission = (actionType: RowActionType) => {
   return currentPermission.permissions?.includes(actionType)
 }
 
-const handleClick = (type: RowActionType) => {
+// 处理按钮点击
+const handleAction = (type: RowActionType) => {
   props.onAction?.(type, props.row)
 }
-
-const renderButton = (action: RowActionType) => {
-  // 检查权限，如果没有权限则不渲染按钮
-  if (!hasPermission(action)) {
-    return null
-  }
-
-  const button = h(
-    NButton,
-    {
-      size: 'small',
-      quaternary: true,
-      type: buttonConfig[action].type,
-      onClick: action !== 'delete' ? () => handleClick(action) : undefined,
-    },
-    { default: () => buttonConfig[action].text }
-  )
-
-  if (action === 'delete') {
-    return h(
-      NPopconfirm,
-      {
-        negativeText: props.deleteConfig?.cancelText,
-        positiveText: props.deleteConfig?.confirmText,
-        onPositiveClick: () => handleClick('delete')
-      },
-      {
-        default: () => props.deleteConfig?.content,
-        trigger: () => button
-      }
-    )
-  }
-
-  return button
-}
-</script>
-
-<template>
-  <NSpace justify="center" align="center">
-    <template v-for="action in actions" :key="action">
-      <component :is="renderButton(action)" v-if="renderButton(action)" />
-    </template>
-  </NSpace>
-</template> 
+</script> 

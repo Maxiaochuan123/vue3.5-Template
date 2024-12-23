@@ -1,6 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/modules/auth'
+import { 
+  HomeOutline, 
+  WalletOutline,
+  MegaphoneOutline,
+  CashOutline,
+  DocumentTextOutline,
+  ReceiptOutline,
+  KeyOutline,
+  PersonOutline,
+  ShieldOutline,
+  DocumentLockOutline
+} from '@vicons/ionicons5'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -27,6 +39,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '首页',
+          icon: HomeOutline,
         },
       },
       {
@@ -36,6 +49,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '账户权益',
+          icon: WalletOutline,
         },
       },
       {
@@ -45,6 +59,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '广告管理',
+          icon: MegaphoneOutline,
         },
       },
       {
@@ -53,16 +68,29 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '财务管理',
+          icon: CashOutline,
         },
         children: [
           {
             path: 'bill-management',
             name: 'bill-management',
-            component: () => import('@/views/financial/bill-management/index.vue'),
             meta: {
               requiresAuth: true,
               title: '票据管理',
+              icon: DocumentTextOutline,
             },
+            children: [
+              {
+                path: 'invoice',
+                name: 'invoice',
+                component: () => import('@/views/financial/bill-management/invoice/index.vue'),
+                meta: {
+                  requiresAuth: true,
+                  title: '发票',
+                  icon: ReceiptOutline,
+                },
+              },
+            ],
           },
         ],
       },
@@ -72,6 +100,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '权限管理',
+          icon: KeyOutline,
         },
         children: [
           {
@@ -81,6 +110,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               requiresAuth: true,
               title: '账号管理',
+              icon: PersonOutline,
             },
           },
           {
@@ -90,6 +120,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               requiresAuth: true,
               title: '角色管理',
+              icon: ShieldOutline,
             },
           },
           {
@@ -99,6 +130,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               requiresAuth: true,
               title: '系统日志',
+              icon: DocumentLockOutline,
             },
           },
         ],

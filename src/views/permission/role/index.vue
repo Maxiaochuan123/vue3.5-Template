@@ -5,8 +5,8 @@ import { NInput, NFormItem, NTag } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
-import TableToolbarActions from '@/core/table/TableToolbarActions.vue'
-import TableActions from '@/core/table/TableActions.vue'
+import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
+import TableActions from '@/core/table/table-actions/index.vue'
 import DialogForm from '@/core/form/DialogForm.vue'
 import RoleForm, { type FormState } from './components/RoleForm.vue'
 
@@ -44,17 +44,90 @@ const tableFetchApi = async (params: SearchParams): Promise<{ list: TableDataRec
             name: '超级管理员',
             code: 'super_admin',
             description: '系统最高权限角色',
-            permissions: ['所有权限'],
+            permissions: [
+              {
+                  "id": "1",
+                  "name": "首页",
+                  "isChecked": false,
+                  "permissions": [],
+                  "children": []
+              },
+              {
+                  "id": "2",
+                  "name": "账户权益",
+                  "isChecked": false,
+                  "permissions": [],
+                  "children": []
+              },
+              {
+                  "id": "3",
+                  "name": "广告管理",
+                  "isChecked": true,
+                  "permissions": [
+                      "edit",
+                      "view"
+                  ],
+                  "children": []
+              },
+              {
+                  "id": "4",
+                  "name": "财务管理",
+                  "isChecked": true,
+                  "permissions": [],
+                  "children": [
+                      {
+                          "id": "4-1",
+                          "name": "票据管理",
+                          "isChecked": true,
+                          "permissions": [
+                              "delete"
+                          ],
+                          "children": [{
+                            "id": "4-1-1",
+                            "name": "发票",
+                            "isChecked": true,
+                            "permissions": [
+                              "delete",
+                              "view"
+                            ],
+                            "children": []
+                          }]
+                      }
+                  ]
+              },
+              {
+                  "id": "5",
+                  "name": "权限管理",
+                  "isChecked": true,
+                  "permissions": [],
+                  "children": [
+                      {
+                          "id": "5-1",
+                          "name": "账号管理",
+                          "isChecked": false,
+                          "permissions": [
+                          ],
+                          "children": []
+                      },
+                      {
+                          "id": "5-2",
+                          "name": "角色管理",
+                          "isChecked": true,
+                          "permissions": [],
+                          "children": []
+                      },
+                      {
+                          "id": "5-3",
+                          "name": "系统日志",
+                          "isChecked": true,
+                          "permissions": [],
+                          "children": []
+                      }
+                  ]
+              }
+            ],
             createTime: '2024-03-20 10:00:00',
-          },
-          {
-            id: 2,
-            name: '运营',
-            code: 'operator',
-            description: '运营人员角色',
-            permissions: ['广告管理', '内容管理'],
-            createTime: '2024-03-20 10:00:00',
-          },
+          }
         ],
         total: 2,
       })
@@ -71,8 +144,13 @@ const refreshList = () => {
 
 // 编辑处理
 const handleRoleForm = (row: Record<string, any>, type: 'edit' | 'view') => {
+  console.log(row.permissions);
+  
   formType.value = type
-  editData.value = { ...row }
+  editData.value = {
+    name: row.name,
+    permissions: row.permissions || []
+  }
   dialogRef.value?.open()
 }
 
@@ -92,22 +170,6 @@ const columns: DataTableColumns<TableDataRecord> = [
     title: '描述',
     key: 'description',
     width: 200,
-  },
-  {
-    title: '权限',
-    key: 'permissions',
-    width: 300,
-    render: (row) => {
-      return row.permissions.map((perm: string) => {
-        return h(NTag, {
-          style: {
-            marginRight: '6px'
-          },
-          type: 'info',
-          bordered: false
-        }, { default: () => perm })
-      })
-    }
   },
   {
     title: '创建时间',
@@ -144,14 +206,17 @@ const columns: DataTableColumns<TableDataRecord> = [
 // 新增角色
 const handleAdd = () => {
   formType.value = 'add'
-  editData.value = {}
+  editData.value = {
+    name: '',
+    permissions: []
+  }
   dialogRef.value?.open()
 }
 
 // 表单提交
 const submitApi = async (formData: FormState) => {
-  console.log('提交的数据:', formData)
-  return Promise.resolve()
+  console.log('提交的数据:', formData.permissions)
+  return Promise.resolve(formData)
 }
 </script>
 
@@ -184,12 +249,14 @@ const submitApi = async (formData: FormState) => {
     <!-- 新增/编辑角色 -->
     <DialogForm
       ref="dialogRef"
-      :form-ref="formRef?.formRef"
+      :width="700"
+      :form-ref="formRef"
       :formType="formType"
       :submit-api="submitApi"
       :refresh-list="refreshList"
       :extra-fields="['id']"
       :edit-data="editData"
+      title="角色"
     >
       <RoleForm ref="formRef" />
     </DialogForm>

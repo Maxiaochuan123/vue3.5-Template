@@ -1,18 +1,31 @@
-import { post } from '@/api/server'
+import { post, get } from '@/api/server'
+import type { ApiResult } from '@/api/types'
 
-interface LoginParams {
+export interface LoginParams {
   userName: string
   password: string
 }
 
-interface LoginResponse {
-  code: number
-  data: string // token字符串
-  msg: string
+export type LoginData = string
+
+export interface Permission {
+  id: string
+  name: string
+  isChecked: boolean
+  permissions: string[]
+  children: Permission[]
 }
 
+export type LoginResponse = ApiResult<LoginData>
+export type PermissionResponse = ApiResult<Permission[]>
+
 export const authApi = {
-  login(data: LoginParams) {
-    return post<LoginResponse>('/common/v1/admin/login', data)
+  async login(data: LoginParams): Promise<LoginResponse> {
+    const response = await post<LoginData>('/common/v1/admin/login', data)
+    return response as LoginResponse
   },
+  async getPermissions(): Promise<PermissionResponse> {
+    const response = await get<Permission[]>('/common/v1/admin/permissions')
+    return response as PermissionResponse
+  }
 }
