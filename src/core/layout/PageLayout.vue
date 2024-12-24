@@ -137,14 +137,14 @@
     // })
     
     // 如果没有找到权限配置或未被选中，则不显示
-    // if (!permission || !permission.isChecked) {
-    //   console.log('权限检查未通过:', {
-    //     path: route.path,
-    //     title: meta.title,
-    //     permission
-    //   })
-    //   return null
-    // }
+    if (!permission || !permission.isChecked) {
+      console.log('权限检查未通过:', {
+        path: route.path,
+        title: meta.title,
+        permission
+      })
+      return null
+    }
 
     const currentPath = parentPath + (route.path.startsWith('/') ? route.path : '/' + route.path)
     

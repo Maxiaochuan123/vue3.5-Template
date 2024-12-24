@@ -174,14 +174,14 @@ export const useAuthStore = defineStore('auth', () => {
               id: '5-1',
               name: '账号管理',
               isChecked: true,
-              permissions: [],
+              permissions: ['add', 'edit', 'status', 'delete', 'view'],
               children: [],
             },
             {
               id: '5-2',
               name: '角色管理',
               isChecked: true,
-              permissions: [],
+              permissions: ['add', 'edit', 'status', 'view'],
               children: [],
             },
             {
@@ -196,7 +196,7 @@ export const useAuthStore = defineStore('auth', () => {
         {
           id: '6',
           name: '机器人管理',
-          isChecked: true,
+          isChecked: false,
           permissions: ['view', 'add', 'edit', 'delete'],
           children: [],
         },

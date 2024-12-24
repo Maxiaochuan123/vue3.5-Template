@@ -14,7 +14,8 @@ interface CustomFormInst {
 
 interface Props {
   formRef?: FormInst | CustomFormInst | null
-  submitApi: (...args: any[]) => Promise<any>
+  addApi?: (...args: any[]) => Promise<any>
+  editApi: (...args: any[]) => Promise<any>
   formType?: FormType
   refreshList?: () => void
   extraFields?: string[]
@@ -71,23 +72,21 @@ const handleFormSubmit = async () => {
   
   try {
     const formInstance = props.formRef as CustomFormInst
-    const success = await handleSubmit({
-      submitApi: props.submitApi,
-      formRef: props.formRef,
-      formData: formInstance.formData,
-      formType: currentFormType.value,
-      initialData: formInstance.initialData,
-      extraFields: props.extraFields,
-      originalData: formInstance.formData,
-      onSuccess: () => {
-        props.refreshList?.()
-        close()
-      }
-    })
-
-    if (!success) {
-      submitDisabled.value = false
+    if (currentFormType.value !== 'add' && currentFormType.value !== 'edit') {
+      console.error('Invalid form type for submission')
+      return
     }
+    
+    const api = currentFormType.value === 'edit' ? props.editApi : props.addApi
+    
+    if (!api) {
+      console.error(`${currentFormType.value === 'edit' ? 'editApi' : 'addApi'} is not provided`)
+      return
+    }
+
+    await api(formInstance.formData)
+    props.refreshList?.()
+    close()
   } catch (error) {
     submitDisabled.value = false
     console.error('Form submission error:', error)

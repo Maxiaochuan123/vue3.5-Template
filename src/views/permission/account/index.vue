@@ -7,6 +7,7 @@ import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
+import { statusOptions } from '@/enum/options'
 
 type TableDataRecord = Record<string, any>
 
@@ -24,12 +25,6 @@ const defaultSearchForm = reactive<SearchParams>({
 })
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
-
-// 状态选项
-const statusOptions = [
-  { label: '启用', value: 'active' },
-  { label: '禁用', value: 'inactive' },
-]
 
 // 角色选项
 const roleOptions = [

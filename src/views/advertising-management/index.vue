@@ -7,7 +7,7 @@ import Table from '@/core/table/Table.vue'
 import DrawerForm from '@/core/form/DrawerForm.vue'
 import TableToolbarActions from '@/core/table/TableToolbarActions.vue'
 import TableActions from '@/core/table/TableActions.vue'
-import { advertisementTypeOptions, statusOptions, getOptionLabel } from '@/enum/options'
+import { advertisementTypeOptions, auditStatusOptions, getOptionLabel } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
 import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
 
@@ -201,7 +201,7 @@ const submitApi = async (formData: FormState) => {
           <NFormItem label="审核状态" data-width="sm">
             <NSelect
               v-model:value="searchForm.status"
-              :options="statusOptions"
+              :options="auditStatusOptions"
               placeholder="请选择审核状态"
               clearable
             />

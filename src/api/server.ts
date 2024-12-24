@@ -3,6 +3,12 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { message } from '@/utils/message'
 import { useAuthStore } from '@/stores/modules/auth'
 
+export interface ApiResult<T = any> {
+  code: number
+  msg: string
+  data: T
+}
+
 // 创建 axios 实例
 const service: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -34,8 +40,8 @@ service.interceptors.response.use(
     if (res.code === 200) {
       return res
     } else {
-      message.error(res.message || 'Error')
-      return Promise.reject(new Error(res.message || 'Error'))
+      message.error(res.msg || 'Error')
+      return Promise.reject(new Error(res.msg || 'Error'))
     }
   },
   (error) => {
@@ -44,47 +50,45 @@ service.interceptors.response.use(
   },
 )
 
-export interface ApiResult<T> {
-  code: number
-  msg: string
-  data: T
-}
-
 /** 请求封装 */
-export async function get<T>(
+export async function get<T = any>(
   url: string,
   params?: any,
   config?: AxiosRequestConfig,
 ): Promise<ApiResult<T>> {
-  const response = await service.get<ApiResult<T>>(url, { ...config, params })
-  return response
+  return service.get(url, { ...config, params })
 }
 
-export async function post<T>(
+export async function post<T = any>(
   url: string,
   data?: any,
   config?: AxiosRequestConfig,
 ): Promise<ApiResult<T>> {
-  const response = await service.post<ApiResult<T>>(url, data, config)
-  return response
+  return service.post(url, data, config)
 }
 
-export async function put<T>(
+export async function put<T = any>(
   url: string,
   data?: any,
   config?: AxiosRequestConfig,
 ): Promise<ApiResult<T>> {
-  const response = await service.put<ApiResult<T>>(url, data, config)
-  return response
+  return service.put(url, data, config)
 }
 
-export async function del<T>(
+export async function patch<T = any>(
+  url: string,
+  data?: any,
+  config?: AxiosRequestConfig,
+): Promise<ApiResult<T>> {
+  return service.patch(url, data, config)
+}
+
+export async function del<T = any>(
   url: string,
   params?: any,
   config?: AxiosRequestConfig,
 ): Promise<ApiResult<T>> {
-  const response = await service.delete<ApiResult<T>>(url, { ...config, params })
-  return response
+  return service.delete(url, { ...config, params })
 }
 
 export default service

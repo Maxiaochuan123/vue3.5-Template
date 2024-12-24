@@ -29,6 +29,14 @@ export type AdvertisementType = ExtractOptionsValue<typeof advertisementTypeOpti
 
 // 状态选项
 export const statusOptions = [
+  { label: '通过', value: 1 },
+  { label: '不通过', value: 2 },
+]
+// 导出状态类型
+export type StatusType = ExtractOptionsValue<typeof statusOptions>
+
+// 审核状态选项
+export const auditStatusOptions = [
   { label: '审核通过', value: 'passed' },
   { label: '审核中', value: 'pending' },
   { label: '审核失败', value: 'failed' },

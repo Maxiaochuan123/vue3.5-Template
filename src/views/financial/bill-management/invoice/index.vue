@@ -35,7 +35,7 @@ const typeOptions = [
 ]
 
 // 状态选项
-const statusOptions = [
+const auditStatusOptions = [
   { label: '已开具', value: 'issued' },
   { label: '已作废', value: 'cancelled' },
   { label: '已红冲', value: 'reversed' },
@@ -183,7 +183,7 @@ const handleExport = () => {
           <NFormItem label="状态">
             <NSelect
               v-model:value="searchForm.status"
-              :options="statusOptions"
+              :options="auditStatusOptions"
               placeholder="请选择状态"
               clearable
             />

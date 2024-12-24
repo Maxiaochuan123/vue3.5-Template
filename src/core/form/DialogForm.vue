@@ -13,7 +13,8 @@ interface CustomFormInst {
 
 interface Props {
   formRef?: FormInst | CustomFormInst | null
-  submitApi: (...args: any[]) => Promise<any>
+  addApi?: (...args: any[]) => Promise<any>
+  editApi: (...args: any[]) => Promise<any>
   formType?: FormType
   refreshList?: () => void
   extraFields?: string[]
@@ -72,8 +73,20 @@ const handleFormSubmit = async () => {
   
   try {
     const formInstance = props.formRef as CustomFormInst
+    if (currentFormType.value !== 'add' && currentFormType.value !== 'edit') {
+      console.error('Invalid form type for submission')
+      return
+    }
+    
+    const api = currentFormType.value === 'edit' ? props.editApi : props.addApi
+    
+    if (!api) {
+      console.error(`${currentFormType.value === 'edit' ? 'editApi' : 'addApi'} is not provided`)
+      return
+    }
+
     const success = await handleSubmit({
-      submitApi: props.submitApi,
+      submitApi: api,
       formRef: props.formRef,
       formData: formInstance.formData,
       formType: currentFormType.value,
@@ -149,7 +162,7 @@ defineExpose({
 
 <style scoped lang="less">
   .page-content {
-    padding: 16px 0;
+    padding-top: 16px;
   }
 
 .page-footer {
@@ -158,8 +171,8 @@ defineExpose({
   justify-content: center;
   gap: 20px;
 
-  .n-button {
-    padding: 0 44px;
-  }
+  // .n-button {
+  //   padding: 0 44px;
+  // }
 }
 </style> 

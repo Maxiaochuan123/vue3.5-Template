@@ -4,6 +4,7 @@ import type { DataTableColumns, FormInst } from 'naive-ui'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import TablePageLayout from '@/core/table/TableLayout.vue'
+import { auditStatusOptions } from '@/enum/options'
 
 type TableDataRecord = Record<string, any>
 
@@ -27,13 +28,6 @@ const advertisementTypeOptions = [
   { label: '充值', value: 'deposit' },
   { label: '提现', value: 'withdraw' },
   { label: '赠送', value: 'bonus' },
-]
-
-// 状态选项
-const statusOptions = [
-  { label: '成功', value: 'success' },
-  { label: '失败', value: 'failed' },
-  { label: '处理中', value: 'processing' },
 ]
 
 // 表列定义
@@ -233,7 +227,7 @@ const tableFetchApi = async ( params: SearchParams ): Promise<{ list: TableDataR
           <NFormItem label="变动状态">
             <NSelect
               v-model:value="searchForm.status"
-              :options="statusOptions"
+              :options="auditStatusOptions"
               clearable
             />
           </NFormItem>

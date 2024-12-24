@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, h } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
-import { NInput, NFormItem, NTag } from 'naive-ui'
+import { NInput, NFormItem, NTag, NSwitch } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
@@ -9,16 +9,18 @@ import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
 import DialogForm from '@/core/form/DialogForm.vue'
 import RoleForm, { type FormState } from './components/RoleForm.vue'
+import { roleApi } from '@/api/modules/role'
+import type { Role } from '@/api/modules/role'
 
-type TableDataRecord = Record<string, any>
+type TableDataRecord = Role
 
 interface SearchParams {
-  keyword: string | null
+  name: string | null
 }
 
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<SearchParams>({
-  keyword: null,
+  name: null,
 })
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
@@ -34,105 +36,15 @@ const handleSearch = (values: SearchParams) => {
 
 // 定义获取数据的方法
 const tableFetchApi = async (params: SearchParams): Promise<{ list: TableDataRecord[]; total: number }> => {
-  console.log('搜索参数:', params)
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        list: [
-          {
-            id: 1,
-            name: '超级管理员',
-            code: 'super_admin',
-            description: '系统最高权限角色',
-            permissions: [
-              {
-                  "id": "1",
-                  "name": "首页",
-                  "isChecked": false,
-                  "permissions": [],
-                  "children": []
-              },
-              {
-                  "id": "2",
-                  "name": "账户权益",
-                  "isChecked": false,
-                  "permissions": [],
-                  "children": []
-              },
-              {
-                  "id": "3",
-                  "name": "广告管理",
-                  "isChecked": true,
-                  "permissions": [
-                      "edit",
-                      "view"
-                  ],
-                  "children": []
-              },
-              {
-                  "id": "4",
-                  "name": "财务管理",
-                  "isChecked": true,
-                  "permissions": [],
-                  "children": [
-                      {
-                          "id": "4-1",
-                          "name": "票据管理",
-                          "isChecked": true,
-                          "permissions": [
-                              "delete"
-                          ],
-                          "children": [{
-                            "id": "4-1-1",
-                            "name": "发票",
-                            "isChecked": true,
-                            "permissions": [
-                              "delete",
-                              "view"
-                            ],
-                            "children": []
-                          }]
-                      }
-                  ]
-              },
-              {
-                  "id": "5",
-                  "name": "权限管理",
-                  "isChecked": true,
-                  "permissions": [],
-                  "children": [
-                      {
-                          "id": "5-1",
-                          "name": "账号管理",
-                          "isChecked": false,
-                          "permissions": [
-                          ],
-                          "children": []
-                      },
-                      {
-                          "id": "5-2",
-                          "name": "角色管理",
-                          "isChecked": true,
-                          "permissions": [],
-                          "children": []
-                      },
-                      {
-                          "id": "5-3",
-                          "name": "系统日志",
-                          "isChecked": true,
-                          "permissions": [],
-                          "children": []
-                      }
-                  ]
-              }
-            ],
-            createTime: '2024-03-20 10:00:00',
-          }
-        ],
-        total: 2,
-      })
-    }, 1000)
+  const res = await roleApi.getRoleList({
+    name: params.name || undefined,
+    pageIndex: 1,
+    pageSize: 10
   })
+  return {
+    list: res.data.records,
+    total: res.data.total
+  }
 }
 
 // 刷新列表
@@ -143,15 +55,25 @@ const refreshList = () => {
 }
 
 // 编辑处理
-const handleRoleForm = (row: Record<string, any>, type: 'edit' | 'view') => {
-  console.log(row.permissions);
-  
+const handleRoleForm = (row: TableDataRecord, type: 'edit' | 'view') => {
   formType.value = type
   editData.value = {
+    id: row.id,
     name: row.name,
-    permissions: row.permissions || []
+    permissions: row.menuTree
   }
   dialogRef.value?.open()
+}
+
+// 处理状态切换
+const handleStatusChange = async (row: TableDataRecord, value: boolean) => {
+  try {
+    await roleApi.updateRoleStatus(row.id, value ? 1 : 2)
+    refreshList()
+  } catch (error) {
+    // 状态切换失败，刷新列表恢复状态
+    refreshList()
+  }
 }
 
 // 表列定义
@@ -162,14 +84,20 @@ const columns: DataTableColumns<TableDataRecord> = [
     width: 150,
   },
   {
-    title: '角色编码',
-    key: 'code',
+    title: '创建人',
+    key: 'username',
     width: 150,
   },
   {
-    title: '描述',
-    key: 'description',
-    width: 200,
+    title: '状态',
+    key: 'status',
+    width: 100,
+    render: (row) => {
+      return h(NSwitch, {
+        value: row.status === 1,
+        onUpdateValue: (value) => handleStatusChange(row, value)
+      })
+    }
   },
   {
     title: '创建时间',
@@ -183,18 +111,18 @@ const columns: DataTableColumns<TableDataRecord> = [
     fixed: 'right',
     render: (row: TableDataRecord) => {
       return h(TableActions, {
-        row,
+        row: row as any,
         deleteConfig: {
           content: '确定要删除该角色吗？删除后不可恢复！',
         },
-        onAction: (type, rowData) => {
+        onAction: (type, row) => {
           switch (type) {
             case 'edit':
             case 'view':
-              handleRoleForm(rowData, type)
+              handleRoleForm(row, type)
               break
             case 'delete':
-              console.log('删除', rowData)
+              console.log('删除', row)
               break
           }
         }
@@ -212,12 +140,6 @@ const handleAdd = () => {
   }
   dialogRef.value?.open()
 }
-
-// 表单提交
-const submitApi = async (formData: FormState) => {
-  console.log('提交的数据:', formData.permissions)
-  return Promise.resolve(formData)
-}
 </script>
 
 <template>
@@ -227,8 +149,8 @@ const submitApi = async (formData: FormState) => {
         <template #default="{ searchForm }">
           <NFormItem label="关键词" data-width="md">
             <NInput
-              v-model:value="searchForm.keyword"
-              placeholder="请输入角色名称/编码"
+              v-model:value="searchForm.name"
+              placeholder="请输入角色名称"
               clearable
             />
           </NFormItem>
@@ -245,14 +167,15 @@ const submitApi = async (formData: FormState) => {
     <template #table>
       <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
     </template>
-
+    
     <!-- 新增/编辑角色 -->
     <DialogForm
       ref="dialogRef"
-      :width="700"
+      :width="740"
       :form-ref="formRef"
       :formType="formType"
-      :submit-api="submitApi"
+      :add-api="roleApi.createRole"
+      :edit-api="roleApi.updateRole"
       :refresh-list="refreshList"
       :extra-fields="['id']"
       :edit-data="editData"
