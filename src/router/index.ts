@@ -145,6 +145,18 @@ const routes: RouteRecordRaw[] = [
           title: '机器人管理',
           icon: AppsOutline,
         },
+        children: [
+          {
+            path: ':id',
+            name: 'robot-detail',
+            component: () => import('@/views/robot-management/detail/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '机器人详情',
+              hideInMenu: true,
+            },
+          },
+        ],
       },
     ],
   },

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, inject, toRef } from 'vue'
-import type { FormInst } from 'naive-ui'
+import { ref, computed, inject, toRef, type Ref } from 'vue'
+import type { FormInst, FormValidationError } from 'naive-ui'
 import { useFormData } from '@/core/form/hooks/useFormData'
 import { NForm, NFormItem, NInput, NInputNumber, NRadioGroup, NRadio } from 'naive-ui'
 
@@ -51,7 +51,14 @@ defineExpose({
   formRef,
   formData,
   initialData,
-  validate: () => formRef.value?.validate(),
+  validate: async () => {
+    try {
+      await formRef.value?.validate()
+      return Promise.resolve()
+    } catch (errors) {
+      return Promise.reject(errors as FormValidationError[])
+    }
+  },
 })
 
 const isViewMode = computed(() => formType.value === 'view')

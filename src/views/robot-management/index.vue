@@ -1,5 +1,9 @@
 <template>
-  <div class="robot-management">
+  <!-- 如果有子路由，显示子路由内容 -->
+  <router-view v-if="$route.name === 'robot-detail'" />
+
+  <!-- 否则显示机器人列表 -->
+  <div v-else class="robot-management">
     <n-card>
       <n-tabs type="segment">
         <n-tab-pane name="all" tab="全部账号">
@@ -91,11 +95,12 @@
     <!-- 机器人表单对话框 -->
     <DialogForm
       ref="dialogFormRef"
-      :form-ref="formRef"
-      :submit-api="submitApi"
+      :form-ref="robotFormRef"
+      :add-api="submitApi"
+      :edit-api="submitApi"
       :refresh-list="refreshList"
     >
-      <RobotForm ref="formRef" :edit-data="editData" />
+      <RobotForm ref="robotFormRef" :edit-data="editData" />
     </DialogForm>
   </div>
 </template>
@@ -104,16 +109,17 @@
 import { ref } from 'vue'
 import { PersonOutline, AddOutline } from '@vicons/ionicons5'
 import { useMessage } from 'naive-ui'
+import { useRouter } from 'vue-router'
 import { NCard, NTabs, NTabPane, NAvatar, NIcon, NTag, NButton, NModal } from 'naive-ui'
 import RobotForm from './components/RobotForm.vue'
 import DialogForm from '@/core/form/DialogForm.vue'
-import type { FormInst } from 'naive-ui'
 import type { FormState } from './components/RobotForm.vue'
 import QrcodeVue from 'qrcode.vue'
 
 const message = useMessage()
+const router = useRouter()
 const showQrCodeModal = ref(false)
-const formRef = ref<FormInst | null>(null)
+const robotFormRef = ref<InstanceType<typeof RobotForm> | null>(null)
 const dialogFormRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const editData = ref<Partial<FormState>>()
 
@@ -164,7 +170,7 @@ const robots = ref<Robot[]>([
 ])
 
 const showTaskList = (robot: Robot) => {
-  message.info(`显示 ${robot.name} 的任务列表`)
+  router.push(`/robot-management/${robot.id}`)
 }
 
 const handleAddRobot = () => {
@@ -186,7 +192,7 @@ const refreshList = () => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .robot-management {
   padding: 16px;
 }
