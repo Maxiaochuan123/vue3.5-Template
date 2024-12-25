@@ -3,89 +3,126 @@
     <template #search>
       <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
         <template #default="{ searchForm }">
-          <NFormItem label="任务类型" data-width="sm">
-            <NSelect
-              v-model:value="searchForm.type"
-              :options="taskTypeOptions"
-              placeholder="请选择任务类型"
-              clearable
-            />
-          </NFormItem>
-
-          <NFormItem label="执行状态" data-width="sm">
-            <NSelect
-              v-model:value="searchForm.status"
-              :options="taskStatusOptions"
-              placeholder="请选择执行状态"
-              clearable
-            />
-          </NFormItem>
-
-          <NFormItem label="执行时间" data-width="lg">
-            <NDatePicker v-model:value="searchForm.dateRange" type="datetimerange" clearable />
+          <NFormItem label="任务名称" data-width="md">
+            <NInput v-model:value="searchForm.keyword" placeholder="请输入" clearable />
           </NFormItem>
         </template>
       </SearchForm>
     </template>
 
+    <!-- 工具栏 -->
+    <template #toolbar>
+      <NSpace>
+        <NButton type="primary" @click="handleAddTask">添加任务</NButton>
+      </NSpace>
+    </template>
+
     <!-- 表格 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
+      <div class="table-container">
+        <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" :scroll-x="1140" />
+      </div>
     </template>
   </TablePageLayout>
+
+  <!-- 添加任务弹窗 -->
+  <NModal v-model:show="showAddModal" preset="dialog" title="添加任务">
+    <NForm>
+      <NFormItem label="选择任务">
+        <NSelect v-model:value="selectedTask" :options="taskOptions" placeholder="请选择任务" />
+      </NFormItem>
+    </NForm>
+    <template #action>
+      <NSpace>
+        <NButton @click="showAddModal = false">取消</NButton>
+        <NButton type="primary" @click="handleConfirmAdd">确认</NButton>
+      </NSpace>
+    </template>
+  </NModal>
 </template>
+
+<style scoped>
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+</style>
 
 <script setup lang="ts">
 import { h, ref, reactive } from 'vue'
-import { NButton, NTag, type DataTableColumns } from 'naive-ui'
+import {
+  NButton,
+  NTag,
+  NSpace,
+  NModal,
+  NForm,
+  NFormItem,
+  NSelect,
+  type DataTableColumns,
+  useMessage,
+} from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 
 interface TableDataRecord {
   id: number
-  type: 'sync' | 'message' | 'friend' | 'group'
-  target: string
-  status: 'pending' | 'running' | 'success' | 'failed'
-  startTime: string
-  endTime: string
-  result: string
+  name: string
+  status: '未开始' | '进行中' | '已完成'
+  type: string
+  createTime: string
+  updateTime: string
+  creator: string
 }
 
 interface SearchParams {
-  type: string | null
-  status: string | null
-  dateRange: [number, number] | null
+  keyword: string | null
 }
 
-// 任务类型选项
-const taskTypeOptions = [
-  { label: '同步任务', value: 'sync' },
-  { label: '消息任务', value: 'message' },
-  { label: '好友任务', value: 'friend' },
-  { label: '群任务', value: 'group' },
-]
-
-// 任务状态选项
-const taskStatusOptions = [
-  { label: '待执行', value: 'pending' },
-  { label: '执行中', value: 'running' },
-  { label: '执行成功', value: 'success' },
-  { label: '执行失败', value: 'failed' },
-]
+const message = useMessage()
 
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<SearchParams>({
-  type: null,
-  status: null,
-  dateRange: null,
+  keyword: null,
 })
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
+const showAddModal = ref(false)
+const selectedTask = ref<string | null>(null)
+
+// 任务选项
+const taskOptions = [
+  { label: '获取好友列表', value: 'getFriendList' },
+  { label: '获取好友圈信息', value: 'getFriendCircle' },
+  { label: '心跳', value: 'heartbeat' },
+  { label: '获取指定好友朋友圈', value: 'getSpecificFriendCircle' },
+]
 
 // 搜索
 const handleSearch = (values: SearchParams) => {
   tableRef.value?.loadData(values)
+}
+
+// 添加任务
+const handleAddTask = () => {
+  showAddModal.value = true
+}
+
+// 确认添加任务
+const handleConfirmAdd = () => {
+  if (!selectedTask.value) {
+    message.warning('请选择任务类型')
+    return
+  }
+  console.log('添加任务:', selectedTask.value)
+  showAddModal.value = false
+  selectedTask.value = null
+}
+
+// 删除任务
+const handleDelete = (row: TableDataRecord) => {
+  console.log('删除任务:', row.id)
 }
 
 // 定义获取数据的方法
@@ -99,25 +136,25 @@ const tableFetchApi = async (
       resolve({
         list: [
           {
-            id: 1,
-            type: 'sync',
-            target: '好友列表同步',
-            status: 'success',
-            startTime: '2024-03-15 10:30:00',
-            endTime: '2024-03-15 10:31:00',
-            result: '同步成功，更新 50 条记录',
+            id: 4,
+            name: '获取好友列表',
+            status: '未开始',
+            type: '获取好友列表',
+            createTime: '2024-12-12 10:30:30',
+            updateTime: '2024-12-12 10:30:30',
+            creator: '张三\n17761234567',
           },
           {
-            id: 2,
-            type: 'message',
-            target: '群发消息',
-            status: 'running',
-            startTime: '2024-03-15 10:35:00',
-            endTime: '',
-            result: '正在执行...',
+            id: 5,
+            name: '获取朋友圈信息',
+            status: '进行中',
+            type: '获取朋友圈信息',
+            createTime: '2024-12-12 10:30:30',
+            updateTime: '2024-12-12 10:30:30',
+            creator: '张三\n17761234567',
           },
         ],
-        total: 100,
+        total: 2,
       })
     }, 500)
   })
@@ -126,62 +163,58 @@ const tableFetchApi = async (
 // 表格列定义
 const columns: DataTableColumns<TableDataRecord> = [
   {
+    title: '编号',
+    key: 'id',
+    width: 80,
+    align: 'center',
+  },
+  {
+    title: '任务名称',
+    key: 'name',
+    width: 200,
+  },
+  {
+    title: '任务状态',
+    key: 'status',
+    width: 100,
+    align: 'center',
+  },
+  {
     title: '任务类型',
     key: 'type',
-    width: 120,
-    render: (row) => {
-      const typeMap = {
-        sync: { type: 'info', text: '同步任务' },
-        message: { type: 'success', text: '消息任务' },
-        friend: { type: 'warning', text: '好友任务' },
-        group: { type: 'error', text: '群任务' },
-      }
-      const type = typeMap[row.type]
-      return h(
-        NTag,
-        { type: type.type as 'info' | 'success' | 'warning' | 'error' },
-        { default: () => type.text },
-      )
-    },
+    width: 150,
   },
   {
-    title: '任务目标',
-    key: 'target',
-    width: 200,
-  },
-  {
-    title: '执行状态',
-    key: 'status',
-    width: 120,
-    render: (row) => {
-      const statusMap = {
-        pending: { type: 'default', text: '待执行' },
-        running: { type: 'info', text: '执行中' },
-        success: { type: 'success', text: '执行成功' },
-        failed: { type: 'error', text: '执行失败' },
-      }
-      const status = statusMap[row.status]
-      return h(
-        NTag,
-        { type: status.type as 'default' | 'info' | 'success' | 'error' },
-        { default: () => status.text },
-      )
-    },
-  },
-  {
-    title: '开始时间',
-    key: 'startTime',
+    title: '创建时间',
+    key: 'createTime',
     width: 180,
   },
   {
-    title: '结束时间',
-    key: 'endTime',
+    title: '更新时间',
+    key: 'updateTime',
     width: 180,
   },
   {
-    title: '执行结果',
-    key: 'result',
-    width: 200,
+    title: '创建人',
+    key: 'creator',
+    width: 150,
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    width: 100,
+    fixed: 'right',
+    render: (row) => {
+      return h(
+        NButton,
+        {
+          text: true,
+          type: 'error',
+          onClick: () => handleDelete(row),
+        },
+        { default: () => '删除' },
+      )
+    },
   },
 ]
 </script>

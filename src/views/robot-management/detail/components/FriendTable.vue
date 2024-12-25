@@ -17,30 +17,50 @@
     <!-- 工具栏 -->
     <template #toolbar>
       <NSpace>
-        <NButton type="primary" @click="handleSendMessage"> 发送消息 </NButton>
-        <NButton type="primary" @click="handleGetFriendCircle"> 获取好友圈 </NButton>
+        <NButton type="primary" @click="handleSendMessage">发送消息</NButton>
+        <NButton type="primary" @click="handleGetFriendCircle">获取好友圈</NButton>
       </NSpace>
     </template>
 
     <!-- 表格 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
+      <Table
+        ref="tableRef"
+        :columns="columns"
+        :fetch-api="tableFetchApi"
+        :row-selection="true"
+        @update:checked-row-keys="handleSelectionChange"
+        @update:checked-rows="handleCheckedRowsChange"
+      />
     </template>
   </TablePageLayout>
 </template>
 
 <script setup lang="ts">
 import { h, ref, reactive } from 'vue'
-import { NButton, NAvatar, NSpace, type DataTableColumns } from 'naive-ui'
+import { NButton, NAvatar, NSpace, type DataTableColumns, useMessage } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 
-type TableDataRecord = Record<string, any>
+interface TableDataRecord {
+  id: number
+  avatar: string
+  nickname: string
+  weixinId: string
+  remark: string
+  customer: string
+  customerPhone?: string
+  customerAvatar?: string
+  syncCount: number
+  syncStatus: string
+}
 
 interface SearchParams {
   keyword: string | null
 }
+
+const message = useMessage()
 
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<SearchParams>({
@@ -48,6 +68,17 @@ const defaultSearchForm = reactive<SearchParams>({
 })
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
+const checkedRowKeys = ref<(string | number)[]>([])
+const checkedRows = ref<TableDataRecord[]>([])
+
+// 选择变化处理
+const handleSelectionChange = (keys: (string | number)[]) => {
+  checkedRowKeys.value = keys
+}
+
+const handleCheckedRowsChange = (rows: TableDataRecord[]) => {
+  checkedRows.value = rows
+}
 
 // 搜索
 const handleSearch = (values: SearchParams) => {
@@ -95,6 +126,12 @@ const tableFetchApi = async (
 
 // 表格列定义
 const columns: DataTableColumns<TableDataRecord> = [
+  {
+    type: 'selection',
+    width: 50,
+    align: 'center',
+    fixed: 'left',
+  },
   {
     title: '好友',
     key: 'friend',
@@ -164,6 +201,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     title: '操作',
     key: 'actions',
     width: 300,
+    fixed: 'right',
     render: (row) => {
       return h(NSpace, null, [
         h(
@@ -190,12 +228,35 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
 ]
 
-// 添加处理函数
+// 发送消息处理函数
 const handleSendMessage = () => {
-  console.log('发送消息')
+  if (checkedRows.value.length === 0) {
+    message.warning('请选择要发送消息的好友')
+    return
+  }
+  const selectedIds = checkedRows.value.map((row) => row.id)
+  console.log('发送消息给选中的好友ID:', selectedIds)
 }
 
+// 获取好友圈处理函数
 const handleGetFriendCircle = () => {
-  console.log('获取好友圈')
+  if (checkedRows.value.length === 0) {
+    message.warning('请选择要获取朋友圈的好友')
+    return
+  }
+  const selectedIds = checkedRows.value.map((row) => row.id)
+  console.log('获取选中好友的朋友圈ID:', selectedIds)
 }
 </script>
+
+<style scoped lang="less">
+:deep(.n-data-table) {
+  height: 100%;
+  .n-data-table-base-table {
+    height: 100%;
+  }
+  .n-data-table-base-table-body {
+    height: calc(100% - 41px); // 减去表头高度
+  }
+}
+</style>

@@ -9,16 +9,31 @@
         <n-tab-pane name="all" tab="全部账号">
           <div class="robot-list">
             <div v-for="robot in robots" :key="robot.id" class="robot-card">
-              <n-card>
+              <n-card hoverable @click="showDetail(robot)">
                 <div class="robot-info">
                   <div class="avatar-container">
                     <n-avatar round :size="48">
                       <n-icon><PersonOutline /></n-icon>
                     </n-avatar>
-                    <n-tag type="success" size="small" class="status-tag">在线</n-tag>
+                    <n-tag
+                      :type="robot.status === 'online' ? 'success' : 'error'"
+                      size="small"
+                      class="status-tag"
+                    >
+                      {{ robot.status === 'online' ? '在线' : '掉线' }}
+                    </n-tag>
                   </div>
                   <div class="robot-details">
-                    <div class="robot-name">{{ robot.name }}</div>
+                    <div class="robot-name">
+                      {{ robot.name }}
+                      <n-tag
+                        size="small"
+                        :type="robot.type === 'sync' ? 'info' : 'warning'"
+                        class="type-tag"
+                      >
+                        {{ robot.type === 'sync' ? '同步账号' : '运营账号' }}
+                      </n-tag>
+                    </div>
                     <div class="robot-account">{{ robot.account }}</div>
                     <div class="robot-ip">{{ robot.ip }}</div>
                   </div>
@@ -34,7 +49,7 @@
                     <div class="status-label">当前执行:</div>
                     <div class="status-value">{{ robot.currentTask }}</div>
                   </div>
-                  <n-button size="small" type="primary" @click="showTaskList(robot)">
+                  <n-button size="small" type="primary" @click.stop="showTaskList(robot)">
                     任务列表
                   </n-button>
                 </div>
@@ -137,6 +152,8 @@ interface Robot {
   friends: number
   currentTask: string
   lastExecuteTime: string
+  status: 'online' | 'offline'
+  type: 'sync' | 'operation'
 }
 
 const robots = ref<Robot[]>([
@@ -148,6 +165,8 @@ const robots = ref<Robot[]>([
     friends: 2800,
     currentTask: '同步好友中',
     lastExecuteTime: '2024.07.02 15:30:30',
+    status: 'online',
+    type: 'sync',
   },
   {
     id: '2',
@@ -157,6 +176,8 @@ const robots = ref<Robot[]>([
     friends: 2800,
     currentTask: '心跳',
     lastExecuteTime: '2024.07.02 15:30:30',
+    status: 'offline',
+    type: 'sync',
   },
   {
     id: '3',
@@ -166,11 +187,20 @@ const robots = ref<Robot[]>([
     friends: 2800,
     currentTask: '发送消息',
     lastExecuteTime: '2024.07.02 15:30:30',
+    status: 'online',
+    type: 'operation',
   },
 ])
 
-const showTaskList = (robot: Robot) => {
+const showDetail = (robot: Robot) => {
   router.push(`/robot-management/${robot.id}`)
+}
+
+const showTaskList = (robot: Robot) => {
+  router.push({
+    path: `/robot-management/${robot.id}`,
+    query: { tab: 'task' },
+  })
 }
 
 const handleAddRobot = () => {
@@ -205,6 +235,8 @@ const refreshList = () => {
 }
 
 .robot-card {
+  cursor: pointer;
+
   .robot-info {
     display: flex;
     gap: 16px;
@@ -215,8 +247,8 @@ const refreshList = () => {
 
       .status-tag {
         position: absolute;
-        bottom: -4px;
-        right: -4px;
+        bottom: 14px;
+        right: 4px;
       }
     }
 
@@ -227,6 +259,13 @@ const refreshList = () => {
         font-size: 16px;
         font-weight: 500;
         margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .type-tag {
+          font-weight: normal;
+        }
       }
 
       .robot-account,

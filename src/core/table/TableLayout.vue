@@ -47,7 +47,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-width: 1000px;
+    min-width: 500px;
 
     .search-form {
       margin-bottom: 16px;
@@ -65,10 +65,9 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-
     }
   }
-  
+
   :deep(.n-data-table) {
     flex: 1;
   }

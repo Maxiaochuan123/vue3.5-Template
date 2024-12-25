@@ -35,15 +35,17 @@ const handleSearch = (values: SearchParams) => {
 }
 
 // 定义获取数据的方法
-const tableFetchApi = async (params: SearchParams): Promise<{ list: TableDataRecord[]; total: number }> => {
+const tableFetchApi = async (
+  params: SearchParams,
+): Promise<{ list: TableDataRecord[]; total: number }> => {
   const res = await roleApi.getRoleList({
     name: params.name || undefined,
     pageIndex: 1,
-    pageSize: 10
+    pageSize: 10,
   })
   return {
     list: res.data.records,
-    total: res.data.total
+    total: res.data.total,
   }
 }
 
@@ -60,7 +62,7 @@ const handleRoleForm = (row: TableDataRecord, type: 'edit' | 'view') => {
   editData.value = {
     id: row.id,
     name: row.name,
-    permissions: row.menuTree
+    permissions: row.menuTree,
   }
   dialogRef.value?.open()
 }
@@ -95,9 +97,9 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row) => {
       return h(NSwitch, {
         value: row.status === 1,
-        onUpdateValue: (value) => handleStatusChange(row, value)
+        onUpdateValue: (value) => handleStatusChange(row, value),
       })
-    }
+    },
   },
   {
     title: '创建时间',
@@ -125,7 +127,7 @@ const columns: DataTableColumns<TableDataRecord> = [
               console.log('删除', row)
               break
           }
-        }
+        },
       })
     },
   },
@@ -136,7 +138,7 @@ const handleAdd = () => {
   formType.value = 'add'
   editData.value = {
     name: '',
-    permissions: []
+    permissions: [],
   }
   dialogRef.value?.open()
 }
@@ -148,11 +150,7 @@ const handleAdd = () => {
       <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
         <template #default="{ searchForm }">
           <NFormItem label="关键词" data-width="md">
-            <NInput
-              v-model:value="searchForm.name"
-              placeholder="请输入角色名称"
-              clearable
-            />
+            <NInput v-model:value="searchForm.name" placeholder="请输入角色名称" clearable />
           </NFormItem>
         </template>
       </SearchForm>
@@ -167,7 +165,7 @@ const handleAdd = () => {
     <template #table>
       <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
     </template>
-    
+
     <!-- 新增/编辑角色 -->
     <DialogForm
       ref="dialogRef"
@@ -184,4 +182,4 @@ const handleAdd = () => {
       <RoleForm ref="formRef" />
     </DialogForm>
   </TablePageLayout>
-</template> 
+</template>

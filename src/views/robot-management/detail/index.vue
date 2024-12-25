@@ -1,9 +1,19 @@
 <template>
   <div class="robot-detail">
-    <n-grid :cols="24" :x-gap="16">
+    <div class="layout-container">
       <!-- 左侧信息 -->
-      <n-grid-item :span="6">
-        <n-card class="info-card">
+      <div class="left-side">
+        <n-card class="info-card" title="机器人信息">
+          <template #header-extra>
+            <n-tag
+              size="small"
+              :type="robotInfo.type === 'sync' ? 'info' : 'warning'"
+              class="type-tag"
+              round
+            >
+              {{ robotInfo.type === 'sync' ? '同步账号' : '运营账号' }}
+            </n-tag>
+          </template>
           <div class="robot-info">
             <div class="info-header">
               <div class="basic-info">
@@ -16,7 +26,7 @@
                     size="tiny"
                     class="status-tag"
                   >
-                    在线
+                    {{ robotInfo.status === 'online' ? '在线' : '掉线' }}
                   </n-tag>
                 </div>
                 <div class="right-info">
@@ -42,20 +52,20 @@
 
             <!-- 底部按钮 -->
             <div class="bottom-actions">
-              <n-button block @click="handleWakeup">唤醒</n-button>
-              <n-button block type="primary" @click="handleConfirmWakeup">确认唤醒</n-button>
+              <n-button class="action-btn" @click="handleWakeup">唤醒</n-button>
+              <n-button class="action-btn" type="primary" @click="handleConfirmWakeup"
+                >确认唤醒</n-button
+              >
             </div>
           </div>
         </n-card>
-      </n-grid-item>
+      </div>
 
       <!-- 右侧表格 -->
-      <n-grid-item :span="18">
-        <n-card>
-          <component :is="currentTable" ref="tableRef" />
-        </n-card>
-      </n-grid-item>
-    </n-grid>
+      <div class="right-side">
+        <component :is="currentTable" ref="tableRef" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,6 +96,7 @@ interface RobotInfo {
   status: 'online' | 'offline'
   currentTask: string
   lastExecuteTime: string
+  type: 'sync' | 'operation'
 }
 
 const robotInfo = ref<RobotInfo>({
@@ -96,6 +107,7 @@ const robotInfo = ref<RobotInfo>({
   status: 'online',
   currentTask: '',
   lastExecuteTime: '',
+  type: 'sync',
 })
 
 // 加载机器人信息
@@ -109,16 +121,22 @@ const loadRobotInfo = async () => {
     status: 'online',
     currentTask: '同步好友中',
     lastExecuteTime: '2024.07.02 15:30:30',
+    type: 'sync',
   }
   robotInfo.value = mockData
 }
 
-onMounted(() => {
-  loadRobotInfo()
-})
-
 const activeKey = ref<string>('friend')
 const tableRef = ref(null)
+
+// 根据路由参数设置当前标签页
+onMounted(() => {
+  loadRobotInfo()
+  // 如果 URL 中有 tab 参数，切换到对应标签页
+  if (route.query.tab) {
+    activeKey.value = route.query.tab as string
+  }
+})
 
 // 当前显示的表格组件
 const currentTable = computed(() => {
@@ -171,13 +189,60 @@ const menuOptions = computed<MenuOption[]>(() => [
 
 <style scoped lang="less">
 .robot-detail {
-  padding: 16px;
+  padding: 6px;
+  height: calc(100vh - 64px);
+  box-sizing: border-box;
+  min-width: 900px;
+
+  .layout-container {
+    display: flex;
+    gap: 8px;
+    height: 100%;
+    min-width: 100%;
+  }
+
+  .left-side {
+    width: 300px;
+    min-width: 300px;
+    flex-shrink: 0;
+    height: 100%;
+  }
+
+  .right-side {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    :deep(.n-data-table) {
+      flex: 1;
+      min-width: 0;
+    }
+
+    :deep(.n-data-table-base-table-body) {
+      height: calc(100% - 41px);
+    }
+  }
 
   .info-card {
     :deep(.n-card__content) {
-      display: flex;
-      align-items: center;
+      padding: 0;
     }
+
+    :deep(.n-card-header) {
+      padding: 8px 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    :deep(.n-card__content) {
+      padding: 16px;
+    }
+  }
+
+  :deep(.n-card) {
+    height: 100%;
   }
 
   .robot-info {
@@ -251,11 +316,19 @@ const menuOptions = computed<MenuOption[]>(() => [
     }
 
     .bottom-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
       padding: 0 12px;
+      display: flex;
+      gap: 12px;
+
+      .action-btn {
+        flex: 1;
+        min-width: 80px;
+      }
     }
+  }
+
+  :deep(.page-container) {
+    padding: 0;
   }
 }
 </style>
