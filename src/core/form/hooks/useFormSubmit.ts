@@ -53,7 +53,7 @@ interface FormSubmitOptions {
    * submitApi: (data) => axios.post('/api/user', data)
    * ```
    */
-  submitApi: (...args: any[]) => Promise<any>
+  submitApi?: (...args: any[]) => Promise<any>
 
   /** 表单实例，用于验证表单 */
   formRef: FormInst | CustomFormInst | null
@@ -174,7 +174,8 @@ export function useFormSubmit() {
       initialData
     } = options
 
-    if (!submitApi || !formRef) return
+    if (!formRef) return false
+    if (!submitApi) return false
     
     try {
       // 设置提交状态
@@ -189,6 +190,7 @@ export function useFormSubmit() {
 
       // 处理提交数据
       let submitData: Record<string, any> = {}
+      console.log('formData', formData)
 
       // 使用初始数据结构作为字段过滤依据
       const formFields = Object.keys(initialData || formData)
@@ -208,6 +210,8 @@ export function useFormSubmit() {
           }
         })
       }
+
+      console.log(submitData);
 
       // 调用提交接口
       await submitApi(submitData)

@@ -28,12 +28,17 @@ export const advertisementTypeOptions = [
 export type AdvertisementType = ExtractOptionsValue<typeof advertisementTypeOptions>
 
 // 状态选项
-export const statusOptions = [
+export const defaultStatusOptions = [
   { label: '通过', value: 1 },
   { label: '不通过', value: 2 },
 ]
+
+export const statusOptions = (labels = { pass: '通过', reject: '不通过' }) => [
+  { label: labels.pass, value: 1 },
+  { label: labels.reject, value: 2 },
+]
 // 导出状态类型
-export type StatusType = ExtractOptionsValue<typeof statusOptions>
+export type StatusType = ExtractOptionsValue<typeof defaultStatusOptions>
 
 // 审核状态选项
 export const auditStatusOptions = [

@@ -1,28 +1,24 @@
 <script setup lang="ts">
-import { ref, watch, computed, inject, reactive, onMounted } from 'vue'
-import type { Ref } from 'vue'
-import { NForm, NFormItem, NInput, NTree, NScrollbar, NSwitch } from 'naive-ui'
+import { ref, watch, computed, inject, onMounted, type Ref } from 'vue'
+import { useRoleTree, transformMenuToTree, getAllExpandableKeys, getAllMenuKeys, generateCheckedKeys } from './RoleFormConfig'
 import type { FormInst, FormRules } from 'naive-ui'
 import { useDebounceFn } from '@vueuse/core'
 import { permissionMenus } from '@/permissions'
-import { roleApi } from '@/api/modules/role'
-import type { RolePermission } from '@/api/modules/role'
-import { useRoleTree, transformMenuToTree, getAllExpandableKeys, getAllMenuKeys, generateCheckedKeys } from './RoleFormConfig'
-
-export interface FormState {
-  id?: string
-  name: string
-  permissions: RolePermission[]
-}
+import { roleApi, type RolePermission, type RoleForm } from '@/api/modules/role'
+import { useFormData } from '@/core/form/hooks/useFormData'
 
 // 注入响应式的 formType 和 editData
 const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
-const editData = inject<Ref<Partial<FormState>>>('editData')!
+const editData = inject<Ref<Partial<RoleForm>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
-const formData = reactive<FormState>({
-  name: '',
-  permissions: []
+
+const { formData } = useFormData<RoleForm>({
+  initialData: {
+    name: '',
+    menuTree: []
+  },
+  editData
 })
 
 // 是否为查看模式
@@ -42,8 +38,8 @@ const {
 } = useRoleTree()
 
 // 更新表单数据
-const updateFormData = (permissions: RolePermission[]) => {
-  formData.permissions = permissions
+const updateFormData = (menuTree: RolePermission[]) => {
+  formData.menuTree = menuTree
 }
 
 // 更新树形数据
@@ -79,9 +75,9 @@ watch(
       formData.name = newData.name ?? ''
       
       // 设置初始权限数据
-      formData.permissions = Array.isArray(newData.permissions) ? newData.permissions : []
+      formData.menuTree = Array.isArray(newData.menuTree) ? newData.menuTree : []
       // 设置选中状态
-      checkedKeys.value = Array.isArray(newData.permissions) ? generateCheckedKeys(newData.permissions) : []
+      checkedKeys.value = Array.isArray(newData.menuTree) ? generateCheckedKeys(newData.menuTree) : []
       
       // 更新树形数据
       updateTreeData()
@@ -119,7 +115,7 @@ const rules: FormRules = {
       trigger: ['blur', 'input']
     }
   ],
-  permissions: [
+  menuTree: [
     {
       required: true,
       validator: (rule, value) => {
@@ -150,15 +146,8 @@ const validate = async () => {
 defineExpose({
   validate,
   formData: {
-    get id() {
-      return formData.id
-    },
-    get name() {
-      return formData.name
-    },
-    get menuTree() {
-      return formData.permissions
-    }
+    ...formData,
+    menuTree: JSON.stringify(formData.menuTree)
   }
 })
 </script>
@@ -176,7 +165,7 @@ defineExpose({
       <NInput v-model:value="formData.name" placeholder="请输入角色名称" />
     </NFormItem>
     
-    <NFormItem label="权限配置" path="permissions" :show-require-mark="true">
+    <NFormItem label="权限配置" path="menuTree" :show-require-mark="true">
       <div class="permission-container">
         <div class="tree-header">
           <div class="switch-wrapper">

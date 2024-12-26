@@ -6,8 +6,6 @@ export interface LoginParams {
   password: string
 }
 
-export type LoginData = string
-
 export interface Permission {
   id: string
   name: string
@@ -16,16 +14,18 @@ export interface Permission {
   children: Permission[]
 }
 
-export type LoginResponse = ApiResult<LoginData>
-export type PermissionResponse = ApiResult<Permission[]>
-
 export const authApi = {
-  async login(data: LoginParams): Promise<LoginResponse> {
-    const response = await post<LoginData>('/common/v1/admin/login', data)
-    return response as LoginResponse
+  /**
+   * 用户登录
+   */
+  login(data: LoginParams): Promise<ApiResult<string>> {
+    return post('/common/v1/admin/login', data)
   },
-  async getPermissions(): Promise<PermissionResponse> {
-    const response = await get<Permission[]>('/common/v1/admin/permissions')
-    return response as PermissionResponse
+
+  /**
+   * 获取权限列表
+   */
+  getPermissions(): Promise<ApiResult<Permission[]>> {
+    return get('/common/v1/admin/permissions')
   }
 }

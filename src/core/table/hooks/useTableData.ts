@@ -6,13 +6,13 @@ import { reactive, ref, type Ref } from 'vue';
  * ```ts
  * // 基础使用
  * const params: RequestParams = {
- *   page: 1,
+ *   pageIndex: 1,
  *   pageSize: 10
  * }
  * 
  * // 带查询条件
  * const params: RequestParams = {
- *   page: 1,
+ *   pageIndex: 1,
  *   pageSize: 10,
  *   keyword: 'search text',
  *   status: 'active',
@@ -21,7 +21,7 @@ import { reactive, ref, type Ref } from 'vue';
  * ```
  */
 export interface RequestParams {
-  page: number;          // 当前页码
+  pageIndex: number;          // 当前页码
   pageSize: number;      // 每页条数
   [key: string]: any;    // 其他可能的查询参数
 }
@@ -47,7 +47,7 @@ export interface RequestParams {
  * ```
  */
 export interface ResponseData<T> {
-  list: T[];            // 数据列表
+  records: T[];            // 数据列表
   total: number;        // 总条数
 }
 
@@ -56,7 +56,7 @@ export interface ResponseData<T> {
  * @example
  * ```ts
  * const pagination: PaginationProps = {
- *   page: 1,
+ *   pageIndex: 1,
  *   pageSize: 10,
  *   pageSizes: [10, 20, 50],
  *   showSizePicker: true,
@@ -66,7 +66,7 @@ export interface ResponseData<T> {
  * ```
  */
 export interface PaginationProps {
-  page: number;         // 当前页码
+  pageIndex: number;         // 当前页码
   pageSize: number;     // 每页条数
   pageSizes?: number[]; // 可选的每页条数选项
   showSizePicker?: boolean;  // 是否显示每页条数选择器
@@ -113,7 +113,7 @@ export interface UseTableDataReturn<T> {
   data: Ref<T[]>;             // 表格数据
   pagination: PaginationProps; // 分页配置
   loadData: (params?: any) => Promise<void>;          // 加载数据方法
-  handlePageChange: (page: number) => void;           // 页码改变处理
+  handlePageChange: (pageIndex: number) => void;           // 页码改变处理
   handlePageSizeChange: (pageSize: number) => void;   // 每页条数改变处理
   refresh: () => Promise<void>;                       // 刷新当前数据
   reset: () => Promise<void>;                         // 重置并加载数据
@@ -198,7 +198,7 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
 
   // 分页配置初始化
   const pagination = reactive<PaginationProps>({
-    page: 1,
+    pageIndex: 1,
     pageSize: defaultPageSize,
     showSizePicker: true,
     pageSizes: [10, 20, 30, 40],
@@ -234,7 +234,7 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
     loading.value = true;
     // 如果是新的搜索参数（不是分页触发的），重置到第一页
     if (JSON.stringify(cleanParams) !== JSON.stringify(currentParams.value)) {
-      pagination.page = 1;
+      pagination.pageIndex = 1;
     }
     currentParams.value = cleanParams; // 保存当前查询参数
 
@@ -242,15 +242,14 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
       // 分页参数由内部管理，与外部查询参数合并
       const requestParams = {
         ...cleanParams,      // 先放查询参数
-        page: pagination.page,
+        pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
       };
 
       // 转换参数（如果提供了转换函数）
       const finalParams = transformParams ? transformParams(requestParams) : requestParams;
-      const { list, total } = await fetchApi(finalParams as P);
-
-      data.value = list;
+      const { data: listData, total } = await fetchApi(finalParams as P);
+      data.value = listData.records;
       pagination.itemCount = total;
     } catch (error) {
       if (message) message.error(error instanceof Error ? error.message : '加载数据失败');
@@ -282,7 +281,7 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
    * ```
    */
   const reset = async () => {
-    pagination.page = 1;
+    pagination.pageIndex = 1;
     pagination.pageSize = defaultPageSize;
     currentParams.value = {};  // 清空搜索参数
     return loadData({});
@@ -290,10 +289,10 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
 
   /**
    * 页码改变处理
-   * @param page 新的页码
+   * @param pageIndex 新的页码
    */
-  const handlePageChange = (page: number) => {
-    pagination.page = page;
+  const handlePageChange = (pageIndex: number) => {
+    pagination.pageIndex = pageIndex;
     loadData(currentParams.value);  // 使用当前的搜索参数
   };
 
@@ -303,7 +302,7 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
    */
   const handlePageSizeChange = (pageSize: number) => {
     pagination.pageSize = pageSize;
-    pagination.page = 1;  // 切换每页条数时重置到第一页
+    pagination.pageIndex = 1;  // 切换每页条数时重置到第一页
     loadData(currentParams.value);  // 使用当前的搜索参数
   };
 

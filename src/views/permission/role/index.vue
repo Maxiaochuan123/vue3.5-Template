@@ -8,18 +8,13 @@ import Table from '@/core/table/Table.vue'
 import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
 import DialogForm from '@/core/form/DialogForm.vue'
-import RoleForm, { type FormState } from './components/RoleForm.vue'
-import { roleApi } from '@/api/modules/role'
-import type { Role } from '@/api/modules/role'
+import RoleForm from './components/RoleForm.vue'
+import { roleApi, type Role, type BaseRoleSearch } from '@/api/modules/role'
 
 type TableDataRecord = Role
 
-interface SearchParams {
-  name: string | null
-}
-
 // 定义默认搜索表单值
-const defaultSearchForm = reactive<SearchParams>({
+const defaultSearchForm = reactive<BaseRoleSearch>({
   name: null,
 })
 
@@ -27,26 +22,11 @@ const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const dialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const formRef = ref<InstanceType<typeof RoleForm> | null>(null)
 const formType = ref<'add' | 'edit' | 'view'>('add')
-const editData = ref<Partial<FormState>>({})
+const editData = ref<Partial<Role>>({})
 
 // 搜索
-const handleSearch = (values: SearchParams) => {
+const handleSearch = (values: BaseRoleSearch) => {
   tableRef.value?.loadData(values)
-}
-
-// 定义获取数据的方法
-const tableFetchApi = async (
-  params: SearchParams,
-): Promise<{ list: TableDataRecord[]; total: number }> => {
-  const res = await roleApi.getRoleList({
-    name: params.name || undefined,
-    pageIndex: 1,
-    pageSize: 10,
-  })
-  return {
-    list: res.data.records,
-    total: res.data.total,
-  }
 }
 
 // 刷新列表
@@ -56,21 +36,10 @@ const refreshList = () => {
   }
 }
 
-// 编辑处理
-const handleRoleForm = (row: TableDataRecord, type: 'edit' | 'view') => {
-  formType.value = type
-  editData.value = {
-    id: row.id,
-    name: row.name,
-    permissions: row.menuTree,
-  }
-  dialogRef.value?.open()
-}
-
 // 处理状态切换
 const handleStatusChange = async (row: TableDataRecord, value: boolean) => {
   try {
-    await roleApi.updateRoleStatus(row.id, value ? 1 : 2)
+    await roleApi.updateRoleStatus({ id: row.id, status: value ? 1 : 2 })
     refreshList()
   } catch (error) {
     // 状态切换失败，刷新列表恢复状态
@@ -113,35 +82,56 @@ const columns: DataTableColumns<TableDataRecord> = [
     fixed: 'right',
     render: (row: TableDataRecord) => {
       return h(TableActions, {
-        row: row as any,
+        row,
+        permissionId: '5-2',
+        actions: ['edit', 'view', 'delete'],
         deleteConfig: {
           content: '确定要删除该角色吗？删除后不可恢复！',
         },
-        onAction: (type, row) => {
-          switch (type) {
-            case 'edit':
-            case 'view':
-              handleRoleForm(row, type)
-              break
-            case 'delete':
-              console.log('删除', row)
-              break
-          }
-        },
+        onAction: handleTableAction
       })
     },
   },
 ]
 
+
+// 处理表格操作
+const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<string, any>) => {
+  if (!row.id) return
+  switch (type) {
+    case 'edit':
+    case 'view':
+      handleRoleForm(row, type)
+      break
+    case 'delete':
+      try {
+        await roleApi.deleteRole(row.id)
+        refreshList()
+      } catch (error) {
+        console.error('删除失败:', error)
+      }
+      break
+  }
+}
+
 // 新增角色
 const handleAdd = () => {
   formType.value = 'add'
+  editData.value = {}
+  dialogRef.value?.open()
+}
+
+// 编辑处理
+const handleRoleForm = (row: Record<string, any>, type: 'edit' | 'view') => {
+  formType.value = type
   editData.value = {
-    name: '',
-    permissions: [],
+    id: row.id,
+    name: row.name,
+    menuTree: JSON.parse(row.menuTree as unknown as string),
   }
   dialogRef.value?.open()
 }
+
 </script>
 
 <template>
@@ -158,12 +148,16 @@ const handleAdd = () => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <TableToolbarActions :on-add="handleAdd" />
+      <TableToolbarActions permissionId="5-2" :on-add="handleAdd" />
     </template>
 
     <!-- 表格区域 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
+      <Table 
+        ref="tableRef" 
+        :columns="columns" 
+        :fetch-api="(params: Record<string, any>) => roleApi.getRoleList(params as any)" 
+      />
     </template>
 
     <!-- 新增/编辑角色 -->
@@ -177,7 +171,6 @@ const handleAdd = () => {
       :refresh-list="refreshList"
       :extra-fields="['id']"
       :edit-data="editData"
-      title="角色"
     >
       <RoleForm ref="formRef" />
     </DialogForm>

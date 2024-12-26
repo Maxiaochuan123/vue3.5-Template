@@ -14,7 +14,7 @@ interface CustomFormInst {
 interface Props {
   formRef?: FormInst | CustomFormInst | null
   addApi?: (...args: any[]) => Promise<any>
-  editApi: (...args: any[]) => Promise<any>
+  editApi?: (...args: any[]) => Promise<any>
   formType?: FormType
   refreshList?: () => void
   extraFields?: string[]
@@ -80,8 +80,15 @@ const handleFormSubmit = async () => {
     
     const api = currentFormType.value === 'edit' ? props.editApi : props.addApi
     
-    if (!api) {
-      console.error(`${currentFormType.value === 'edit' ? 'editApi' : 'addApi'} is not provided`)
+    // 如果是新增操作但没有提供 addApi，则不允许提交
+    if (currentFormType.value === 'add' && !api) {
+      console.error('addApi is not provided for add operation')
+      return
+    }
+
+    // 如果是编辑操作但没有提供 editApi，则不允许提交
+    if (currentFormType.value === 'edit' && !api) {
+      console.error('editApi is not provided for edit operation')
       return
     }
 
@@ -95,7 +102,7 @@ const handleFormSubmit = async () => {
       originalData: formInstance.formData,
       onSuccess: () => {
         props.refreshList?.()
-        // close()
+        close()
       }
     })
 

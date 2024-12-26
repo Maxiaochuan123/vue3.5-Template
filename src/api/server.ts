@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { message } from '@/utils/message'
 import { useAuthStore } from '@/stores/modules/auth'
+import router from '@/router'
 
 export interface ApiResult<T = any> {
   code: number
@@ -39,6 +40,12 @@ service.interceptors.response.use(
     // 这里可以根据实际接口返回格式修改
     if (res.code === 200) {
       return res
+    } else if (res.code === 700) {
+      // token 无效，清除用户信息并跳转到登录页
+      const authStore = useAuthStore()
+      authStore.logout()
+      router.push('/login')
+      return Promise.reject(new Error(res.msg || 'Token Invalid'))
     } else {
       message.error(res.msg || 'Error')
       return Promise.reject(new Error(res.msg || 'Error'))
@@ -73,14 +80,6 @@ export async function put<T = any>(
   config?: AxiosRequestConfig,
 ): Promise<ApiResult<T>> {
   return service.put(url, data, config)
-}
-
-export async function patch<T = any>(
-  url: string,
-  data?: any,
-  config?: AxiosRequestConfig,
-): Promise<ApiResult<T>> {
-  return service.patch(url, data, config)
 }
 
 export async function del<T = any>(

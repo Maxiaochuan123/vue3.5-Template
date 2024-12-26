@@ -66,7 +66,7 @@ export const permissionMenus = [
         id: '5-2',
         name: '角色管理',
         isChecked: false,
-        permissions: ['add', 'edit', 'status', 'view']
+        permissions: ['add', 'edit', 'status', 'delete', 'view']
       },
       {
         id: '5-3',

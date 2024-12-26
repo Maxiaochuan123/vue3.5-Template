@@ -1,117 +1,77 @@
 <script setup lang="ts">
-import { ref, reactive, h } from 'vue'
+import { ref, reactive } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
-import { NInput, NSelect, NFormItem, NDatePicker, NTag } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
-
-type TableDataRecord = Record<string, any>
-
-interface SearchParams {
-  keyword: string | null
-  dateRange: [number, number] | null
-  type: string | null
-}
+import { logApi, type BaseLogSearch, type Log } from '@/api/modules/log'
 
 // 定义默认搜索表单值
-const defaultSearchForm = reactive<SearchParams>({
-  keyword: null,
+const defaultSearchForm = reactive<BaseLogSearch>({
+  name: null,
+  message: null,
+  typeId: null,
   dateRange: null,
-  type: null,
 })
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 
 // 日志类型选项
 const logTypeOptions = [
-  { label: '登录日志', value: 'login' },
-  { label: '操作日志', value: 'operation' },
-  { label: '系统日志', value: 'system' },
+  { label: '登录日志', value: 3 },
+  { label: '操作日志', value: 1 },
+  { label: '异常日志', value: 2 },
 ]
 
+// 搜索参数转换
+const transformSearchParams = (params: any) => {
+  console.log('transformSearchParams:', params)
+  const { dateRange, ...rest } = params;
+  return {
+    ...rest,
+    startTime: dateRange?.[0] || null,
+    endTime: dateRange?.[1] || null
+  }
+}
+
 // 搜索
-const handleSearch = (values: SearchParams) => {
+const handleSearch = (values: BaseLogSearch) => {
   tableRef.value?.loadData(values)
 }
 
-// 定义获取数据的方法
-const tableFetchApi = async (params: SearchParams): Promise<{ list: TableDataRecord[]; total: number }> => {
-  console.log('搜索参数:', params)
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        list: [
-          {
-            id: 1,
-            type: '登录日志',
-            username: 'admin',
-            ip: '192.168.1.1',
-            action: '用户登录',
-            status: '成功',
-            detail: '登录成功',
-            createTime: '2024-03-20 10:00:00',
-          },
-          {
-            id: 2,
-            type: '操作日志',
-            username: 'operator',
-            ip: '192.168.1.2',
-            action: '新增广告',
-            status: '成功',
-            detail: '新增广告：XXX',
-            createTime: '2024-03-20 11:00:00',
-          },
-        ],
-        total: 2,
-      })
-    }, 1000)
-  })
-}
-
 // 表列定义
-const columns: DataTableColumns<TableDataRecord> = [
+const columns: DataTableColumns<Log> = [
   {
     title: '日志类型',
-    key: 'type',
+    key: 'typeId',
     width: 120,
+    render: (row) => {
+      const option = logTypeOptions.find(opt => opt.value === row.typeId)
+      return option?.label || '-'
+    }
   },
   {
     title: '用户名',
-    key: 'username',
+    key: 'name',
     width: 120,
   },
   {
     title: 'IP地址',
-    key: 'ip',
+    key: 'ipAddress',
     width: 150,
   },
   {
-    title: '操作',
-    key: 'action',
-    width: 150,
+    title: '操作内容',
+    key: 'message',
+    width: 200,
   },
   {
-    title: '状态',
-    key: 'status',
-    width: 100,
-    render: (row) => {
-      const type = row.status === '成功' ? 'success' : 'error'
-      return h(NTag, {
-        type,
-        bordered: false
-      }, { default: () => row.status })
-    }
-  },
-  {
-    title: '详情',
-    key: 'detail',
-    width: 300,
-  },
-  {
-    title: '时间',
+    title: '创建时间',
     key: 'createTime',
     width: 180,
+    render: (row) => {
+      return new Date(row.createTime).toLocaleString()
+    }
   },
 ]
 </script>
@@ -119,12 +79,29 @@ const columns: DataTableColumns<TableDataRecord> = [
 <template>
   <TablePageLayout>
     <template #search>
-      <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
+      <SearchForm :model="defaultSearchForm" :transform-params="transformSearchParams" :on-search="handleSearch">
         <template #default="{ searchForm }">
-          <NFormItem label="关键词" data-width="md">
+          <NFormItem label="用户名" data-width="md">
             <NInput
-              v-model:value="searchForm.keyword"
-              placeholder="请输入用户名/IP/操作内容"
+              v-model:value="searchForm.name"
+              placeholder="请输入用户名"
+              clearable
+            />
+          </NFormItem>
+
+          <NFormItem label="操作内容" data-width="md">
+            <NInput
+              v-model:value="searchForm.message"
+              placeholder="请输入操作内容"
+              clearable
+            />
+          </NFormItem>
+
+          <NFormItem label="日志类型">
+            <NSelect
+              v-model:value="searchForm.typeId"
+              :options="logTypeOptions"
+              placeholder="请选择日志类型"
               clearable
             />
           </NFormItem>
@@ -136,22 +113,17 @@ const columns: DataTableColumns<TableDataRecord> = [
               clearable
             />
           </NFormItem>
-
-          <NFormItem label="日志类型">
-            <NSelect
-              v-model:value="searchForm.type"
-              :options="logTypeOptions"
-              placeholder="请选择日志类型"
-              clearable
-            />
-          </NFormItem>
         </template>
       </SearchForm>
     </template>
 
     <!-- 表格区域 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
+      <Table 
+        ref="tableRef" 
+        :columns="columns" 
+        :fetch-api="logApi.getLogList" 
+      />
     </template>
   </TablePageLayout>
 </template> 

@@ -1,72 +1,67 @@
 <script setup lang="ts">
 import { ref, reactive, h } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
-import { NInput, NSelect, NFormItem, NSwitch } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
+import DialogForm from '@/core/form/DialogForm.vue'
+import AccountForm from './components/AccountForm.vue'
+import ResetPassword from './components/ResetPassword.vue'
 import { statusOptions } from '@/enum/options'
+import { useAuthStore } from '@/stores/modules/auth'
+import { userApi, type Account, type BaseUserSearch } from '@/api/modules/account'
 
-type TableDataRecord = Record<string, any>
+const authStore = useAuthStore()
 
-interface SearchParams {
-  keyword: string | null
-  status: string | null
-  role: string | null
-}
+type TableDataRecord = Account
 
 // 定义默认搜索表单值
-const defaultSearchForm = reactive<SearchParams>({
-  keyword: null,
+const defaultSearchForm = reactive<BaseUserSearch>({
+  key: null,
   status: null,
-  role: null,
+  roleId: null,
 })
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
+const dialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
+const formRef = ref<InstanceType<typeof AccountForm> | null>(null)
+const formType = ref<'add' | 'edit' | 'view'>('add')
+const editData = ref<Partial<Account>>({})
+const resetPasswordDialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
+const resetPasswordFormRef = ref<InstanceType<typeof ResetPassword> | null>(null)
 
-// 角色选项
-const roleOptions = [
-  { label: '管理员', value: 'admin' },
-  { label: '运营', value: 'operator' },
-  { label: '财务', value: 'finance' },
-]
 
 // 搜索
-const handleSearch = (values: SearchParams) => {
+const handleSearch = (values: BaseUserSearch) => {
   tableRef.value?.loadData(values)
 }
 
-// 定义获取数据的方法
-const tableFetchApi = async (params: SearchParams): Promise<{ list: TableDataRecord[]; total: number }> => {
-  console.log('搜索参数:', params)
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        list: [
-          {
-            id: 1,
-            username: 'admin',
-            nickname: '管理员',
-            role: '管理员',
-            email: 'admin@example.com',
-            status: '启用',
-            lastLoginTime: '2024-03-20 10:00:00',
-            createTime: '2024-03-20 10:00:00',
-          },
-        ],
-        total: 1,
-      })
-    }, 1000)
-  })
+// 刷新列表
+const refreshList = () => {
+  if (tableRef.value) {
+    tableRef.value.refresh()
+  }
+}
+
+// 处理状态切换
+const handleStatusChange = async (row: TableDataRecord, value: boolean) => {
+  if (!row.id) return
+  try {
+    await userApi.updateStatus({ id: row.id, status: value ? 1 : 2 })
+    refreshList()
+  } catch (error) {
+    // 状态切换失败，刷新列表恢复状态
+    refreshList()
+  }
 }
 
 // 表列定义
 const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '用户名',
-    key: 'username',
+    key: 'userName',
     width: 120,
   },
   {
@@ -78,11 +73,10 @@ const columns: DataTableColumns<TableDataRecord> = [
     title: '角色',
     key: 'role',
     width: 120,
-  },
-  {
-    title: '邮箱',
-    key: 'email',
-    width: 180,
+    render: (row) => {
+      const roleOption = authStore.auth.roleOptions.find(option => option.value === row.roleId)
+      return roleOption?.label || '-'
+    }
   },
   {
     title: '状态',
@@ -90,22 +84,10 @@ const columns: DataTableColumns<TableDataRecord> = [
     width: 100,
     render: (row) => {
       return h(NSwitch, {
-        value: row.status === '启用',
-        onUpdateValue: (value) => {
-          console.log('切换状态:', value, row)
-        }
+        value: row.status === 1,
+        onUpdateValue: (value) => handleStatusChange(row, value),
       })
     }
-  },
-  {
-    title: '最后登录时间',
-    key: 'lastLoginTime',
-    width: 180,
-  },
-  {
-    title: '创建时间',
-    key: 'createTime',
-    width: 180,
   },
   {
     title: '操作',
@@ -115,29 +97,64 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        actions: ['edit', 'delete'],
+        permissionId: '5-1',
+        actions: ['edit', 'view', 'delete'],
         deleteConfig: {
           content: '确定要删除该账号吗？删除后不可恢复！',
         },
-        onAction: (type, rowData) => {
-          switch (type) {
-            case 'edit':
-              console.log('编辑', rowData)
-              break
-            case 'delete':
-              console.log('删除', rowData)
-              break
+        onAction: handleTableAction,
+        customButtons: [
+          {
+            label: '重置密码',
+            action: 'edit',
+            type: 'warning',
+            onClick: (row) => handleResetPassword(row)
           }
-        }
+        ]
       })
     },
   },
 ]
 
+// 处理表格操作
+const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<string, any>) => {
+  if (!row.id) return
+  switch (type) {
+    case 'edit':
+    case 'view':
+      handleUserForm(row, type)
+      break
+    case 'delete':
+      try {
+        await userApi.deleteUser(row.id)
+        refreshList()
+      } catch (error) {
+        console.error('删除失败:', error)
+      }
+      break
+  }
+}
+
 // 新增账号
 const handleAdd = () => {
-  console.log('新增账号')
+  formType.value = 'add'
+  editData.value = {}
+  dialogRef.value?.open()
 }
+
+// 编辑处理
+const handleUserForm = (row: Record<string, any>, type: 'edit' | 'view') => {
+  formType.value = type
+  editData.value = row
+  dialogRef.value?.open()
+}
+
+// 重置密码
+const handleResetPassword = (row: Record<string, any>) => {
+  editData.value = row
+  resetPasswordDialogRef.value?.open()
+}
+
 </script>
 
 <template>
@@ -147,7 +164,7 @@ const handleAdd = () => {
         <template #default="{ searchForm }">
           <NFormItem label="关键词" data-width="md">
             <NInput
-              v-model:value="searchForm.keyword"
+              v-model:value="searchForm.key"
               placeholder="请输入用户名/昵称/邮箱"
               clearable
             />
@@ -156,7 +173,7 @@ const handleAdd = () => {
           <NFormItem label="状态">
             <NSelect
               v-model:value="searchForm.status"
-              :options="statusOptions"
+              :options="statusOptions({ pass: '启用', reject: '禁用' })"
               placeholder="请选择状态"
               clearable
             />
@@ -164,8 +181,8 @@ const handleAdd = () => {
 
           <NFormItem label="角色">
             <NSelect
-              v-model:value="searchForm.role"
-              :options="roleOptions"
+              v-model:value="searchForm.roleId"
+              :options="authStore.auth.roleOptions"
               placeholder="请选择角色"
               clearable
             />
@@ -176,12 +193,41 @@ const handleAdd = () => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <TableToolbarActions :on-add="handleAdd" />
+      <TableToolbarActions 
+        :permission-id="'5-1'"
+        :on-add="handleAdd"
+      />
     </template>
 
     <!-- 表格区域 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-api="tableFetchApi" />
+      <Table ref="tableRef" :columns="columns" :fetch-api="userApi.getUserList" />
     </template>
+
+    <!-- 新增/编辑用户 -->
+    <DialogForm
+      ref="dialogRef"
+      :width="740"
+      :form-ref="formRef"
+      :formType="formType"
+      :add-api="userApi.createUser"
+      :edit-api="userApi.updateUser"
+      :refresh-list="refreshList"
+      :extra-fields="['id']"
+      :edit-data="editData"
+    >
+      <AccountForm ref="formRef" />
+    </DialogForm>
+
+    <!-- 重置密码 -->
+    <DialogForm 
+      ref="resetPasswordDialogRef" 
+      :width="440" 
+      title="重置密码"
+      :form-ref="resetPasswordFormRef"
+      :add-api="userApi.updatePassword"
+    >
+      <ResetPassword ref="resetPasswordFormRef" :id="editData.id ?? 0" />
+    </DialogForm>
   </TablePageLayout>
 </template> 

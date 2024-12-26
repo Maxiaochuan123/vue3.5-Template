@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, inject, toRef } from 'vue'
+import { ref, computed, inject, toRef, type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { advertisementTypeOptions, type AdvertisementType } from '@/enum/options'
 import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
@@ -19,14 +19,9 @@ export interface FormState {
   iosUrl: string
 }
 
-interface Props {
-  editData?: Partial<FormState>
-}
-
-const props = defineProps<Props>()
-
 // 注入响应式的 formType
 const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
+const editData = inject<Ref<Partial<FormState>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
 
@@ -46,7 +41,7 @@ const { formData, initialData } = useFormData<FormState>({
     androidUrl: '',
     iosUrl: ''
   },
-  editData: toRef(props, 'editData')
+  editData
 })
 
 // 媒体验证器
@@ -98,15 +93,16 @@ const rules = {
   }
 }
 
+const isViewMode = computed(() => formType.value === 'view')
+
+
 // 暴露给父组件的方法和数据
 defineExpose({
   formRef,
   formData,
-  initialData,
+  // initialData,
   validate: () => formRef.value?.validate()
 })
-
-const isViewMode = computed(() => formType.value === 'view')
 </script>
 
 <template>

@@ -38,17 +38,21 @@ import { useMessage } from 'naive-ui'
 import { useAuthStore } from '@/stores/modules/auth'
 import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
 import type { FormInst } from 'naive-ui'
-// import { authApi } from '@/api/modules/auth'
+import { md5 } from '@/utils/crypto'
 
 const router = useRouter()
 const message = useMessage()
 const authStore = useAuthStore()
 const loading = ref(false)
 const loginFormRef = ref<FormInst | null>(null)
-const loginForm = ref({
+  const loginForm = ref({
   userName: 'admin',
   password: 'bf04006d4d4054417a50c1ac6fa2e248',
 })
+// const loginForm = ref({
+//   userName: '',
+//   password: '',
+// })
 
 const loginRules = {
   userName: { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -60,6 +64,8 @@ const handleLogin = async () => {
   try {
     loading.value = true
     await loginFormRef.value.validate()
+    // const encryptedPassword = md5(loginForm.value.password)
+    // await authStore.login(loginForm.value.userName, encryptedPassword)
     await authStore.login(loginForm.value.userName, loginForm.value.password)
     message.success('登录成功')
     router.push('/')

@@ -2,36 +2,60 @@
   <NSpace justify="center" align="center">
     <template v-for="action in actions" :key="action">
       <EditButton 
-        v-if="action === 'edit' && hasPermission('edit')" 
+        v-if="action === 'edit'"
+        :permission-id="[permissionId, 'edit']"
         @click="handleAction('edit')" 
       />
       <ViewButton 
-        v-if="action === 'view' && hasPermission('view')" 
+        v-if="action === 'view'"
+        :permission-id="[permissionId, 'view']"
         @click="handleAction('view')" 
       />
       <DeleteButton 
-        v-if="action === 'delete' && hasPermission('delete')" 
+        v-if="action === 'delete'"
+        :permission-id="[permissionId, 'delete']"
         v-bind="deleteConfig"
         @click="handleAction('delete')" 
       />
+    </template>
+    <!-- 自定义按钮 -->
+    <template v-for="(btn, index) in customButtons" :key="index">
+      <span v-btnPermission="[permissionId, btn.action]">
+        <NButton
+          :type="btn.type || 'primary'"
+          text
+          @click="btn.onClick(row)"
+        >
+          {{ btn.label }}
+        </NButton>
+      </span>
     </template>
   </NSpace>
 </template>
 
 <script setup lang="ts">
-import { NSpace } from 'naive-ui'
+import { NSpace, NButton } from 'naive-ui'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/modules/auth'
 import EditButton from './components/EditButton.vue'
 import ViewButton from './components/ViewButton.vue'
 import DeleteButton from './components/DeleteButton.vue'
 
 type RowActionType = 'edit' | 'view' | 'delete'
 
-interface Props {
-  row: Record<string, any>
+// 自定义按钮类型
+type CustomButton = {
+  label: string
+  type?: 'primary' | 'info' | 'success' | 'warning' | 'error'
+  action: string        // 操作类型必传
+  onClick: (row: Record<string, any>) => void
+}
+
+interface Props<T = Record<string, any>> {
+  row: T
   actions?: RowActionType[]
-  onAction?: (type: RowActionType, row: Record<string, any>) => void
+  customButtons?: CustomButton[]
+  permissionId: string  // 当前页面的权限ID（必传）
+  onAction?: (type: RowActionType, row: T) => void
   deleteConfig?: {
     content?: string
     confirmText?: string
@@ -41,6 +65,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   actions: () => ['edit', 'view', 'delete'],
+  customButtons: () => [],
   deleteConfig: () => ({
     content: '是否确认删除该条数据？',
     confirmText: '确认',
@@ -48,55 +73,47 @@ const props = withDefaults(defineProps<Props>(), {
   })
 })
 
-const route = useRoute()
-const authStore = useAuthStore()
-
-// 递归查找当前页面的权限配置
-const findCurrentPagePermission = (permissions: any[], routeMeta: any): any | null => {
-  if (!routeMeta?.title) return null
-
-  // 获取完整的路由路径
-  const routePath = route.matched
-    .map(r => r.meta?.title as string)
-    .filter(Boolean)
-
-  // 递归查找匹配的权限
-  const findInPermissions = (perms: any[], pathSegments: string[]): any | null => {
-    // 如果没有更多的路径段，返回null
-    if (pathSegments.length === 0) return null
-
-    const [currentSegment, ...remainingSegments] = pathSegments
-
-    // 在当前层级查找匹配的权限
-    const matchedPerm = perms.find(p => p.name === currentSegment)
-    if (!matchedPerm) return null
-
-    // 如果是最后一个路径段，返回找到的权限
-    if (remainingSegments.length === 0) {
-      return matchedPerm
-    }
-
-    // 如果还有剩余路径段，继续在子权限中查找
-    if (matchedPerm.children && matchedPerm.children.length > 0) {
-      return findInPermissions(matchedPerm.children, remainingSegments)
-    }
-
-    return null
-  }
-
-  return findInPermissions(permissions, routePath)
-}
-
-// 检查按钮权限
-const hasPermission = (actionType: RowActionType) => {
-  const currentPermission = findCurrentPagePermission(authStore.auth.permissions, route.meta)
-  if (!currentPermission) return false
-  
-  return currentPermission.permissions?.includes(actionType)
-}
-
 // 处理按钮点击
 const handleAction = (type: RowActionType) => {
   props.onAction?.(type, props.row)
 }
+
+/**
+ * 在 table 中使用
+ * render: (row: TableDataRecord) => {
+      return h(TableActions, {
+        row,
+        permissionId: '5-1',
+        actions: ['edit', 'view', 'delete'],
+        deleteConfig: {
+          content: '确定要删除该账号吗？删除后不可恢复！',
+        },
+        onAction: (type, rowData) => {
+          switch (type) {
+            case 'edit':
+            case 'view':
+              handleUserForm(rowData, type)
+              break
+            case 'delete':
+              console.log('删除', rowData)
+              break
+          }
+        },
+        // 添加自定义按钮
+        customButtons: [
+          {
+            label: '重置密码',
+            type: 'warning',
+            action: 'edit',
+            onClick: (row) => console.log('重置密码')
+          },
+          {
+            label: '分配权限',
+            action: 'edit',
+            onClick: (row) => console.log('分配权限')
+          }
+        ],
+      })
+    },
+ */
 </script> 
