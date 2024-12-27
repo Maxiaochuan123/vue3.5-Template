@@ -3,8 +3,8 @@ import { ref, watch, computed, inject, onMounted, type Ref } from 'vue'
 import { useRoleTree, transformMenuToTree, getAllExpandableKeys, getAllMenuKeys, generateCheckedKeys } from './RoleFormConfig'
 import type { FormInst, FormRules } from 'naive-ui'
 import { useDebounceFn } from '@vueuse/core'
-import { permissionMenus } from '@/permissions'
-import { roleApi, type RolePermission, type RoleForm } from '@/api/modules/role'
+import { permissionMenus } from '@/core/permissions'
+import { roleApi, type RolePermission, type RoleForm } from '@/core/api/modules/role'
 import { useFormData } from '@/core/form/hooks/useFormData'
 
 // 注入响应式的 formType 和 editData

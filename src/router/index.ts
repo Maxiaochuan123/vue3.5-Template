@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { useAuthStore } from '@/stores/modules/auth'
+import { useAuthStore } from '@/core/stores/modules/auth'
 import {
   HomeOutline,
   WalletOutline,
@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/auth/login.vue'),
+    component: () => import('@/core/views/auth/login.vue'),
     meta: {
       requiresAuth: false,
       title: '登录',
@@ -64,38 +64,6 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'financial',
-        name: 'financial',
-        meta: {
-          requiresAuth: true,
-          title: '财务管理',
-          icon: CashOutline,
-        },
-        children: [
-          {
-            path: 'bill-management',
-            name: 'bill-management',
-            meta: {
-              requiresAuth: true,
-              title: '票据管理',
-              icon: DocumentTextOutline,
-            },
-            children: [
-              {
-                path: 'invoice',
-                name: 'invoice',
-                component: () => import('@/views/financial/bill-management/invoice/index.vue'),
-                meta: {
-                  requiresAuth: true,
-                  title: '发票',
-                  icon: ReceiptOutline,
-                },
-              },
-            ],
-          },
-        ],
-      },
-      {
         path: 'permission',
         name: 'permission',
         meta: {
@@ -107,7 +75,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'account',
             name: 'permission-account',
-            component: () => import('@/views/permission/account/index.vue'),
+            component: () => import('@/core/views/permission/account/index.vue'),
             meta: {
               requiresAuth: true,
               title: '账号管理',
@@ -117,7 +85,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'role',
             name: 'permission-role',
-            component: () => import('@/views/permission/role/index.vue'),
+            component: () => import('@/core/views/permission/role/index.vue'),
             meta: {
               requiresAuth: true,
               title: '角色管理',
@@ -127,7 +95,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: 'log',
             name: 'permission-log',
-            component: () => import('@/views/permission/log/index.vue'),
+            component: () => import('@/core/views/permission/log/index.vue'),
             meta: {
               requiresAuth: true,
               title: '系统日志',

@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { NButton } from 'naive-ui'
-import { permissionMap } from '@/permissions'
+import { permissionMap } from '@/core/permissions'
 
 defineProps<{
   permissionId: [string, string]

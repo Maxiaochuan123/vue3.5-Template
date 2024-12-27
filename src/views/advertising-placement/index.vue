@@ -10,7 +10,7 @@ import TableActions from '@/core/table/table-actions/index.vue'
 import { advertisingTypeOptions, auditStatusOptions, getOptionLabel } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
 import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
-import { advertApi, type BaseAdvertSearch, type Advertising } from '@/api/modules/advertising'
+import { advertisingApi, type BaseAdvertSearch, type Advertising } from '@/api/modules/advertising'
 import { useMessage } from 'naive-ui'
 import DialogForm from '@/core/form/DialogForm.vue'
 import SetAdvertAccountForm from './components/SetAdvertAccountForm.vue'
@@ -101,7 +101,7 @@ const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<s
       break
     case 'delete':
       try {
-        await advertApi.deleteAdvertising(row.id)
+        await advertisingApi.deleteAdvertising(row.id)
         refreshList()
       } catch (error) {
         console.error('删除失败:', error)
@@ -196,7 +196,7 @@ const handleSetAdvertAccount = () => {
 
     <!-- 表格 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-api="advertApi.getAdvertisingList" />
+      <Table ref="tableRef" :columns="columns" :fetch-api="advertisingApi.getAdvertisingList" />
     </template>
 
     <!-- 新增/编辑广告 -->
@@ -204,8 +204,8 @@ const handleSetAdvertAccount = () => {
       ref="drawerRef"
       :form-ref="formRef"
       :formType="formType"
-      :add-api="advertApi.createAdvertising"
-      :edit-api="advertApi.editAdvertising"
+      :add-api="advertisingApi.createAdvertising"
+      :edit-api="advertisingApi.editAdvertising"
       :refresh-list="refreshList"
       :extra-fields="['id']"
       :edit-data="editData"
@@ -219,7 +219,7 @@ const handleSetAdvertAccount = () => {
       :width="440" 
       title="设置投放账号"
       :form-ref="setAdvertAccountFormRef"
-      :add-api="advertApi.setAdvertisingAccount"
+      :add-api="advertisingApi.setAdvertisingAccount"
     >
       <SetAdvertAccountForm ref="setAdvertAccountFormRef" />
     </DialogForm>

@@ -1,5 +1,5 @@
 import type { Directive } from 'vue'
-import { useAuthStore } from '@/stores/modules/auth'
+import { useAuthStore } from '@/core/stores/modules/auth'
 
 export const btnPermission: Directive = {
   mounted(el, binding) {

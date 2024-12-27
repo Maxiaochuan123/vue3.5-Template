@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { NButton, NIcon } from 'naive-ui'
 import { DownloadOutline } from '@vicons/ionicons5'
-import { permissionMap } from '@/permissions'
+import { permissionMap } from '@/core/permissions'
 
 defineEmits<{
   (e: 'click'): void

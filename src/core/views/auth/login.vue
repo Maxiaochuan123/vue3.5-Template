@@ -35,7 +35,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
-import { useAuthStore } from '@/stores/modules/auth'
+import { useAuthStore } from '@/core/stores/modules/auth'
 import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
 import type { FormInst } from 'naive-ui'
 import { md5 } from '@/utils/crypto'

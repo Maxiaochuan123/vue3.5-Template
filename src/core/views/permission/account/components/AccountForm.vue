@@ -2,8 +2,8 @@
 import { ref, computed, inject, type Ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import { useFormData } from '@/core/form/hooks/useFormData'
-import type { Account } from '@/api/modules/account'
-import { useAuthStore } from '@/stores/modules/auth'
+import type { Account } from '@/core/api/modules/account'
+import { useAuthStore } from '@/core/stores/modules/auth'
 
 const authStore = useAuthStore()
 

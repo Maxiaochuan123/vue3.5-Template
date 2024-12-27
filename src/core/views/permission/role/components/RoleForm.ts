@@ -1,8 +1,8 @@
 import { ref, h } from 'vue'
 import type { TreeOption } from 'naive-ui'
 import { NCheckboxGroup, NCheckbox, NSpace } from 'naive-ui'
-import { permissionMenus, permissionMap } from '@/permissions'
-import type { RolePermission } from '@/api/modules/role'
+import { permissionMenus, permissionMap } from '@/core/permissions'
+import type { RolePermission } from '@/core/api/modules/role'
 
 // 将权限菜单转换为树形结构
 export const transformMenuToTree = (

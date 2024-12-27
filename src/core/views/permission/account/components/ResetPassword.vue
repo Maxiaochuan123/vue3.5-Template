@@ -41,7 +41,6 @@ defineExpose({
       label-placement="left"
       label-width="100"
     >
-      <span>ID: {{ formData.id }}</span>
       <NFormItem label="密码" path="password">
         <NInput
           v-model:value="formData.password"

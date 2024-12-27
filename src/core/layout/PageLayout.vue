@@ -67,7 +67,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import { MenuOutline, PersonOutline, LogOutOutline } from '@vicons/ionicons5'
 import { NBreadcrumb, NBreadcrumbItem, NIcon } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
-import { useAuthStore } from '@/stores/modules/auth'
+import { useAuthStore } from '@/core/stores/modules/auth'
 
 interface CustomRouteMeta {
   title?: string

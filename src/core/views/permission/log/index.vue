@@ -4,7 +4,7 @@ import type { DataTableColumns } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
-import { logApi, type BaseLogSearch, type Log } from '@/api/modules/log'
+import { logApi, type BaseLogSearch, type Log } from '@/core/api/modules/log'
 
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<BaseLogSearch>({

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, h } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
+import { NSwitch } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
@@ -10,8 +11,8 @@ import DialogForm from '@/core/form/DialogForm.vue'
 import AccountForm from './components/AccountForm.vue'
 import ResetPassword from './components/ResetPassword.vue'
 import { statusOptions } from '@/enum/options'
-import { useAuthStore } from '@/stores/modules/auth'
-import { userApi, type Account, type BaseUserSearch } from '@/api/modules/account'
+import { useAuthStore } from '@/core/stores/modules/auth'
+import { userApi, type Account, type BaseUserSearch } from '@/core/api/modules/account'
 
 const authStore = useAuthStore()
 
@@ -207,7 +208,7 @@ const handleResetPassword = (row: Record<string, any>) => {
     <!-- 新增/编辑用户 -->
     <DialogForm
       ref="dialogRef"
-      :width="740"
+      :width="500"
       :form-ref="formRef"
       :formType="formType"
       :add-api="userApi.createUser"

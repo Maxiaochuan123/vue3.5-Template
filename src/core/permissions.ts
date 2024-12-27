@@ -41,46 +41,24 @@ export const permissionMenus = [
   },
   {
     id: '4',
-    name: '财务管理',
-    isChecked: false,
-    permissions: [],
-    children: [
-      {
-        id: '4-1',
-        name: '票据管理',
-        isChecked: false,
-        permissions: [],
-        children: [
-          {
-            id: '4-1-1',
-            name: '发票',
-            isChecked: false,
-            permissions: ['add', 'edit', 'delete', 'view']
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: '5',
     name: '权限管理',
     isChecked: false,
     permissions: [],
     children: [
       {
-        id: '5-1',
+        id: '4-1',
         name: '账号管理',
         isChecked: false,
         permissions: ['add', 'edit', 'status', 'delete', 'view']
       },
       {
-        id: '5-2',
+        id: '4-2',
         name: '角色管理',
         isChecked: false,
         permissions: ['add', 'edit', 'status', 'delete', 'view']
       },
       {
-        id: '5-3',
+        id: '4-3',
         name: '系统日志',
         isChecked: false,
         permissions: []
@@ -88,7 +66,7 @@ export const permissionMenus = [
     ]
   },
   {
-    id: '6',
+    id: '5',
     name: '机器人管理',
     isChecked: false,
     permissions: []

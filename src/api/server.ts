@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { message } from '@/utils/message'
-import { useAuthStore } from '@/stores/modules/auth'
+import { useAuthStore } from '@/core/stores/modules/auth'
 import router from '@/router'
 
 export interface ApiResult<T = any> {
