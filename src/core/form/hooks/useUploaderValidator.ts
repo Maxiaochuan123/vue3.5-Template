@@ -1,5 +1,6 @@
-import type { Ref } from 'vue'
+import type { Ref, ComputedRef } from 'vue'
 import type { FormItemRule, FormInst } from 'naive-ui'
+import { unref } from 'vue'
 
 /**
  * MediaUploader 组件验证器的配置选项接口
@@ -10,7 +11,7 @@ interface MediaValidatorOptions {
   /** 表单验证字段的 key */
   key: string
   /** 是否必填，默认 false */
-  required?: boolean 
+  required?: boolean | Ref<boolean> | ComputedRef<boolean>
   /** 验证失败时的提示信息 */
   message?: string
   /** 需要上传的文件数量，默认 1 */
@@ -56,7 +57,7 @@ export function useMediaUploaderValidator(options: MediaValidatorOptions) {
   // 创建 MediaUploader 的验证规则
   const rule: FormItemRule = {
     key,
-    required,
+    required: unref(required),
     message,
     trigger: ['change', 'blur'],
     validator(rule: FormItemRule, value: string[]) {
@@ -66,12 +67,12 @@ export function useMediaUploaderValidator(options: MediaValidatorOptions) {
       }
       
       // 如果是空数组且不是必填，直接通过
-      if (value.length === 0 && !required) {
+      if (value.length === 0 && !unref(required)) {
         return true
       }
       
       // 如果是空数组且必填，返回默认消息
-      if (value.length === 0 && required) {
+      if (value.length === 0 && unref(required)) {
         return new Error(message)
       }
       

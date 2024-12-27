@@ -40,7 +40,9 @@
   const message = useMessage()
 
   // v-model
-  const modelValue = defineModel<string[]>({ default: () => [] })
+  // const modelValue = defineModel<string | string[]>({ default: () => props.maxCount === 1 ? '' : [] })
+    // const modelValue = defineModel<string | string[]>({ 'modelValue', default: '' })
+  const modelValue = defineModel<string | string[]>("modelValue", {  default: '' })
 
   // 定义 emit
   const emit = defineEmits<{
@@ -64,12 +66,22 @@
 
   // 初始化或更新文件列表
   const initializeFileList = () => {
-    if (modelValue.value && modelValue.value.length > 0) {
-      fileList.value = modelValue.value.map((url) => ({
-        url,
-        status: 'success' as const,
-        progress: 100,
-      }))
+    if (modelValue.value) {
+      if (props.maxCount === 1 && typeof modelValue.value === 'string') {
+        fileList.value = [{
+          url: modelValue.value,
+          status: 'success' as const,
+          progress: 100,
+        }]
+      } else if (Array.isArray(modelValue.value) && modelValue.value.length > 0) {
+        fileList.value = modelValue.value.map((url) => ({
+          url,
+          status: 'success' as const,
+          progress: 100,
+        }))
+      } else {
+        reset()
+      }
     } else {
       reset()
     }
@@ -219,7 +231,11 @@
             fileItem.url = uploadFile.url
             fileItem.status = 'success'
             fileItem.progress = 100
-            modelValue.value = [...modelValue.value, uploadFile.url]
+            if (props.maxCount === 1) {
+              modelValue.value = uploadFile.url
+            } else {
+              modelValue.value = [...(Array.isArray(modelValue.value) ? modelValue.value : []), uploadFile.url]
+            }
             emit('upload-success')
             unsubscribe()
           } else if (uploadFile?.status === 'error') {
@@ -257,7 +273,14 @@
 
       // 更新 modelValue，过滤掉被删除的文件
       if (file.url) {
-        modelValue.value = modelValue.value.filter(url => url !== file.url)
+        if (props.maxCount === 1) {
+          modelValue.value = ''
+        } else {
+          const currentValue = modelValue.value
+          if (Array.isArray(currentValue)) {
+            modelValue.value = currentValue.filter((url: string) => url !== file.url)
+          }
+        }
       }
 
       // 清空文件输入框的值
@@ -403,7 +426,7 @@
 
     &.direction-row {
       flex-direction: row;
-      align-items: flex-start;
+      align-items: flex-end;
     }
 
     .media-upload {
@@ -411,7 +434,10 @@
       flex-direction: row;
       flex-wrap: wrap;
       align-items: flex-start;
-      gap: 8px;
+
+      // .file-list {
+      //   margin-right: 8px;
+      // }
 
       .upload-area {
         order: 2;
@@ -604,7 +630,14 @@
     }
 
     .media-upload-description {
-      flex-shrink: 0;
+      // background-color: #ff6600;
+      // flex-shrink: 0;
+
+        display: flex;
+        flex-direction: column;
+        margin-left: 10px;
+        font-size: 12px;
+        color: #999;
     }
   }
 </style>

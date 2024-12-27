@@ -147,7 +147,7 @@ export const useAuthStore = defineStore('auth', () => {
           id: '3',
           name: '广告管理',
           isChecked: true,
-          permissions: ['edit', 'view'],
+          permissions: ['add', 'edit', 'delete', 'setAdvertisingAccount'],
           children: [],
         },
         {

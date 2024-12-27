@@ -3,7 +3,7 @@ import { NEllipsis } from 'naive-ui'
 import VideoPreviewCard from '@/core/upload/media-upload/preview/VideoPreviewCard.vue'
 
 export function renderAdvertisingInfo(row: Record<string, any>) {
-  const videoUrl = row.media?.[0] || ''
+  const videoUrl = row.content || ''
   const title = row.title || ''
   const createTime = row.createTime || ''
 

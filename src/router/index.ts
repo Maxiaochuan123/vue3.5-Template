@@ -54,9 +54,9 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'advertising-management',
-        name: 'advertising-management',
-        component: () => import('@/views/advertising-management/index.vue'),
+        path: 'advertising',
+        name: 'advertising',
+        component: () => import('@/views/advertising/index.vue'),
         meta: {
           requiresAuth: true,
           title: '广告管理',

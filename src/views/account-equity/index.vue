@@ -24,7 +24,7 @@ const defaultSearchForm = reactive<SearchParams>({
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 
 // 类型选项
-const advertisementTypeOptions = [
+const advertisingTypeOptions = [
   { label: '充值', value: 'deposit' },
   { label: '提现', value: 'withdraw' },
   { label: '赠送', value: 'bonus' },
@@ -220,7 +220,7 @@ const tableFetchApi = async ( params: SearchParams ): Promise<{ list: TableDataR
           <NFormItem label="变动类型">
             <NSelect
               v-model:value="searchForm.type"
-              :options="advertisementTypeOptions"
+              :options="advertisingTypeOptions"
               clearable
             />
           </NFormItem>

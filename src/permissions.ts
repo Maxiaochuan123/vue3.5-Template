@@ -1,11 +1,22 @@
-// 权限操作按钮映射
-export const permissionMap = {
+// 权限操作按钮映射 - 基础
+const permissionBasicMap = {
   add: '新增',
   edit: '编辑',
   delete: '删除',
   view: '查看',
   status: '状态',
   export: '导出'
+}
+
+// 权限操作按钮映射 - 广告
+const permissionAdvertMap = {
+  setAdvertisingAccount: '投放账号'
+}
+
+// 权限操作按钮映射
+export const permissionMap = {
+  ...permissionBasicMap,
+  ...permissionAdvertMap
 }
 
 // 权限配置
@@ -26,7 +37,7 @@ export const permissionMenus = [
     id: '3',
     name: '广告管理',
     isChecked: false,
-    permissions: ['add', 'edit', 'delete', 'view']
+    permissions: ['add', 'edit', 'delete', 'setAdvertisingAccount']
   },
   {
     id: '4',
