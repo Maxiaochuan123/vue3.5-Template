@@ -64,6 +64,28 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: 'advertising-placement',
+        name: 'advertising-placement',
+        component: () => import('@/views/advertising-placement/index.vue'),
+        meta: {
+          requiresAuth: true,
+          title: '广告投放',
+          icon: MegaphoneOutline,
+        },
+        children: [
+          {
+            path: ':id',
+            name: 'advertising-placement-detail',
+            component: () => import('@/views/advertising-placement/detail/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '投放数据',
+              hideInMenu: true,
+            },
+          },
+        ],
+      },
+      {
         path: 'permission',
         name: 'permission',
         meta: {

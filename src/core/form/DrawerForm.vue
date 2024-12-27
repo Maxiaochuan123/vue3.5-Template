@@ -84,9 +84,23 @@ const handleFormSubmit = async () => {
       return
     }
 
-    await api(formInstance.formData)
-    props.refreshList?.()
-    close()
+    const success = await handleSubmit({
+      submitApi: api,
+      formRef: props.formRef,
+      formData: formInstance.formData,
+      formType: currentFormType.value,
+      initialData: formInstance.initialData,
+      extraFields: props.extraFields,
+      originalData: formInstance.formData,
+      onSuccess: () => {
+        props.refreshList?.()
+        close()
+      }
+    })
+
+    if (!success) {
+      submitDisabled.value = false
+    }
   } catch (error) {
     submitDisabled.value = false
     console.error('Form submission error:', error)

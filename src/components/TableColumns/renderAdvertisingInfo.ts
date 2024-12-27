@@ -1,9 +1,9 @@
 import { h } from 'vue'
 import { NEllipsis } from 'naive-ui'
-import VideoPreviewCard from '@/core/upload/media-upload/preview/VideoPreviewCard.vue'
+import MediaPreviewCard from '@/core/upload/media-upload/preview/MediaPreviewCard.vue'
 
 export function renderAdvertisingInfo(row: Record<string, any>) {
-  const videoUrl = row.content || ''
+  const mediaUrl = row.content || ''
   const title = row.title || ''
   const createTime = row.createTime || ''
 
@@ -13,8 +13,8 @@ export function renderAdvertisingInfo(row: Record<string, any>) {
       style: 'display: flex; align-items: center; gap: 16px; width: 100%;'
     },
     [
-      h(VideoPreviewCard, {
-        videoUrl,
+      h(MediaPreviewCard, {
+        mediaUrl,
         style: 'width: 120px; flex-shrink: 0;'
       }),
       h('div', { 

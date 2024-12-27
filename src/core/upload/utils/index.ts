@@ -49,3 +49,19 @@ export function isVideo(file: FileItem | null) {
 
   return false
 }
+
+export function getMediaType(url: string): 'image' | 'video' | null {
+  if (!url) return null
+
+  // 检查图片扩展名
+  if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
+    return 'image'
+  }
+
+  // 检查视频扩展名 
+  if (/\.(mp4|webm|ogg|mov)$/i.test(url)) {
+    return 'video'
+  }
+
+  return null
+}

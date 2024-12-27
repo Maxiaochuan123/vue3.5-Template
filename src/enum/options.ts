@@ -20,9 +20,9 @@ export function getOptionLabel(options: Option[], value: any): string {
  */
 // 广告类型选项
 export const advertisingTypeOptions = [
-  { label: 'CPM: 展示广告', value: 'CPM' },
-  { label: 'CPC: 可点击广告', value: 'CPC' },
-  { label: 'CPA: 可下载广告', value: 'CPA' },
+  { label: 'CPM: 展示广告', value: 1 },
+  { label: 'CPC: 可点击广告', value: 2 },
+  { label: 'CPA: 可下载广告', value: 3 },
 ]
 // 导出广告类型
 export type AdvertisingType = ExtractOptionsValue<typeof advertisingTypeOptions>
@@ -39,6 +39,15 @@ export const statusOptions = (labels = { pass: '通过', reject: '不通过' }) 
 ]
 // 导出状态类型
 export type StatusType = ExtractOptionsValue<typeof defaultStatusOptions>
+
+// 广告投放状态选项
+export const advertPlacementStatusOptions = [
+  { label: '待投放', value: 0 },
+  { label: '投放中', value: 1 },
+  { label: '已结束', value: 2 },
+]
+// 导出状态类型
+export type AdvertPlacementStatusType = ExtractOptionsValue<typeof advertPlacementStatusOptions>
 
 // 审核状态选项
 export const auditStatusOptions = [

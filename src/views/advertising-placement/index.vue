@@ -5,45 +5,51 @@ import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import DrawerForm from '@/core/form/DrawerForm.vue'
-import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
-import { advertisingTypeOptions, auditStatusOptions, getOptionLabel } from '@/enum/options'
+import { advertisingTypeOptions, advertPlacementStatusOptions, getOptionLabel } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
-import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
-import { advertisingApi, type BaseAdvertSearch, type Advertising } from '@/api/modules/advertising'
-import { useMessage } from 'naive-ui'
-import DialogForm from '@/core/form/DialogForm.vue'
-import SetAdvertAccountForm from './components/SetAdvertAccountForm.vue'
+import AdvertisingPlacementForm, { type FormState } from './components/AdvertisingPlacementForm.vue'
+import { advertisingPlacementApi, type BaseAdvertPlacementSearch, type AdvertisingPlacement } from '@/api/modules/advertisingPlacement'
+import { useRouter } from 'vue-router'
 
-const message = useMessage()
+const router = useRouter()
 
-type TableDataRecord = Advertising
+type TableDataRecord = AdvertisingPlacement
 
 // 定义默认搜索表单值
-const defaultSearchForm = reactive<BaseAdvertSearch>({
+const defaultSearchForm = reactive<BaseAdvertPlacementSearch>({
   key: null,
   dateRange: null,
   status: null,
   type: null,
 })
 
+// 搜索参数转换
+const transformSearchParams = (params: any) => {
+  console.log('transformSearchParams:', params)
+  const { dateRange, ...rest } = params;
+  return {
+    ...rest,
+    startDate: dateRange?.[0] || null,
+    endDate: dateRange?.[1] || null
+  }
+}
+
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
-const formRef = ref<InstanceType<typeof AdvertisingForm> | null>(null)
+const formRef = ref<InstanceType<typeof AdvertisingPlacementForm> | null>(null)
 const formType = ref<'add' | 'edit' | 'view'>('add')
 const editData = ref<Partial<FormState>>({})
-const setAdvertAccountDialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
-const setAdvertAccountFormRef = ref<InstanceType<typeof SetAdvertAccountForm> | null>(null)
-        
+
 // 搜索
-const handleSearch = (values: BaseAdvertSearch) => {
+const handleSearch = (values: BaseAdvertPlacementSearch) => {
   tableRef.value?.loadData(values)
 }
 
 // 表格列定义
 const columns: DataTableColumns<TableDataRecord> = [
   {
-    title: '广告信息',
+    title: '投放广告',
     key: 'desc',
     width: 400,
     render: renderAdvertisingInfo,
@@ -51,25 +57,19 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '广告类型',
     key: 'type',
-    width: 150,
     render: (row) => {
       return getOptionLabel(advertisingTypeOptions, row.type)
     },
   },
   {
-    title: '创建人',
-    key: 'username',
-    width: 120,
-    ellipsis: {
-      tooltip: true,
-    },
+    title: '投放金额',
+    key: 'price',
   },
   {
     title: '状态',
     key: 'status',
-    width: 150,
     render: (row) => {
-      return getOptionLabel(auditStatusOptions, row.status)
+      return getOptionLabel(advertPlacementStatusOptions, row.status)
     },
   },
   {
@@ -77,39 +77,30 @@ const columns: DataTableColumns<TableDataRecord> = [
     key: 'actions',
     width: 200,
     fixed: 'right',
+    titleAlign: 'center',
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '3',
-        actions: row.status === 1 ? ['edit', 'view'] : ['edit', 'view', 'delete'],
-        deleteConfig: {
-          content: '确定要删除该广告吗？删除后不可恢复！',
-        },
-        onAction: handleTableAction
+        permissionId: '4',
+        currentPermission: 'advertisingPlacement',
+        // 添加自定义按钮
+        customButtons: [
+          {
+            label: '追投',
+            action: 'followUpInvestment',
+            onClick: handleAdvertisingForm
+          },
+          {
+            label: '投放数据',
+            type: 'warning',
+            action: 'placementData',
+            onClick: handlePlacementData
+          }
+        ],
       })
     },
   },
 ]
-
-// 处理表格操作
-const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<string, any>) => {
-  if (!row.id) return
-  switch (type) {
-    case 'edit':
-    case 'view':
-    handleAdvertisingForm(row, type)
-      break
-    case 'delete':
-      try {
-        await advertisingApi.deleteAdvertising(row.id)
-        refreshList()
-      } catch (error) {
-        console.error('删除失败:', error)
-        message.error('删除失败')
-      }
-      break
-  }
-}
 
 // 打开抽屉
 const handleAdd = () => {
@@ -124,29 +115,29 @@ const refreshList = () => {
   }
 }
 
-// 编辑处理
-const handleAdvertisingForm = (row: Record<string, any>, type: 'edit' | 'view') => {
-  // const formattedData = {
-  //   ...row,
-  //   content: Array.isArray(row.content) ? row.content : [],
-  //   icon: Array.isArray(row.icon) ? row.icon : []
-  // }
-  
-  formType.value = type
-  editData.value = row
-  drawerRef.value?.open()
+// 投放数据
+const handlePlacementData = (row: Record<string, any>) => {
+  router.push({
+    name: 'advertising-placement-detail',
+    query: { id: row.id }
+  })
 }
 
-const handleSetAdvertAccount = () => {
-  console.log('投放账号')
-  setAdvertAccountDialogRef.value?.open()
+// 编辑处理
+const handleAdvertisingForm = (row: Record<string, any>) => {
+  formType.value = 'edit'
+  editData.value = row
+  drawerRef.value?.open()
 }
 </script>
 
 <template>
+  <!-- 如果有子路由，显示子路由内容 -->
+  <router-view v-if="$route.name === 'robot-detail'" />
+
   <TablePageLayout>
     <template #search>
-      <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
+      <SearchForm :model="defaultSearchForm" :transform-params="transformSearchParams" :on-search="handleSearch">
         <template #default="{ searchForm }">
           <NFormItem label="关键词" data-width="md">
             <NInput
@@ -156,28 +147,10 @@ const handleSetAdvertAccount = () => {
             />
           </NFormItem>
 
-          <NFormItem label="创建时间" data-width="lg">
+          <NFormItem label="投放日期范围" data-width="lg">
             <NDatePicker
               v-model:value="searchForm.dateRange"
               type="daterange"
-              clearable
-            />
-          </NFormItem>
-
-          <NFormItem label="广告类型" data-width="sm">
-            <NSelect
-              v-model:value="searchForm.type"
-              :options="advertisingTypeOptions"
-              placeholder="请选择广告类型"
-              clearable
-            />
-          </NFormItem>
-
-          <NFormItem label="审核状态" data-width="sm">
-            <NSelect
-              v-model:value="searchForm.status"
-              :options="auditStatusOptions"
-              placeholder="请选择审核状态"
               clearable
             />
           </NFormItem>
@@ -187,41 +160,33 @@ const handleSetAdvertAccount = () => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <TableToolbarActions :on-add="handleAdd" permission-id="3">
-        <template #default>
-          <NButton type="primary" @click="handleSetAdvertAccount"> 设置投放账号 </NButton>
-        </template>
-      </TableToolbarActions>
+      <NButton
+        type="primary"
+        v-btnPermission="['4', 'advertisingPlacement']"
+        @click="handleAdd"
+      >
+        投放广告
+      </NButton>
     </template>
 
     <!-- 表格 -->
     <template #table>
-      <Table ref="tableRef" :columns="columns" :fetch-api="advertisingApi.getAdvertisingList" />
+      <Table ref="tableRef" :columns="columns" :fetch-api="advertisingPlacementApi.getAdvertisingPlacementList" />
     </template>
 
-    <!-- 新增/编辑广告 -->
+    <!-- 投放/追投广告 -->
     <DrawerForm
       ref="drawerRef"
       :form-ref="formRef"
       :formType="formType"
-      :add-api="advertisingApi.createAdvertising"
-      :edit-api="advertisingApi.editAdvertising"
+      :add-api="advertisingPlacementApi.createAdvertisingPlacement"
+      :edit-api="advertisingPlacementApi.updateAdvertisingPlacement"
       :refresh-list="refreshList"
       :extra-fields="['id']"
       :edit-data="editData"
     >
-      <AdvertisingForm ref="formRef" />
+      <AdvertisingPlacementForm ref="formRef" />
     </DrawerForm>
 
-    <!-- 设置投放账号 -->
-    <DialogForm 
-      ref="setAdvertAccountDialogRef" 
-      :width="440" 
-      title="设置投放账号"
-      :form-ref="setAdvertAccountFormRef"
-      :add-api="advertisingApi.setAdvertisingAccount"
-    >
-      <SetAdvertAccountForm ref="setAdvertAccountFormRef" />
-    </DialogForm>
   </TablePageLayout>
 </template>

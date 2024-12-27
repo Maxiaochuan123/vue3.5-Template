@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, inject, toRef, type Ref } from 'vue'
+import { ref, computed, inject, type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { advertisingTypeOptions, type AdvertisingType } from '@/enum/options'
 import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
@@ -9,10 +9,10 @@ import MediaPreviewPhone from '@/core/upload/media-upload/preview/MediaPreviewPh
 
 export interface FormState {
   type: AdvertisingType
-  icon: string[]
-  content: string[]
+  icon: string
+  content: string
   title: string
-  desc: string
+  descs: string
   button: string
   url: string
   android: string
@@ -31,11 +31,11 @@ const adIconMaxCount = 1
 
 const { formData } = useFormData<FormState>({
   initialData: {
-    type: 'CPM',
+    type: 1,
     title: '',
-    content: [],
-    icon: [],
-    desc: '',
+    content: '',
+    icon: '',
+    descs: '',
     button: '',
     url: '',
     android: '',
@@ -57,14 +57,14 @@ const mediaValidator = useMediaUploaderValidator({
 const adIconMediaValidator = useMediaUploaderValidator({
   formRef,
   key: 'icon',
-  required: computed(() => ['CPC', 'CPA'].includes(formData.type)), 
+  required: computed(() => [2, 3].includes(formData.type)), 
   message: '请上传广告图标',
   requiredCount: adIconMaxCount
 })
 
 // 表单验证规则
 const rules = {
-  type: { required: true, message: '请选择广告类型', trigger: 'change' },
+  type: { type: 'number', required: true, message: '请选择广告类型', trigger: 'change' },
   content: mediaValidator.rule,
   title: [
     { required: true, message: '请输入广告标题', trigger: 'blur' },
@@ -72,22 +72,22 @@ const rules = {
   ],
   icon: adIconMediaValidator.rule,
   button: { 
-    required: computed(() => ['CPC', 'CPA'].includes(formData.type)),
+    required: computed(() => [2, 3].includes(formData.type)),
     message: '请输入按钮文案',
     trigger: 'blur'
   },
   url: {
-    required: computed(() => formData.type === 'CPC'),
+    required: computed(() => formData.type === 2),
     message: '请输入落地页URL',
     trigger: 'blur'
   },
   android: {
-    required: computed(() => formData.type === 'CPA'),
+    required: computed(() => formData.type === 3),
     message: '请输入安卓下载地址',
     trigger: 'blur'
   },
   ios: {
-    required: computed(() => formData.type === 'CPA'),
+    required: computed(() => formData.type === 3),
     message: '请输入苹果下载地址',
     trigger: 'blur'
   }
@@ -116,7 +116,7 @@ defineExpose({
         :disabled="isViewMode"
       >
         <!-- CPM/CPC/CPA 基础组件 -->
-        <template v-if="['CPM', 'CPC', 'CPA'].includes(formData.type)">
+        <template v-if="[1, 2, 3].includes(formData.type)">
           <NFormItem label="广告类型" path="type">
             <NSelect
               v-model:value="formData.type"
@@ -156,7 +156,7 @@ defineExpose({
 
           <NFormItem label="广告描述">
             <NInput
-              v-model:value="formData.desc"
+              v-model:value="formData.descs"
               type="textarea"
               placeholder="请输入广告描述"
               :maxlength="200"
@@ -166,7 +166,7 @@ defineExpose({
         </template>
 
         <!-- CPC/CPA 共同组件 -->
-        <template v-if="['CPC', 'CPA'].includes(formData.type)">
+        <template v-if="[2, 3].includes(formData.type)">
           <NFormItem label="广告图标" path="icon">
             <MediaUpload 
               v-model="formData.icon"
@@ -192,7 +192,7 @@ defineExpose({
         </template>
 
         <!-- CPC 特有组件 -->
-        <template v-if="formData.type === 'CPC'">
+        <template v-if="formData.type === 2">
           <NFormItem label="落地页URL" path="url">
             <NInput
               v-model:value="formData.url"
@@ -202,7 +202,7 @@ defineExpose({
         </template>
 
         <!-- CPA 特有组件 -->
-        <template v-if="formData.type === 'CPA'">
+        <template v-if="formData.type === 3">
           <NFormItem label="安卓下载地址" path="android">
             <NInput
               v-model:value="formData.android"
@@ -219,7 +219,7 @@ defineExpose({
       </NForm>
     </div>
     <div class="preview-content">
-      <MediaPreviewPhone :url="formData.content[0]" title="预览广告创意" />
+      <MediaPreviewPhone :url="formData.content" title="预览广告创意" />
     </div>
   </div>
 </template>
@@ -238,9 +238,5 @@ defineExpose({
       align-items: center;
       flex: 1;
     }
-  }
-
-  .uploader-container {
-    // 移除 decriton 样式，因为它已经移到 MediaUpload.vue 中了
   }
 </style>

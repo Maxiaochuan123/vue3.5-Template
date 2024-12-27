@@ -27,6 +27,17 @@ const defaultSearchForm = reactive<BaseAdvertSearch>({
   type: null,
 })
 
+// 搜索参数转换
+const transformSearchParams = (params: any) => {
+  console.log('transformSearchParams:', params)
+  const { dateRange, ...rest } = params;
+  return {
+    ...rest,
+    startDate: dateRange?.[0] || null,
+    endDate: dateRange?.[1] || null
+  }
+}
+
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingForm> | null>(null)
@@ -44,14 +55,13 @@ const handleSearch = (values: BaseAdvertSearch) => {
 const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '广告信息',
-    key: 'desc',
+    key: 'descs',
     width: 400,
     render: renderAdvertisingInfo,
   },
   {
     title: '广告类型',
     key: 'type',
-    width: 150,
     render: (row) => {
       return getOptionLabel(advertisingTypeOptions, row.type)
     },
@@ -59,7 +69,6 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '创建人',
     key: 'username',
-    width: 120,
     ellipsis: {
       tooltip: true,
     },
@@ -67,7 +76,6 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '状态',
     key: 'status',
-    width: 150,
     render: (row) => {
       return getOptionLabel(auditStatusOptions, row.status)
     },
@@ -77,11 +85,12 @@ const columns: DataTableColumns<TableDataRecord> = [
     key: 'actions',
     width: 200,
     fixed: 'right',
+    titleAlign: 'center',
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
         permissionId: '3',
-        actions: row.status === 1 ? ['edit', 'view'] : ['edit', 'view', 'delete'],
+        actions: ['edit', 'view', 'delete'],
         deleteConfig: {
           content: '确定要删除该广告吗？删除后不可恢复！',
         },
@@ -105,7 +114,7 @@ const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<s
         refreshList()
       } catch (error) {
         console.error('删除失败:', error)
-        message.error('删除失败')
+        message.error(`删除失败: ${error}`)
       }
       break
   }
@@ -126,12 +135,6 @@ const refreshList = () => {
 
 // 编辑处理
 const handleAdvertisingForm = (row: Record<string, any>, type: 'edit' | 'view') => {
-  // const formattedData = {
-  //   ...row,
-  //   content: Array.isArray(row.content) ? row.content : [],
-  //   icon: Array.isArray(row.icon) ? row.icon : []
-  // }
-  
   formType.value = type
   editData.value = row
   drawerRef.value?.open()
@@ -146,11 +149,11 @@ const handleSetAdvertAccount = () => {
 <template>
   <TablePageLayout>
     <template #search>
-      <SearchForm :model="defaultSearchForm" :on-search="handleSearch">
+      <SearchForm :model="defaultSearchForm" :on-search="handleSearch" :transform-params="transformSearchParams">
         <template #default="{ searchForm }">
           <NFormItem label="关键词" data-width="md">
             <NInput
-              v-model:value="searchForm.keyword"
+              v-model:value="searchForm.key"
               placeholder="请输入标题关键词"
               clearable
             />
@@ -189,7 +192,7 @@ const handleSetAdvertAccount = () => {
     <template #toolbar>
       <TableToolbarActions :on-add="handleAdd" permission-id="3">
         <template #default>
-          <NButton type="primary" @click="handleSetAdvertAccount"> 设置投放账号 </NButton>
+          <NButton type="primary" v-btnPermission="['3', 'setAdvertisingAccount']" @click="handleSetAdvertAccount"> 设置投放账号 </NButton>
         </template>
       </TableToolbarActions>
     </template>

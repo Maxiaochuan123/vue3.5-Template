@@ -190,7 +190,6 @@ export function useFormSubmit() {
 
       // 处理提交数据
       let submitData: Record<string, any> = {}
-      console.log('formData', formData)
 
       // 使用初始数据结构作为字段过滤依据
       const formFields = Object.keys(initialData || formData)
@@ -211,7 +210,7 @@ export function useFormSubmit() {
         })
       }
 
-      console.log(submitData);
+      console.log('submitData', submitData);
 
       // 调用提交接口
       await submitApi(submitData)

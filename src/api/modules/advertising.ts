@@ -1,6 +1,7 @@
 import { post, get, put, del } from '@/api/server'
 import type { ApiResult, ListRequest, ListResponse } from '@/api/types'
-import type { AdvertisingType } from '@/enum/options'
+import type { AuditStatusType, AdvertisingType } from '@/enum/options'
+
 
 export interface Advertising {
   id?: number
@@ -8,8 +9,14 @@ export interface Advertising {
   content: string
   createTime: string
   icon?: string
-  status: number
-  type: number | null
+  status: AuditStatusType | null
+  type: AdvertisingType | null
+  title: string
+  button: string
+  url: string
+  descs: string
+  android: string
+  ios: string
 }
 
 export interface SetAdvertAccount {
@@ -20,11 +27,18 @@ export interface SetAdvertAccount {
 export interface BaseAdvertSearch {
   key?: string | null
   dateRange?: [number, number] | null
-  status?: number | null
+  status: AuditStatusType | null
   type?: AdvertisingType | null
 }
 
 export interface AdvertSearch extends ListRequest, BaseAdvertSearch {}
+
+export interface AdvertisingOptions {
+  id: number
+  title: string
+  content: string
+  type: AdvertisingType
+}
 
 export const advertisingApi = {
   /**
@@ -59,6 +73,13 @@ export const advertisingApi = {
    * 删除广告
    */
   deleteAdvertising(id: number): Promise<ApiResult<void>> {
-    return del(`/api/v1/mjAdvertInfo/{id}`)
-  }
+    return del(`/api/v1/mjAdvertInfo/${id}`)
+  },
+
+  /**
+   * 获取广告下拉列表
+   */
+  getAdvertisingOptions(): Promise<ApiResult<AdvertisingOptions[]>> {
+    return get('/api/v1/advertPlacement/select')
+  },
 }

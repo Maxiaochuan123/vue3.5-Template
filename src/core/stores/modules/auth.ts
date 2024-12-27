@@ -129,40 +129,47 @@ export const useAuthStore = defineStore('auth', () => {
         },
         {
           id: '4',
-          name: '权限管理',
+          name: '广告投放',
           isChecked: true,
-          permissions: [],
-          children: [
-            {
-              id: '4-1',
-              name: '账号管理',
-              isChecked: true,
-              permissions: ['add', 'edit', 'status', 'delete', 'view'],
-              children: [],
-            },
-            {
-              id: '4-2',
-              name: '角色管理',
-              isChecked: true,
-              permissions: ['add', 'edit', 'status', 'delete', 'view'],
-              children: [],
-            },
-            {
-              id: '4-3',
-              name: '系统日志',
-              isChecked: true,
-              permissions: [],
-              children: [],
-            },
-          ],
-        },
-        {
-          id: '5',
-          name: '机器人管理',
-          isChecked: false,
-          permissions: ['view', 'add', 'edit', 'delete'],
+          permissions: ['advertisingPlacement', 'followUpInvestment', 'placementData'],
           children: [],
         },
+        // {
+        //   id: '5',
+        //   name: '权限管理',
+        //   isChecked: true,
+        //   permissions: [],
+        //   children: [
+        //     {
+        //       id: '5-1',
+        //       name: '账号管理',
+        //       isChecked: true,
+        //       permissions: ['add', 'edit', 'status', 'delete', 'view'],
+        //       children: [],
+        //     },
+        //     {
+        //       id: '5-2',
+        //       name: '角色管理',
+        //       isChecked: true,
+        //       permissions: ['add', 'edit', 'status', 'delete', 'view'],
+        //       children: [],
+        //     },
+        //     {
+        //       id: '5-3',
+        //       name: '系统日志',
+        //       isChecked: true,
+        //       permissions: [],
+        //       children: [],
+        //     },
+        //   ],
+        // },
+        // {
+        //   id: '6',
+        //   name: '机器人管理',
+        //   isChecked: false,
+        //   permissions: ['view', 'add', 'edit', 'delete'],
+        //   children: [],
+        // },
       ]
 
       // 登录获取 token

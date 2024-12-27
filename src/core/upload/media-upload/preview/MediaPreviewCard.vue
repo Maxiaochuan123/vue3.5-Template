@@ -1,56 +1,66 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { NIcon } from 'naive-ui'
-  import { CaretForwardOutline, VideocamOffSharp } from '@vicons/ionicons5'
+  import { CaretForwardOutline, VideocamOffSharp, ImageOutline } from '@vicons/ionicons5'
   import MediaPreviewMask from './MediaPreviewMask.vue'
+  import { getMediaType } from '../../utils'
   
   defineOptions({
-    name: 'VideoPreview',
+    name: 'MediaPreviewCard',
   })
   
   interface Props {
-    videoUrl: string
+    mediaUrl: string
   }
   
   const props = defineProps<Props>()
   const showPreview = ref(false)
   const videoRef = ref<HTMLVideoElement | null>(null)
+  const mediaType = computed(() => getMediaType(props.mediaUrl))
   
   const handlePlay = () => {
-    if (!props.videoUrl) return
+    if (!props.mediaUrl) return
     showPreview.value = true
   }
 </script>
 
 <template>
-  <div class="video-preview">
+  <div class="media-preview">
     <div class="preview-cover" @click="handlePlay">
-      <div class="no-cover" v-if="!videoUrl">
+      <div class="no-cover" v-if="!mediaUrl">
         <n-icon size="24" class="placeholder-icon">
-          <VideocamOffSharp />
+          <VideocamOffSharp v-if="mediaType === 'video'" />
+          <ImageOutline v-else />
         </n-icon>
       </div>
       <template v-else>
-        <video 
+        <video
+          v-if="mediaType === 'video'"
           ref="videoRef"
-          :src="videoUrl"
-          class="video-background"
+          :src="mediaUrl"
+          class="media-background"
           preload="metadata"
+        />
+        <img
+          v-else
+          :src="mediaUrl"
+          class="media-background"
         />
         <div class="play-button">
           <n-icon size="24" class="play-icon">
-            <CaretForwardOutline />
+            <CaretForwardOutline v-if="mediaType === 'video'" />
+            <ImageOutline v-else />
           </n-icon>
         </div>
       </template>
     </div>
 
-    <MediaPreviewMask v-model="showPreview" :file="{ url: videoUrl }" />
+    <MediaPreviewMask v-model="showPreview" :file="{ url: mediaUrl }" />
   </div>
 </template>
   
 <style scoped lang="less">
-  .video-preview {
+  .media-preview {
     width: 120px;
     height: 80px;
     position: relative;
@@ -68,7 +78,7 @@
       justify-content: center;
       background-color: #f5f5f5;
   
-      .video-background {
+      .media-background {
         position: absolute;
         inset: 0;
         width: 100%;

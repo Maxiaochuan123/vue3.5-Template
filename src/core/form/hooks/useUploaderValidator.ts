@@ -60,25 +60,23 @@ export function useMediaUploaderValidator(options: MediaValidatorOptions) {
     required: unref(required),
     message,
     trigger: ['change', 'blur'],
-    validator(rule: FormItemRule, value: string[]) {
-      // 如果值不是数组或者是空数组，返回默认消息
-      if (!Array.isArray(value)) {
-        return new Error(message)
-      }
+    validator(rule: FormItemRule, value: string | string[]) {
+      // 将单个值转换为数组统一处理
+      const files = Array.isArray(value) ? value : value ? [value] : []
       
       // 如果是空数组且不是必填，直接通过
-      if (value.length === 0 && !unref(required)) {
+      if (files.length === 0 && !unref(required)) {
         return true
       }
       
       // 如果是空数组且必填，返回默认消息
-      if (value.length === 0 && unref(required)) {
+      if (files.length === 0 && unref(required)) {
         return new Error(message)
       }
       
       // 如果数组不为空但数量不足，更新规则消息并返回错误
-      if (value.length < requiredCount) {
-        rule.message = `请上传${requiredCount}个文件，当前已上传${value.length}个`
+      if (files.length < requiredCount) {
+        rule.message = `请上传${requiredCount}个文件，当前已上传${files.length}个`
         return new Error(rule.message)
       }
       
