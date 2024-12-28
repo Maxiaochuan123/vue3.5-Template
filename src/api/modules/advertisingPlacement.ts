@@ -1,4 +1,5 @@
 import { post, get, put } from '@/api/server'
+import { dataGet } from '@/api/advertisingPlacementServer'
 import type { ApiResult, ListRequest, ListResponse } from '@/api/types'
 import type { AuditStatusType, AdvertisingType } from '@/enum/options'
 
@@ -7,6 +8,7 @@ export interface AdvertisingPlacement {
   adverInfoId: number
   type: AdvertisingType | null
   price: number | null
+  placeEndTime: string | null
 }
 
 export interface BaseAdvertPlacementSearch {
@@ -22,6 +24,26 @@ export interface BillingMethod {
   cpa: string
   cpc: string
   cpm: string
+}
+
+export interface RegionParams extends ListRequest {
+  id: number
+}
+
+export interface CityParams extends RegionParams {
+  province: string
+}
+
+export interface RegionData {
+  rank: number
+  name: string
+  num: number
+  percent: number
+}
+
+export interface RegionResponse {
+  records: RegionData[]
+  total: number
 }
 
 export const advertisingPlacementApi = {
@@ -51,5 +73,85 @@ export const advertisingPlacementApi = {
    */
   updateAdvertisingPlacement(data: AdvertisingPlacement): Promise<ApiResult<void>> {
     return put('/api/v1/advertPlacement', data)
+  },
+}
+
+// 广告投放数据
+export const advertisingPlacementDataApi = {
+  /**
+   * 获取展现次数
+   */
+  getShowAcount(params: { id: number }): Promise<ApiResult> {
+    return get('/api/v1/advert/showAcount', params)
+  },
+
+  /**
+   * 获取点击次数
+   */
+  getClickAcount(params: { id: number }): Promise<ApiResult> {
+    return get('/api/v1/advert/clickAcount', params)
+  },
+
+  /**
+   * 获取下载次数
+   */
+  getDownloadAcount(params: { id: number }): Promise<ApiResult> {
+    return get('/api/v1/advert/downloadAcount', params)
+  },
+  
+  /**
+   * 获取展现趋势数据
+   */
+  getShowTrend(params: { id: number }): Promise<ApiResult> {
+    return dataGet('/common/v1/advert/showLine', params)
+  },
+
+  /**
+   * 获取点击趋势数据 
+   */
+  getClickTrend(params: { id: number }): Promise<ApiResult> {
+    return dataGet('/common/v1/advert/clickLine', params)
+  },
+
+  /**
+   * 获取性别分布数据
+   */
+  getGenderDistribution(params: { id: number }): Promise<ApiResult> {
+    return dataGet('/common/v1/advert/sexAccount', params)
+  },
+
+  /**
+   * 获取访问设备分布数据
+   */
+  getDeviceDistribution(params: { id: number }): Promise<ApiResult> {
+    return dataGet('/common/v1/advert/deviceAccount', params)
+  },
+
+  /**
+   * 获取职业分布数据
+   */
+  getOccupationDistribution(params: { id: number }): Promise<ApiResult> {
+    return dataGet('/common/v1/advert/occupation', params)
+  },
+
+  /**
+   * 获取省级地区分布数据
+   */
+  getProvinceDistribution(params: RegionParams): Promise<ApiResult<{ records: RegionData[]; total: number }>> {
+    return dataGet('/common/v1/advert/province', params)
+  },
+
+  /**
+   * 获取城市分布数据
+   */
+  getCityDistribution(params: CityParams): Promise<ApiResult<{ records: RegionData[]; total: number }>> {
+    return dataGet('/common/v1/advert/city', params)
+  },
+
+  /**
+   * 获取年龄分布数据
+   */
+  getAgeDistribution(params: { id: number }): Promise<ApiResult> {
+    return dataGet('/common/v1/advert/age', params)
   },
 }

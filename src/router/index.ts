@@ -82,8 +82,8 @@ const routes: RouteRecordRaw[] = [
               title: '投放数据',
               hideInMenu: true,
             },
-          },
-        ],
+          }
+        ]
       },
       {
         path: 'permission',

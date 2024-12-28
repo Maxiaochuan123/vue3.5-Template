@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { h, ref, reactive } from 'vue'
-import { NButton, type DataTableColumns } from 'naive-ui'
+import { NButton, type DataTableColumns, NIcon, NTooltip } from 'naive-ui'
+import { InformationCircleOutline } from '@vicons/ionicons5'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
@@ -64,13 +65,52 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '投放金额',
     key: 'price',
+    render: (row) => {
+      return `￥${row.price}`
+    }
+  },
+  {
+    title: () => {
+      return h(
+        'div',
+        {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }
+        },
+        [
+          '展示次数',
+          h(NTooltip, {}, {
+            trigger: () => h(NIcon, {
+              style: {
+                cursor: 'help'
+              },
+              size: 20
+            }, {
+              default: () => h(InformationCircleOutline)
+            }),
+            default: () => '投放数据5分钟更新一次'
+          })
+        ]
+      )
+    },
+    key: 'num',
   },
   {
     title: '状态',
     key: 'status',
     render: (row) => {
-      return getOptionLabel(advertPlacementStatusOptions, row.status)
+      return getOptionLabel(advertPlacementStatusOptions, row.type)
     },
+  },
+  {
+    title: '结束时间',
+    key: 'placeEndTime',
+    render: (row) => {
+      return row.placeEndTime ? row.placeEndTime : '--'
+    }
   },
   {
     title: '操作',
@@ -118,8 +158,10 @@ const refreshList = () => {
 // 投放数据
 const handlePlacementData = (row: Record<string, any>) => {
   router.push({
-    name: 'advertising-placement-detail',
-    query: { id: row.id }
+    path: `/advertising-placement/${row.id}`,
+    query: {
+      type: row.type
+    }
   })
 }
 
@@ -133,9 +175,9 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
 
 <template>
   <!-- 如果有子路由，显示子路由内容 -->
-  <router-view v-if="$route.name === 'robot-detail'" />
+  <router-view v-if="$route.name === 'advertising-placement-detail'" />
 
-  <TablePageLayout>
+  <TablePageLayout v-else>
     <template #search>
       <SearchForm :model="defaultSearchForm" :transform-params="transformSearchParams" :on-search="handleSearch">
         <template #default="{ searchForm }">
@@ -179,6 +221,8 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
       ref="drawerRef"
       :form-ref="formRef"
       :formType="formType"
+      add-title="投放广告"
+      edit-title="追投广告"
       :add-api="advertisingPlacementApi.createAdvertisingPlacement"
       :edit-api="advertisingPlacementApi.updateAdvertisingPlacement"
       :refresh-list="refreshList"

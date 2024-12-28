@@ -19,6 +19,8 @@ interface Props {
   formType?: FormType
   refreshList?: () => void
   extraFields?: string[]
+  addTitle?: string
+  editTitle?: string
   showFooter?: boolean
   submitText?: string
   cancelText?: string
@@ -30,7 +32,7 @@ const props = withDefaults(defineProps<Props>(), {
   submitText: '提交',
   cancelText: '取消',
   showFooter: true,
-  extraFields: () => []
+  extraFields: () => [],
 })
 
 // 创建响应式的 formType
@@ -46,6 +48,17 @@ watch(
   },
   { immediate: true }
 )
+
+// addTitle 和 editTitle 是可选的，如果提供了，则优先使用这些标题，否则使用 drawerTitle
+const computedTitle = computed(() => {
+  if (currentFormType.value === 'add') {
+    return props.addTitle || drawerTitle.value
+  }
+  if (currentFormType.value === 'edit') {
+    return props.editTitle || drawerTitle.value
+  }
+  return props.addTitle || props.editTitle || drawerTitle.value
+})
 
 // 提供响应式的 formType 和 editData 给子组件
 provide('formType', currentFormType)
@@ -145,7 +158,7 @@ defineExpose({
                 <ArrowBack />
               </NIcon>
             </div>
-            <h2 class="page-title">{{ drawerTitle }}</h2>
+            <h2 class="page-title">{{ computedTitle }}</h2>
           </div>
         </div>
       </template>
