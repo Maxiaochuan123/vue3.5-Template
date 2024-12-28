@@ -61,10 +61,18 @@ const selectPrice = (price: number) => {
 
 // 监听广告选择变化
 const handleAdvertisingChange = (value: number | null) => {
-  if (value && advertisingOptionsMap.value.has(value)) {
-    const selectedAd = advertisingOptionsMap.value.get(value)!
-    formData.type = selectedAd.type
-    url.value = selectedAd.content
+  if (value !== null) {
+    // 确保使用数字类型进行比较
+    const numericValue = Number(value)
+    
+    if (advertisingOptionsMap.value.has(numericValue)) {
+      const selectedAd = advertisingOptionsMap.value.get(numericValue)!
+      formData.type = selectedAd.type
+      url.value = selectedAd.content
+    } else {
+      formData.type = null
+      url.value = ''
+    }
   } else {
     formData.type = null
     url.value = ''
@@ -85,6 +93,11 @@ const getAdvertisingOptions = async () => {
         label: item.title,
         value: item.id
       }))
+      
+      // 如果是编辑模式，在数据加载完成后设置初始值
+      if (formType.value === 'edit' && editData.value.adverInfoId) {
+        handleAdvertisingChange(editData.value.adverInfoId)
+      }
     }
   } catch (error) {
     console.error('获取广告选项失败:', error)
@@ -115,10 +128,10 @@ const getUserBalance = async () => {
   }
 } 
 
-onMounted(() => {
-  getAdvertisingOptions()
-  getBillingMethod()
-  getUserBalance()
+onMounted(async () => {
+  await getAdvertisingOptions()
+  await getBillingMethod()
+  await getUserBalance()
 })
 
 const { formData, initialData } = useFormData<FormState>({
