@@ -183,7 +183,7 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
         <template #default="{ searchForm }">
           <NFormItem label="关键词" data-width="md">
             <NInput
-              v-model:value="searchForm.keyword"
+              v-model:value="searchForm.key"
               placeholder="请输入标题关键词"
               clearable
             />
