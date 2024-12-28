@@ -1,6 +1,6 @@
 import { post, get, put, del } from '@/api/server'
 import type { ApiResult, ListRequest, ListResponse } from '@/api/types'
-import type { StatusType } from '@/enum/options'
+import type { EnableDisableType } from '@/enum/options'
 
 
 // 角色权限菜单类型
@@ -16,8 +16,8 @@ export interface RolePermission {
 export interface Role {
   id: string
   name: string
-  username: string // 创建人
-  status: StatusType // 1启用 2禁用
+  username: string
+  status: EnableDisableType
   createTime: string
   menuTree: RolePermission[]
 }
@@ -32,7 +32,7 @@ export interface RoleListQuery extends ListRequest, BaseRoleSearch {}
 // 角色更改状态
 export interface RoleStatus {
   id: string
-  status: StatusType
+  status: EnableDisableType
 }
 
 

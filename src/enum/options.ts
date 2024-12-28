@@ -27,18 +27,13 @@ export const advertisingTypeOptions = [
 // 导出广告类型
 export type AdvertisingType = ExtractOptionsValue<typeof advertisingTypeOptions>
 
-// 状态选项
-export const defaultStatusOptions = [
-  { label: '通过', value: 1 },
-  { label: '不通过', value: 2 },
-]
-
-export const statusOptions = (labels = { pass: '通过', reject: '不通过' }) => [
-  { label: labels.pass, value: 1 },
-  { label: labels.reject, value: 2 },
+// 启用禁用状态选项
+export const enableDisableOptions = [
+  { label: '启用', value: 1 },
+  { label: '禁用', value: 2 },
 ]
 // 导出状态类型
-export type StatusType = ExtractOptionsValue<typeof defaultStatusOptions>
+export type EnableDisableType = ExtractOptionsValue<typeof enableDisableOptions>
 
 // 广告投放状态选项
 export const advertPlacementStatusOptions = [
@@ -57,3 +52,20 @@ export const auditStatusOptions = [
 ]
 // 导出状态类型
 export type AuditStatusType = ExtractOptionsValue<typeof auditStatusOptions>
+
+// 变动类型选项
+export const changeTypeOptions = [
+  { label: '归零', value: 1 },
+  { label: '广告投放', value: 2 },
+  { label: '重置', value: 3 },
+]
+// 导出状态类型
+export type ChangeTypeType = ExtractOptionsValue<typeof changeTypeOptions>
+
+// 变动状态选项
+export const changeStatusOptions = [
+  { label: '减少', value: 1 },
+  { label: '增加', value: 2 },
+]
+// 导出状态类型
+export type ChangeStatusType = ExtractOptionsValue<typeof changeStatusOptions>

@@ -10,7 +10,7 @@ import TableActions from '@/core/table/table-actions/index.vue'
 import DialogForm from '@/core/form/DialogForm.vue'
 import AccountForm from './components/AccountForm.vue'
 import ResetPassword from './components/ResetPassword.vue'
-import { statusOptions } from '@/enum/options'
+import { enableDisableOptions } from '@/enum/options'
 import { useAuthStore } from '@/core/stores/modules/auth'
 import { userApi, type Account, type BaseUserSearch } from '@/core/api/modules/account'
 
@@ -174,7 +174,7 @@ const handleResetPassword = (row: Record<string, any>) => {
           <NFormItem label="状态">
             <NSelect
               v-model:value="searchForm.status"
-              :options="statusOptions({ pass: '启用', reject: '禁用' })"
+              :options="enableDisableOptions"
               placeholder="请选择状态"
               clearable
             />
