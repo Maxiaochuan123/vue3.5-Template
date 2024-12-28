@@ -23,8 +23,8 @@ const transformSearchParams = (params: any) => {
   const { dateRange, ...rest } = params;
   return {
     ...rest,
-    startDate: dateRange?.[0] || null,
-    endDate: dateRange?.[1] || null
+    startDate: dateRange?.[0] ? new Date(dateRange[0]).toISOString().split('T')[0] : null,
+    endDate: dateRange?.[1] ? new Date(dateRange[1]).toISOString().split('T')[0] : null
   }
 }
 
@@ -55,14 +55,14 @@ const columns: DataTableColumns<TableDataRecord> = [
     title: '本金变动',
     key: 'principalAmount',
     render: (row) => {
-      return '￥' + row.principalAmount
+      return row.principalAmount ? '￥' + row.principalAmount : '--'
     },
   },
   {
     title: '赠送变动',
     key: 'giftAmount',
     render: (row) => {
-      return '￥' + row.giftAmount
+      return row.giftAmount ? '￥' + row.giftAmount : '--'
     },
   },
   {
@@ -74,11 +74,13 @@ const columns: DataTableColumns<TableDataRecord> = [
     key: 'time',
   }
 ]
+const mydate = ref()
 </script>
 
 <template>
   <TablePageLayout>
     <template #search>
+          
       <SearchForm :model="defaultSearchForm" :on-search="handleSearch" :transform-params="transformSearchParams">
         <template #default="{ searchForm }">
           <NFormItem label="时间" data-width="lg">

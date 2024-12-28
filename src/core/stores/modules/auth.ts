@@ -102,14 +102,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 初始化状态
   initState()
-
+  
   const login = async (userName: string, password: string) => {
     try {
       const mockPermissions = [
         {
           id: '1',
           name: '首页',
-          isChecked: true,
+          isChecked: false,
           permissions: [],
           children: [],
         },

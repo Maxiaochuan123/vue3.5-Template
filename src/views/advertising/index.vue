@@ -33,8 +33,8 @@ const transformSearchParams = (params: any) => {
   const { dateRange, ...rest } = params;
   return {
     ...rest,
-    startDate: dateRange?.[0] || null,
-    endDate: dateRange?.[1] || null
+    startDate: dateRange?.[0] ? new Date(dateRange[0]).toISOString().split('T')[0] : null,
+    endDate: dateRange?.[1] ? new Date(dateRange[1]).toISOString().split('T')[0] : null
   }
 }
 

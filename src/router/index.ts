@@ -159,11 +159,55 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
+  
+  // 首先检查是否需要认证
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
-  } else {
-    next()
+    return
   }
+
+  // 然后检查权限
+  if (to.meta.requiresAuth) {
+    // 获取当前路由及其所有父级路由的权限标题
+    const routeTitles = to.matched
+      .filter(route => route.meta?.title)
+      .map(route => route.meta?.title as string)
+
+    // 递归检查权限
+    const checkPermission = (permissions: any[], title: string): boolean => {
+      for (const permission of permissions) {
+        if (permission.name === title) {
+          return permission.isChecked
+        }
+        if (permission.children?.length) {
+          const hasPermission = checkPermission(permission.children, title)
+          if (hasPermission) return true
+        }
+      }
+      return false
+    }
+
+    // 检查路由链上的所有权限
+    const hasAllPermissions = routeTitles.every(title => {
+      return checkPermission(authStore.auth.permissions, title)
+    })
+
+    if (!hasAllPermissions) {
+      // 重定向到第一个有权限的路由
+      const firstPermittedRoute = authStore.auth.permissions.find(p => p.isChecked)
+      if (firstPermittedRoute) {
+        const route = routes[1].children?.find(r => r.meta?.title === firstPermittedRoute.name)
+        if (route) {
+          next(route.path)
+          return
+        }
+      }
+      next('/login')
+      return
+    }
+  }
+  
+  next()
 })
 
 export default router
