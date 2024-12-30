@@ -4,34 +4,35 @@ import type { AuditStatusType, GenderType } from '@/enum/options'
 
 export interface Customer {
   id?: number
-  userName: string | null
-  gender: GenderType | null
-  mobile: string | null
-  address: string | null
-  status: AuditStatusType | null
-  createTime: string | null
+  userName: string
+  gender: GenderType
+  mobile: string
+  address: string
+  status: AuditStatusType
+  createTime: string
+  type?: string
 }
 
 export interface CustomerDetail {
-  address: string | null
-  allRecharge: string | null
-  auditContent: string | null
-  auditTime: string | null
-  auditUser: string | null
-  companyName: string | null
-  createTime: string | null
-  enterpriseImg: string | null
-  gender: GenderType | null
-  gift: string | null
-  identityImgList: string[] | null
-  mobile: string | null
-  nickname: string | null
-  principal: string | null
-  realName: string | null
-  rechargeGift: string | null
-  rechargePrincipal: string | null
-  status: number | null
-  userName: string | null
+  address: string
+  allRecharge: string
+  auditContent: string
+  auditTime: string
+  auditUser: string
+  companyName: string
+  createTime: string
+  enterpriseImg: string
+  gender: GenderType
+  gift: string
+  identityImgList: string[]
+  mobile: string
+  nickname: string
+  principal: string
+  realName: string
+  rechargeGift: string
+  rechargePrincipal: string
+  status: AuditStatusType
+  userName: string
 }
 
 export interface CustomerSaveForm {
@@ -42,23 +43,21 @@ export interface CustomerSaveForm {
   realName: string
 }
 
-export interface CreatedContract {
+export interface AddContract {
   id: number | null
-  contractPrice: number | null
-  contractUrl: string[] | null
-  figtAmount: number | null
-  name: string | null
-  pricePrincipal: string | null
-  principal: number | null
-  status: AuditStatusType | null
-  type: string | null
+  contractUrl: string[]
+  pricePrincipal: string
+  contractPrice: string
+  figtAmount: string
+  principal: string
+  type: string
 }
 
 export interface BaseCustomerSearch {
-  key?: string | null
+  key?: string
   dateRange?: [number, number] | null
-  mobile?: string | null
-  status?: AuditStatusType | null
+  mobile?: string
+  status?: AuditStatusType
 }
 
 export interface CustomerSearch extends ListRequest, BaseCustomerSearch {}
@@ -66,6 +65,12 @@ export interface CustomerSearch extends ListRequest, BaseCustomerSearch {}
 export interface RegionResponse {
   records: Customer[]
   total: number
+}
+
+export interface AuditForm {
+  id: number
+  status: AuditStatusType
+  auditContent: string
 }
 
 export const customerApi = {
@@ -93,7 +98,21 @@ export const customerApi = {
   /**
    * 添加合同
    */
-  createContract(data: CreatedContract): Promise<ApiResult<void>> {
+  createContract(data: AddContract): Promise<ApiResult<void>> {
     return post('/api/v1/mjCustomer/contract', data)
   },
+
+  /**
+   * 修改密码
+   */
+  updatePassword(data: { id: number; password: string }): Promise<ApiResult<void>> {
+    return post('/api/v1/mjCustomer/password', data)
+  },
+
+  /**
+   * 审核
+   */
+  audit(data: AuditForm): Promise<ApiResult<void>> {
+    return post('/api/v1/mjCustomer/audit', data)
+  }
 }

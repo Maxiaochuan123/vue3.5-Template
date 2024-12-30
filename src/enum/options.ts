@@ -48,7 +48,7 @@ export type AdvertPlacementStatusType = ExtractOptionsValue<typeof advertPlaceme
 export const auditStatusOptions = [
   { label: '待审核', value: 0 },
   { label: '审核通过', value: 1 },
-  { label: '审核失败', value: 2 },
+  { label: '审核失败', value: -1 },
 ]
 // 导出状态类型
 export type AuditStatusType = ExtractOptionsValue<typeof auditStatusOptions>

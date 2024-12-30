@@ -39,7 +39,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/dashboard/index.vue'),
         meta: {
           requiresAuth: true,
-          title: '首页',
+          title: '数据概览',
           icon: HomeOutline,
         },
       },

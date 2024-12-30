@@ -431,6 +431,7 @@
       flex-wrap: wrap;
       align-items: flex-start;
 
+
       .upload-area {
         order: 2;
         width: 100px;

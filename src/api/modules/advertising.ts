@@ -9,8 +9,8 @@ export interface Advertising {
   content: string
   createTime: string
   icon?: string
-  status: AuditStatusType | null
-  type: AdvertisingType | null
+  status: AuditStatusType
+  type: AdvertisingType
   title: string
   button: string
   url: string
@@ -38,10 +38,10 @@ export interface SetAdvertAccountFormState {
 }
 
 export interface BaseAdvertSearch {
-  key?: string | null
+  key?: string
   dateRange?: [number, number] | null
-  status: AuditStatusType | null
-  type?: AdvertisingType | null
+  status: AuditStatusType
+  type: AdvertisingType
 }
 
 export interface AdvertSearch extends ListRequest, BaseAdvertSearch {}

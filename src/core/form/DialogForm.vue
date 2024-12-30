@@ -2,6 +2,7 @@
 import { provide, ref, watch, computed, toRef } from 'vue'
 import { NModal, NButton, type FormInst } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
+import { log } from 'echarts/types/src/util/log.js'
 
 type FormType = 'add' | 'edit' | 'view'
 
@@ -101,6 +102,7 @@ const handleFormSubmit = async () => {
       extraFields: props.extraFields,
       originalData: formInstance.formData,
       onSuccess: () => {
+        console.log('onSuccess')
         props.refreshList?.()
         close()
       }

@@ -4,8 +4,8 @@ import type { ChangeTypeType, ChangeStatusType } from '@/enum/options'
 
 
 export interface AccountEquity {
-  type: ChangeTypeType | null
-  status: ChangeStatusType | null
+  type: ChangeTypeType
+  status: ChangeStatusType
   principalAmount: string
   giftAmount: string
   username: string
@@ -13,10 +13,10 @@ export interface AccountEquity {
 }
 
 export interface BaseAccountEquitySearch {
-  key?: string | null
+  key?: string
   dateRange?: [number, number] | null
-  status: ChangeStatusType | null
-  type?: ChangeTypeType | null
+  status: ChangeStatusType
+  type?: ChangeTypeType
 }
 
 export interface AccountEquitySearch extends ListRequest, BaseAccountEquitySearch {}

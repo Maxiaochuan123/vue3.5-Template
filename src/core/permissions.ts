@@ -21,7 +21,7 @@ const permissionAdvertMap = {
 const permissionCustomerMap = {
   audit: '审核',
   updatePassword: '修改密码',
-  addContract: '添加投放合同',
+  addContract: '添加合同',
 }
 
 // 权限操作按钮映射

@@ -108,8 +108,8 @@ export const useAuthStore = defineStore('auth', () => {
       const mockPermissions = [
         {
           id: '1',
-          name: '首页',
-          isChecked: false,
+          name: '数据概览',
+          isChecked: true,
           permissions: [],
           children: [],
         },

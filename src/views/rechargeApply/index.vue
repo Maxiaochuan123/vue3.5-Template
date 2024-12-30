@@ -264,7 +264,6 @@ const refreshList = () => {
       title="修改密码"
       :form-ref="updatePasswordFormRef"
       :add-api="customerApi.updatePassword"
-      :refresh-list="refreshList"
     >
       <UpdatePassword ref="updatePasswordFormRef" :rowData="editData" />
     </DialogForm>
@@ -276,7 +275,6 @@ const refreshList = () => {
       title="审核"
       :form-ref="auditFormRef"
       :add-api="customerApi.audit"
-      :refresh-list="refreshList"
     >
       <AuditForm ref="auditFormRef" :rowData="editData" />
     </DialogForm>

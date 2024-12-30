@@ -6,22 +6,22 @@ import type { AuditStatusType, AdvertisingType } from '@/enum/options'
 export interface AdvertisingPlacement {
   id?: number
   adverInfoId: number
-  type: AdvertisingType | null
-  price: number | null
-  placeEndTime: string | null
+  type: AdvertisingType
+  price: number
+  placeEndTime: string
 }
 
 export interface AdvertisingPlacementFormState {
-  adverInfoId: number | null,
-  type: AdvertisingType | null,
-  price: number | null,
+  adverInfoId: number
+  type: AdvertisingType
+  price: number
 }
 
 export interface BaseAdvertPlacementSearch {
-  key?: string | null
+  key?: string
   dateRange?: [number, number] | null
-  status?: AuditStatusType | null
-  type?: AdvertisingType | null
+  status?: AuditStatusType
+  type?: AdvertisingType
 }
 
 export interface AdvertPlacementSearch extends ListRequest, BaseAdvertPlacementSearch {}
