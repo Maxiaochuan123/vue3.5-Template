@@ -11,6 +11,12 @@ export interface AdvertisingPlacement {
   placeEndTime: string | null
 }
 
+export interface AdvertisingPlacementFormState {
+  adverInfoId: number | null,
+  type: AdvertisingType | null,
+  price: number | null,
+}
+
 export interface BaseAdvertPlacementSearch {
   key?: string | null
   dateRange?: [number, number] | null
@@ -64,14 +70,14 @@ export const advertisingPlacementApi = {
   /**
    * 创建广告投放
    */
-  createAdvertisingPlacement(data: AdvertisingPlacement): Promise<ApiResult<void>> {
+  createAdvertisingPlacement(data: AdvertisingPlacementFormState): Promise<ApiResult<void>> {
     return post('/api/v1/advertPlacement', data)
   },
 
   /**
    * 编辑广告投放
    */
-  updateAdvertisingPlacement(data: AdvertisingPlacement): Promise<ApiResult<void>> {
+  updateAdvertisingPlacement(data: AdvertisingPlacementFormState): Promise<ApiResult<void>> {
     return put('/api/v1/advertPlacement', data)
   },
 }

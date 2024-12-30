@@ -5,7 +5,7 @@ import { InformationCircleOutline } from '@vicons/ionicons5'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
-import DrawerForm from '@/core/form/DrawerForm.vue'
+import DrawerForm, { type FormType } from '@/core/form/DrawerForm.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
 import { advertisingTypeOptions, advertPlacementStatusOptions, getOptionLabel } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
@@ -39,7 +39,7 @@ const transformSearchParams = (params: any) => {
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingPlacementForm> | null>(null)
-const formType = ref<'add' | 'edit' | 'view'>('add')
+const formType = ref<FormType>('add')
 const editData = ref<Partial<FormState>>({})
 
 // 搜索

@@ -86,6 +86,16 @@ const routes: RouteRecordRaw[] = [
         ]
       },
       {
+        path: 'customer',
+        name: 'customer',
+        component: () => import('@/views/customer/index.vue'),
+        meta: {
+          requiresAuth: true,
+          title: '客户管理',
+          icon: PersonOutline,
+        }
+      },
+      {
         path: 'permission',
         name: 'permission',
         meta: {
@@ -168,9 +178,9 @@ router.beforeEach((to, from, next) => {
 
   // 然后检查权限
   if (to.meta.requiresAuth) {
-    // 获取当前路由及其所有父级路由的权限标题
+    // 获取当前路由及其所有父级路由的权限标题，排除 hideInMenu 为 true 的路由
     const routeTitles = to.matched
-      .filter(route => route.meta?.title)
+      .filter(route => route.meta?.title && !route.meta?.hideInMenu)
       .map(route => route.meta?.title as string)
 
     // 递归检查权限

@@ -6,22 +6,12 @@ import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidato
 import { useFormData } from '@/core/form/hooks/useFormData'
 import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
 import MediaPreviewPhone from '@/core/upload/media-upload/preview/MediaPreviewPhone.vue'
+import { type FormType } from '@/core/form/DrawerForm.vue'
+import { type AdvertisingFormState } from '@/api/modules/advertising'
 
-export interface FormState {
-  type: AdvertisingType
-  icon: string
-  content: string
-  title: string
-  descs: string
-  button: string
-  url: string
-  android: string
-  ios: string
-}
-
-// 注入响应式的 formType
-const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
-const editData = inject<Ref<Partial<FormState>>>('editData')!
+// 注入响应式数据
+const formType = inject<Ref<FormType>>('formType')!
+const editData = inject<Ref<Partial<AdvertisingFormState>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
 
@@ -29,7 +19,7 @@ const formRef = ref<FormInst | null>(null)
 const mediaMaxCount = 1
 const adIconMaxCount = 1
 
-const { formData } = useFormData<FormState>({
+const { formData } = useFormData<AdvertisingFormState>({
   initialData: {
     type: 1,
     title: '',

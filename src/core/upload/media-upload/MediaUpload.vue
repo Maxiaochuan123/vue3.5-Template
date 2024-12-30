@@ -132,19 +132,14 @@
 
   // 添加检查重复文件的函数
   const isDuplicateFile = (file: File): boolean => {
-    return fileList.value.some(existingFile => {
-      // 如果是正在上传的文件，比较文件名和大小
-      if (existingFile.file) {
-        return existingFile.file.name === file.name && existingFile.file.size === file.size
-      }
-      // 如果已经上传成功的文件，比较文件大小和类型
-      if (existingFile.url) {
-        // 检查当前文件列表中是否已存在相同的文件（通过名称和大小）
-        const currentFiles = modelValue.value
-        return currentFiles.includes(existingFile.url)
-      }
-      return false
-    })
+    // 如果是单文件模式，检查是否已有值
+    if (props.maxCount === 1) {
+      return modelValue.value !== '' && modelValue.value !== null && modelValue.value !== undefined
+    }
+
+    // 如果是多文件模式，检查当前已上传的文件数量
+    const currentFiles = Array.isArray(modelValue.value) ? modelValue.value : []
+    return currentFiles.length + fileList.value.length >= props.maxCount
   }
 
   // 处理文件选择
@@ -152,20 +147,16 @@
     const input = event.target as HTMLInputElement
     if (input.files) {
       const files = Array.from(input.files)
-      // 添加数量检查
-      if (fileList.value.length + files.length > props.maxCount) {
-        message.warning(`最多只能上传${props.maxCount}个文件`)
+      // 检查是否超过最大数量限制
+      const remainingSlots = props.maxCount - fileList.value.length
+      if (files.length > remainingSlots) {
+        message.warning(`最多还能上传${remainingSlots}个文件`)
         return
       }
 
       const validFiles = files.filter((file) => {
         if (!isValidFileType(file)) {
           message.warning(`只支持上传 ${props.accept} 类型的文件`)
-          return false
-        }
-        // 添加重复文件检查
-        if (isDuplicateFile(file)) {
-          message.warning(`文件 ${file.name} 已存在，请勿重复上传`)
           return false
         }
         return true
@@ -180,20 +171,16 @@
   const handleDrop = (event: DragEvent) => {
     isDragover.value = false
     const files = Array.from(event.dataTransfer?.files || [])
-    // 添加数量检查
-    if (fileList.value.length + files.length > props.maxCount) {
-      message.warning(`最多只能上传${props.maxCount}个文件`)
+    // 检查是否超过最大数量限制
+    const remainingSlots = props.maxCount - fileList.value.length
+    if (files.length > remainingSlots) {
+      message.warning(`最多还能上传${remainingSlots}个文件`)
       return
     }
 
     const validFiles = files.filter((file) => {
       if (!isValidFileType(file)) {
         message.warning(`只支持上传 ${props.accept} 类型的文件`)
-        return false
-      }
-      // 添加重复文件检查
-      if (isDuplicateFile(file)) {
-        message.warning(`文件 ${file.name} 已存在`)
         return false
       }
       return true
@@ -207,7 +194,8 @@
       if (fileList.value.length >= props.maxCount) break
 
       if (file.size > parseBytes(props.maxSize)) {
-        message.warning(`文件大小不能超过 ${props.maxSize}`)
+        message.warning(`文件 ${file.name} 大小不能超过 ${props.maxSize}`)
+
         continue
       }
 
@@ -217,11 +205,8 @@
         progress: 0,
         url: URL.createObjectURL(file),
       }
-      fileList.value.push(fileItem)
 
       try {
-        // console.log('开始上传文件:', file.name)
-
         // 先订阅状态变化
         const unsubscribe = qiniuUploader.subscribe((files) => {
           // console.log('上传状态更新:', files)
@@ -241,18 +226,29 @@
           } else if (uploadFile?.status === 'error') {
             URL.revokeObjectURL(fileItem.url!)
             fileItem.status = 'error'
+            // 从 fileList 中移除失败的文件
+            const index = fileList.value.indexOf(fileItem)
+            if (index !== -1) {
+              fileList.value.splice(index, 1)
+            }
             unsubscribe()
           } else if (uploadFile?.status === 'uploading') {
             fileItem.progress = uploadFile.progress
           }
         })
 
-        // 再开始上传
+        // 添加到文件列表
+        fileList.value.push(fileItem)
+        
+        // 开始上传
         await qiniuUploader.upload(file)
       } catch (error) {
-        // console.error('上传失败:', error)
         URL.revokeObjectURL(fileItem.url!)
-        fileItem.status = 'error'
+        // 从 fileList 中移除失败的文件
+        const index = fileList.value.indexOf(fileItem)
+        if (index !== -1) {
+          fileList.value.splice(index, 1)
+        }
       }
     }
   }
@@ -355,7 +351,7 @@
       </div>
 
       <!-- 文件列表 -->
-      <div class="file-list">
+      <div class="file-list" :style="{ 'margin-right': fileList.length > 0 ? '8px' : '0' }">
         <div v-for="(file, index) in fileList" :key="file.url || index" class="file-item">
           <!-- 上传中状态 -->
           <div v-if="file.status === 'uploading'" class="file-uploading">
@@ -434,10 +430,6 @@
       flex-direction: row;
       flex-wrap: wrap;
       align-items: flex-start;
-
-      // .file-list {
-      //   margin-right: 8px;
-      // }
 
       .upload-area {
         order: 2;
@@ -635,7 +627,7 @@
 
         display: flex;
         flex-direction: column;
-        margin-left: 10px;
+        // margin-left: 10px;
         font-size: 12px;
         color: #999;
     }

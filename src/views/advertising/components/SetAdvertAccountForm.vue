@@ -3,15 +3,11 @@ import { ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
 import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
-
-type SetAdvertAccountForm = {
-  nickname: string
-  backgroundImg: string
-}
+import { type SetAdvertAccountFormState } from '@/api/modules/advertising'
 
 const formRef = ref<FormInst | null>(null)
 
-const formData = ref<SetAdvertAccountForm>({
+const formData = ref<SetAdvertAccountFormState>({
   nickname: '',
   backgroundImg: '',
 })

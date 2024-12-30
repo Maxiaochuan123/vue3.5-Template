@@ -17,6 +17,11 @@
         v-bind="deleteConfig"
         @click="handleAction('delete')" 
       />
+      <DetailButton 
+        v-if="action === 'detail'"
+        :permission-id="[permissionId, 'detail']"
+        @click="handleAction('detail')" 
+      />
     </template>
     <!-- 自定义按钮 -->
     <template v-for="(btn, index) in customButtons" :key="index">
@@ -39,23 +44,25 @@ import { useRoute } from 'vue-router'
 import EditButton from './components/EditButton.vue'
 import ViewButton from './components/ViewButton.vue'
 import DeleteButton from './components/DeleteButton.vue'
+import DetailButton from './components/DetailButton.vue'
 
-type RowActionType = 'edit' | 'view' | 'delete'
+export type RowActionType = 'edit' | 'view' | 'delete' | 'detail'
 
 // 自定义按钮类型
-type CustomButton = {
+interface CustomButton {
   label: string
+  action: string
   type?: 'primary' | 'info' | 'success' | 'warning' | 'error'
-  action: string        // 操作类型必传
-  onClick: (row: Record<string, any>) => void
+  onClick: (row: any) => void
 }
 
 interface Props<T = Record<string, any>> {
   row: T
   actions?: RowActionType[]
   customButtons?: CustomButton[]
-  permissionId: string  // 当前页面的权限ID（必传）
-  onAction?: (type: RowActionType, row: T) => void
+  permissionId: string
+  currentPermission?: string
+  onAction?: (type: RowActionType, row: any) => void
   deleteConfig?: {
     content?: string
     confirmText?: string
@@ -64,7 +71,7 @@ interface Props<T = Record<string, any>> {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  actions: () => ['edit', 'view', 'delete'],
+  actions: () => ['edit', 'view', 'delete', 'detail'],
   customButtons: () => [],
   deleteConfig: () => ({
     content: '是否确认删除该条数据？',

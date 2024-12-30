@@ -19,7 +19,20 @@ export interface Advertising {
   ios: string
 }
 
-export interface SetAdvertAccount {
+export interface AdvertisingFormState {
+  id?: number
+  type: AdvertisingType
+  title: string
+  content: string
+  icon: string
+  descs: string
+  button: string
+  url: string
+  android: string
+  ios: string
+}
+
+export interface SetAdvertAccountFormState {
   nickname: string
   backgroundImg: string
 }
@@ -51,21 +64,21 @@ export const advertisingApi = {
   /**
    * 创建广告
    */
-  createAdvertising(data: Advertising): Promise<ApiResult<void>> {
+  createAdvertising(data: AdvertisingFormState): Promise<ApiResult<void>> {
     return post('/api/v1/mjAdvertInfo', data)
   },
 
   /**
    * 编辑广告
    */
-  editAdvertising(data: Advertising): Promise<ApiResult<void>> {
+  editAdvertising(data: AdvertisingFormState): Promise<ApiResult<void>> {
     return put('/api/v1/mjAdvertInfo', data)
   },
 
   /**
    * 投放账号
    */
-  setAdvertisingAccount(data: SetAdvertAccount): Promise<ApiResult<void>> {
+  setAdvertisingAccount(data: SetAdvertAccountFormState): Promise<ApiResult<void>> {
     return post('/api/v1/mjAdvertInfo/setAccount', data)
   },
 

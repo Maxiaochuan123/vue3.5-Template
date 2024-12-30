@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
-import { NDrawer, NDrawerContent, NButton, NIcon, type FormInst } from 'naive-ui'
+import { NDrawer, NDrawerContent, NButton, NIcon, NScrollbar, type FormInst } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
 import { ArrowBack } from '@vicons/ionicons5'
 
-type FormType = 'add' | 'edit' | 'view'
+export type FormType = 'add' | 'edit' | 'view'
 
 interface CustomFormInst {
   validate: () => Promise<void>
@@ -15,16 +15,16 @@ interface CustomFormInst {
 interface Props {
   formRef?: FormInst | CustomFormInst | null
   addApi?: (...args: any[]) => Promise<any>
-  editApi: (...args: any[]) => Promise<any>
+  editApi?: (...args: any[]) => Promise<any>
   formType?: FormType
-  refreshList?: () => void
+  editData?: Record<string, any>
   extraFields?: string[]
+  refreshList?: () => void
   addTitle?: string
   editTitle?: string
   showFooter?: boolean
   submitText?: string
   cancelText?: string
-  editData?: Record<string, any>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -165,7 +165,9 @@ defineExpose({
 
       <!-- Content Section -->
       <div class="page-content">
-        <slot />
+        <NScrollbar>
+          <slot />
+        </NScrollbar>
       </div>
 
       <!-- Footer Section -->
@@ -224,6 +226,13 @@ defineExpose({
 
 .page-content {
   height: 100%;
+  margin: 0 -24px;
+  :deep(.n-scrollbar-container) {
+    height: 100%;
+  }
+  :deep(.n-scrollbar-content) {
+    padding: 0 16px;
+  }
 }
 
 .page-footer {

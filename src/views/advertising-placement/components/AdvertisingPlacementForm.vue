@@ -8,17 +8,12 @@ import MediaPreviewPhone from '@/core/upload/media-upload/preview/MediaPreviewPh
 import { advertisingApi, type AdvertisingOptions } from '@/api/modules/advertising'
 import { advertisingPlacementApi, type BillingMethod } from '@/api/modules/advertisingPlacement'
 import { userApi } from '@/api/modules/user'
-const themeVars = useThemeVars()
-const message = useMessage()
+import { type AdvertisingPlacementFormState } from '@/api/modules/advertisingPlacement'
 
-export interface FormState {
-  adverInfoId: number | null,
-  type: AdvertisingType | null,
-  price: number | null,
-}
+const themeVars = useThemeVars()
 
 // 注入响应式的 formType
-const editData = inject<Ref<Partial<FormState>>>('editData')!
+const editData = inject<Ref<Partial<AdvertisingPlacementFormState>>>('editData')!
 const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
 
 const url = ref('')
@@ -27,6 +22,33 @@ const advertisingOptions = ref<SelectOption[]>([])
 const advertisingOptionsMap = ref<Map<number, AdvertisingOptions>>(new Map())
 const billingMethod = ref<BillingMethod | null>(null)
 const balance = ref<number | null>(null)
+const agreementChecked = ref(false)
+
+const { formData, initialData } = useFormData<AdvertisingPlacementFormState>({
+  initialData: {
+    adverInfoId: null,
+    type: null,
+    price: null,
+  },
+  editData
+})
+
+// 表单验证规则
+const rules = {
+  adverInfoId: {  type: 'number', required: true, message: '请选择广告', trigger: 'change' },
+  type: { type: 'number', required: true, message: '请选择广告类型', trigger: 'change' },
+  price: {
+    type: 'number',
+    required: true, 
+    message: '金额最低1000倍数', 
+    trigger: 'change',
+    validator: (rule: any, value: number) => {
+      if (!value) return new Error('金额最低1000倍数')
+      if (value < 1000 || value % 1000 !== 0) return new Error('金额最低1000倍数')
+      return true
+    }
+  }
+}
 
 // 预设金额选项
 const priceOptions = [1000, 5000, 10000, 50000, 100000]
@@ -133,35 +155,6 @@ onMounted(async () => {
   await getBillingMethod()
   await getUserBalance()
 })
-
-const { formData, initialData } = useFormData<FormState>({
-  initialData: {
-    adverInfoId: null,
-    type: null,
-    price: null,
-  },
-  editData
-})
-
-// 表单验证规则
-const rules = {
-  adverInfoId: {  type: 'number', required: true, message: '请选择广告', trigger: 'change' },
-  type: { type: 'number', required: true, message: '请选择广告类型', trigger: 'change' },
-  price: {
-    type: 'number',
-    required: true, 
-    message: '金额最低1000倍数', 
-    trigger: 'change',
-    validator: (rule: any, value: number) => {
-      if (!value) return new Error('金额最低1000倍数')
-      if (value < 1000 || value % 1000 !== 0) return new Error('金额最低1000倍数')
-      return true
-    }
-  }
-}
-
-// 协议勾选
-const agreementChecked = ref(false)
 
 // 暴露给父组件的方法和数据
 defineExpose({

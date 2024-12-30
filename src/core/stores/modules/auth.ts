@@ -134,6 +134,13 @@ export const useAuthStore = defineStore('auth', () => {
           permissions: ['advertisingPlacement', 'followUpInvestment', 'placementData'],
           children: [],
         },
+        {
+          id: '5',
+          name: '客户管理',
+          isChecked: true,
+          permissions: ['audit', 'detail', 'updatePassword', 'addContract'],
+          children: [],
+        },
         // {
         //   id: '5',
         //   name: '权限管理',

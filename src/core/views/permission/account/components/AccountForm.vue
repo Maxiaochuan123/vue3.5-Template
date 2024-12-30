@@ -4,11 +4,12 @@ import type { FormInst, FormRules } from 'naive-ui'
 import { useFormData } from '@/core/form/hooks/useFormData'
 import type { Account } from '@/core/api/modules/account'
 import { useAuthStore } from '@/core/stores/modules/auth'
+import { type FormType } from '@/core/form/DrawerForm.vue'
 
 const authStore = useAuthStore()
 
 // 注入响应式的 formType 和 editData
-const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
+const formType = inject<Ref<FormType>>('formType')!
 const editData = inject<Ref<Partial<Account>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)

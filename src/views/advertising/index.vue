@@ -4,13 +4,13 @@ import { NButton, type DataTableColumns } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
-import DrawerForm from '@/core/form/DrawerForm.vue'
+import DrawerForm, { type FormType } from '@/core/form/DrawerForm.vue'
 import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
-import TableActions from '@/core/table/table-actions/index.vue'
+import TableActions, { type RowActionType } from '@/core/table/table-actions/index.vue'
 import { advertisingTypeOptions, auditStatusOptions, getOptionLabel } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
-import AdvertisingForm, { type FormState } from './components/AdvertisingForm.vue'
-import { advertisingApi, type BaseAdvertSearch, type Advertising } from '@/api/modules/advertising'
+import AdvertisingForm from './components/AdvertisingForm.vue'
+import { advertisingApi, type BaseAdvertSearch, type Advertising, type AdvertisingFormState } from '@/api/modules/advertising'
 import { useMessage } from 'naive-ui'
 import DialogForm from '@/core/form/DialogForm.vue'
 import SetAdvertAccountForm from './components/SetAdvertAccountForm.vue'
@@ -41,8 +41,8 @@ const transformSearchParams = (params: any) => {
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingForm> | null>(null)
-const formType = ref<'add' | 'edit' | 'view'>('add')
-const editData = ref<Partial<FormState>>({})
+const formType = ref<FormType>('add')
+const editData = ref<Partial<Advertising>>({})
 const setAdvertAccountDialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const setAdvertAccountFormRef = ref<InstanceType<typeof SetAdvertAccountForm> | null>(null)
         
@@ -101,12 +101,12 @@ const columns: DataTableColumns<TableDataRecord> = [
 ]
 
 // 处理表格操作
-const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<string, any>) => {
+const handleTableAction = async (type: RowActionType, row: TableDataRecord) => {
   if (!row.id) return
   switch (type) {
     case 'edit':
     case 'view':
-    handleAdvertisingForm(row, type)
+    handleAdvertisingForm(row)
       break
     case 'delete':
       try {
@@ -134,8 +134,8 @@ const refreshList = () => {
 }
 
 // 编辑处理
-const handleAdvertisingForm = (row: Record<string, any>, type: 'edit' | 'view') => {
-  formType.value = type
+const handleAdvertisingForm = (row: TableDataRecord) => {
+  formType.value = 'edit'
   editData.value = row
   drawerRef.value?.open()
 }

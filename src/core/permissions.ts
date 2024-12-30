@@ -4,6 +4,7 @@ const permissionBasicMap = {
   edit: '编辑',
   delete: '删除',
   view: '查看',
+  detail: '详情',
   status: '状态',
   export: '导出'
 }
@@ -16,10 +17,18 @@ const permissionAdvertMap = {
   placementData: '投放数据',
 }
 
+// 权限操作按钮映射 - 客户
+const permissionCustomerMap = {
+  audit: '审核',
+  updatePassword: '修改密码',
+  addContract: '添加投放合同',
+}
+
 // 权限操作按钮映射
 export const permissionMap = {
   ...permissionBasicMap,
-  ...permissionAdvertMap
+  ...permissionAdvertMap,
+  ...permissionCustomerMap
 }
 
 // 权限配置
@@ -47,6 +56,12 @@ export const permissionMenus = [
     name: '广告投放',
     isChecked: false,
     permissions: ['advertisingPlacement', 'followUpInvestment', 'placementData']
+  },
+  {
+    id: '5',
+    name: '客户管理',
+    isChecked: false,
+    permissions: ['audit', 'detail', 'updatePassword', 'addContract']
   },
   // {
   //   id: '5',

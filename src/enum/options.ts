@@ -69,3 +69,11 @@ export const changeStatusOptions = [
 ]
 // 导出状态类型
 export type ChangeStatusType = ExtractOptionsValue<typeof changeStatusOptions>
+
+// 性别选项
+export const genderOptions = [
+  { label: '男', value: 0 },
+  { label: '女', value: 1 },
+]
+// 导出状态类型
+export type GenderType = ExtractOptionsValue<typeof genderOptions>

@@ -45,6 +45,7 @@ export function useMediaUploaderValidator(options: MediaValidatorOptions) {
 
   // 创建一个用于重新验证的函数
   const revalidate = () => {
+    console.log('revalidate:', formRef.value)
     if (formRef.value) {
       formRef.value.validate((errors) => {
         if (errors) {

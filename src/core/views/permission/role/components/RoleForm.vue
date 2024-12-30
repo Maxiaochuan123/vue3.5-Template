@@ -6,9 +6,10 @@ import { useDebounceFn } from '@vueuse/core'
 import { permissionMenus } from '@/core/permissions'
 import { roleApi, type RolePermission, type RoleForm } from '@/core/api/modules/role'
 import { useFormData } from '@/core/form/hooks/useFormData'
+import { type FormType } from '@/core/form/DrawerForm.vue'
 
 // 注入响应式的 formType 和 editData
-const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
+const formType = inject<Ref<FormType>>('formType')!
 const editData = inject<Ref<Partial<RoleForm>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
