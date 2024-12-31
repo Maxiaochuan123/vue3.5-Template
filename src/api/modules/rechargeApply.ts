@@ -34,7 +34,7 @@ export interface RechargeApplyDetail {
 export interface RechargeApplyAuditForm {
   id: number | null
   status: SubmitAuditStatusType
-  autditContent: string
+  auditContent: string
 }
 
 export interface BaseRechargeApplySearch {
@@ -44,11 +44,6 @@ export interface BaseRechargeApplySearch {
 }
 
 export interface RechargeApplySearch extends ListRequest, BaseRechargeApplySearch {}
-
-export interface RegionResponse {
-  records: RechargeApply[]
-  total: number
-}
 
 export const rechargeApplyApi = {
   /**
@@ -68,7 +63,7 @@ export const rechargeApplyApi = {
   /**
    * 充值申请
    */
-  rechargeApply(data: RechargeApplyAuditForm): Promise<ApiResult<void>> {
+  recharge(data: RechargeApplyAuditForm): Promise<ApiResult<void>> {
     return put('/api/v1/mjRecharge/status', data)
   }
 }

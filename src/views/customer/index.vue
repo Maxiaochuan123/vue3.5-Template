@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, ref, reactive, provide } from 'vue'
+import { h, ref, reactive } from 'vue'
 import { type DataTableColumns } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
@@ -36,7 +36,7 @@ const transformSearchParams = (params: any) => {
 }
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
-const detailDrawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
+const saveDrawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const saveCustomerFormRef = ref<InstanceType<typeof SaveCustomerForm> | null>(null)
 const addDrawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const addContractFormRef = ref<InstanceType<typeof AddContractForm> | null>(null)
@@ -45,12 +45,6 @@ const updatePasswordFormRef = ref<InstanceType<typeof UpdatePassword> | null>(nu
 const editData = ref<TableDataRecord>()
 const auditDialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const auditFormRef = ref<InstanceType<typeof AuditForm> | null>(null)
-
-// 客户详情数据
-const customerDetail = ref<CustomerDetail | null>(null)
-
-// 提供给子组件的数据
-provide('customerDetail', customerDetail)
 
 // 搜索
 const handleSearch = (values: BaseCustomerSearch) => {
@@ -167,9 +161,8 @@ const handleDetail = async (row: Customer) => {
   try {
     const { code, data } = await customerApi.getCustomerDetail(row.id as number)
     if (code === 200) {
-      customerDetail.value = data
       editData.value = data
-      detailDrawerRef.value?.open()
+      saveDrawerRef.value?.open()
     }
   } catch (error) {
     console.error('获取客户详情失败:', error)
@@ -229,7 +222,7 @@ const refreshList = () => {
 
     <!-- 保存实名信息 -->
     <DrawerForm
-      ref="detailDrawerRef"
+      ref="saveDrawerRef"
       :form-ref="saveCustomerFormRef"
       form-type="edit"
       edit-title="详情"

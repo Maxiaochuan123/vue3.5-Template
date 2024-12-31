@@ -44,7 +44,7 @@ export interface CustomerSaveForm {
 }
 
 export interface AddContract {
-  id: number | null
+  customerId: number | null
   contractUrl: string[]
   pricePrincipal: string
   contractPrice: string
@@ -61,11 +61,6 @@ export interface BaseCustomerSearch {
 }
 
 export interface CustomerSearch extends ListRequest, BaseCustomerSearch {}
-
-export interface RegionResponse {
-  records: Customer[]
-  total: number
-}
 
 export interface AuditForm {
   id: number

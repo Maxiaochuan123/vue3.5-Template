@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
-import { NModal, NButton, type FormInst } from 'naive-ui'
+import { NModal, NButton, type FormInst, NPopconfirm } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
 
 export type FormType = 'add' | 'edit' | 'view'
@@ -23,6 +23,7 @@ interface Props {
   cancelText?: string
   editData?: Record<string, any>
   width?: number | string
+  confirmMessage?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -153,16 +154,32 @@ defineExpose({
           {{ props.formType === 'view' ? '关闭' : cancelText }}
         </NButton>
         
-        <NButton
-          v-if="props.formType !== 'view'"
-          type="primary"
-          size="large"
-          :loading="submitLoading"
-          :disabled="submitDisabled"
-          @click="handleFormSubmit"
-        >
-          {{ submitText }}
-        </NButton>
+        <template v-if="props.formType !== 'view'">
+          <NPopconfirm v-if="confirmMessage" :show-icon="false" @positive-click="handleFormSubmit">
+            <template #trigger>
+              <NButton
+                type="primary"
+                size="large"
+                :loading="submitLoading"
+                :disabled="submitDisabled"
+              >
+                {{ submitText }}
+              </NButton>
+            </template>
+            {{ confirmMessage }}
+          </NPopconfirm>
+          
+          <NButton
+            v-else
+            type="primary"
+            size="large"
+            :loading="submitLoading"
+            :disabled="submitDisabled"
+            @click="handleFormSubmit"
+          >
+            {{ submitText }}
+          </NButton>
+        </template>
       </div>
     </template>
   </NModal>

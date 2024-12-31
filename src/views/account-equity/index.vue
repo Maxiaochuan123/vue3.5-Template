@@ -5,7 +5,7 @@ import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import { changeStatusOptions, changeTypeOptions, getOptionLabel } from '@/enum/options'
-import { accountEquityApi, type BaseAccountEquitySearch, type AccountEquity } from '@/api/modules/account-equity'
+import { accountEquityApi, type BaseAccountEquitySearch, type AccountEquity } from '@/api/modules/accountEquity'
 
 type TableDataRecord = AccountEquity
 

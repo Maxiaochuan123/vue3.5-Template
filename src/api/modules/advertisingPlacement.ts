@@ -47,11 +47,6 @@ export interface RegionData {
   percent: number
 }
 
-export interface RegionResponse {
-  records: RegionData[]
-  total: number
-}
-
 export const advertisingPlacementApi = {
   /**
    * 获取广告投放列表

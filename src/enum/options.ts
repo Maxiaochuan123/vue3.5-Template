@@ -87,6 +87,15 @@ export const changeStatusOptions = [
 // 导出状态类型
 export type ChangeStatusType = ExtractOptionsValue<typeof changeStatusOptions>
 
+// 余额变动类型选项
+export const balanceChangeTypeOptions = [
+  { label: '归零', value: 1 },
+  { label: '广告投放', value: 2 },
+  { label: '充值', value: 3 },
+]
+// 导出状态类型
+export type BalanceChangeTypeType = ExtractOptionsValue<typeof balanceChangeTypeOptions>
+
 // 性别选项
 export const genderOptions = [
   { label: '男', value: 0 },

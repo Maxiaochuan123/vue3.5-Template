@@ -82,14 +82,43 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
-        path: 'recharge-apply',
-        name: 'recharge-apply',
-        component: () => import('@/views/recharge-apply/index.vue'),
+        path: 'recharge-management',
+        name: 'recharge-management',
+        redirect: '/recharge-management/recharge-apply',
         meta: {
           requiresAuth: true,
-          title: '充值申请',
-          icon: PersonOutline,
-        }
+          title: '充值管理',
+          icon: WalletOutline,
+        },
+        children: [
+          {
+            path: 'recharge-apply',
+            name: 'recharge-apply',
+            component: () => import('@/views/recharge-apply/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '充值申请',
+            }
+          },
+          {
+            path: 'advertiser-management',
+            name: 'advertiser-management',
+            component: () => import('@/views/advertiser-management/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '广告主管理',
+            }
+          },
+          {
+            path: 'balance-change',
+            name: 'balance-change',
+            component: () => import('@/views/balance-change/index.vue'),
+            meta: {
+              requiresAuth: true,
+              title: '余额变动',
+            }
+          }
+        ]
       },
       {
         path: 'robot-management',

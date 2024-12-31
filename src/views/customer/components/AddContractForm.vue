@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, inject, type Ref } from 'vue'
+import { ref, inject, computed, type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { InformationCircleOutline } from '@vicons/ionicons5'
 import { useFormData } from '@/core/form/hooks/useFormData'
@@ -9,7 +9,7 @@ import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
 
 // 注入响应式的数据
 const formRef = ref<FormInst | null>(null)
-const editData = inject<Ref<Partial<AddContract>>>('editData')!
+const editData = inject<Ref<Partial<AddContract & { id?: number }>>>('editData')!
 
 // 媒体文件最大数量
 const contractUrlMaxCount = 8
@@ -17,7 +17,7 @@ const pricePrincipalMaxCount = 1
 
 const { formData, initialData } = useFormData<AddContract>({
   initialData: {
-    id: null,
+    customerId: null,
     contractPrice: '',
     contractUrl: [],
     figtAmount: '',
@@ -78,7 +78,13 @@ const rules = {
 // 暴露给父组件的方法和数据
 defineExpose({
   formRef,
-  formData,
+  formData: computed(() => {
+    const { id, ...other } = formData
+    return {
+      ...other,
+      customerId: id
+    }
+  }),
   initialData,
   validate: () => formRef.value?.validate()
 })
@@ -202,8 +208,6 @@ defineExpose({
 <style scoped lang="less">
 .form-drawer-content {
   width: 100%;
-  // display: flex;
-  // gap: 24px;
   padding: 0 30px;
   box-sizing: border-box;
   .form-content {

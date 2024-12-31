@@ -67,8 +67,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import DataCard from './components/DataCard/index.vue'
-import { dataOverviewApi } from '@/api/modules/data-overview'
-import type { AdvertiserData, AdData, RechargeData, ConsumeData } from '@/api/modules/data-overview'
+import { dataOverviewApi } from '@/api/modules/dataOverview'
+import type { AdvertiserData, AdData, RechargeData, ConsumeData } from '@/api/modules/dataOverview'
 import { useThemeVars } from 'naive-ui'
 import { NScrollbar } from 'naive-ui'
 

@@ -1,34 +1,24 @@
 <script setup lang="ts">
-import { ref, inject, onMounted,type Ref } from 'vue'
+import { ref, inject,type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
-import { rechargeApplyApi } from '@/api/modules/rechargeApply'
 import { useFormData } from '@/core/form/hooks/useFormData'
-import { type RechargeApplyAuditForm, type RechargeApplyDetail } from '@/api/modules/rechargeApply'
+import { type RechargeApplyAuditForm } from '@/api/modules/rechargeApply'
 import { submitAuditStatusOptions } from '@/enum/options'
 import { ImageOutline as ImageOutlineIcon } from '@vicons/ionicons5'
 
+const props = defineProps<{
+  _formType: string
+}>() 
+
 // 注入响应式的数据
 const formRef = ref<FormInst | null>(null)
-const editData = inject<Ref<Partial<RechargeApplyAuditForm>>>('editData')!
-
-// 充值详情数据
-const rechargeApplyDetail = ref<RechargeApplyDetail | null>(null)
-const getRechargeApplyDetail = async () => {
-  const { code, data } = await rechargeApplyApi.getRechargeApplyDetail(editData.value.id as number)
-  if (code === 200) {
-    rechargeApplyDetail.value = data
-  }
-}
-
-onMounted(() => {
-  getRechargeApplyDetail()
-})
+const editData = inject<Ref<Record<string, any>>>('editData')!
 
 const { formData, initialData } = useFormData<RechargeApplyAuditForm>({
   initialData: {
     id: null,
     status: 1,
-    autditContent: '',
+    auditContent: '',
   },
   editData
 })
@@ -78,6 +68,7 @@ defineExpose({
         :rules="rules"
         label-placement="left"
         label-width="120"
+        :disabled="props._formType === 'detail'"
       >
         <NCard class="detail-card">
           <div class="form-grid">
@@ -87,7 +78,7 @@ defineExpose({
               <NImageGroup>
                 <NSpace>
                   <NImage
-                    v-for="(img, index) in rechargeApplyDetail?.identityImgList"
+                    v-for="(img, index) in editData?.identityImgList"
                     :key="index"
                     :src="img"
                     width="100"
@@ -106,7 +97,7 @@ defineExpose({
             <!-- 中间列：汇款凭证 -->
             <div class="form-column">
               <div class="section-title">汇款凭证</div>
-              <NImage :src="rechargeApplyDetail?.enterpriseImg" width="100" height="100">
+              <NImage :src="editData?.enterpriseImg" width="100" height="100">
                 <template #error>
                   <n-icon :size="100" color="lightGrey">
                     <ImageOutlineIcon />
@@ -119,12 +110,12 @@ defineExpose({
             <div class="form-column">
               <div class="section-title">充值信息</div>
               <NDescriptions :column="1" :label-placement="'left'" :label-align="'right'">
-                <NDescriptionsItem label="充值对象">{{ rechargeApplyDetail?.realName }}</NDescriptionsItem>
-                <NDescriptionsItem label="公司名称">{{ rechargeApplyDetail?.companyName }}</NDescriptionsItem>
-                <NDescriptionsItem label="手机号">{{ rechargeApplyDetail?.mobile }}</NDescriptionsItem>
-                <NDescriptionsItem label="充值类型">{{ rechargeApplyDetail?.type }}</NDescriptionsItem>
-                <NDescriptionsItem label="充值本金">{{ rechargeApplyDetail?.rechargePrincipal }}</NDescriptionsItem>
-                <NDescriptionsItem label="赠送金额">{{ rechargeApplyDetail?.rechargeGift }}</NDescriptionsItem>
+                <NDescriptionsItem label="充值对象">{{ editData?.realName }}</NDescriptionsItem>
+                <NDescriptionsItem label="公司名称">{{ editData?.companyName }}</NDescriptionsItem>
+                <NDescriptionsItem label="手机号">{{ editData?.mobile }}</NDescriptionsItem>
+                <NDescriptionsItem label="充值类型">{{ editData?.type }}</NDescriptionsItem>
+                <NDescriptionsItem label="充值本金">{{ editData?.rechargePrincipal }}</NDescriptionsItem>
+                <NDescriptionsItem label="赠送金额">{{ editData?.rechargeGift }}</NDescriptionsItem>
               </NDescriptions>
             </div>
           </div>
@@ -148,7 +139,7 @@ defineExpose({
           :required="formData.status === 2"
         >
           <NInput
-            v-model:value="formData.autditContent"
+            v-model:value="formData.auditContent"
             type="textarea"
             placeholder="请输入审核意见"
             :rows="3"

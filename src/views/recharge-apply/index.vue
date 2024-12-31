@@ -7,8 +7,8 @@ import Table from '@/core/table/Table.vue'
 import DrawerForm, { type FormType } from '@/core/form/DrawerForm.vue'
 import TableActions, { type RowActionType } from '@/core/table/table-actions/index.vue'
 import { getOptionLabel, rechargeApplyStatusOptions } from '@/enum/options'
-import { rechargeApplyApi, type BaseRechargeApplySearch, type RechargeApply, type RechargeApplyDetail } from '@/api/modules/rechargeApply'
-import RechargeApplyForm from './components/RechargeApplyForm.vue'
+import { rechargeApplyApi, type BaseRechargeApplySearch, type RechargeApply } from '@/api/modules/rechargeApply'
+import RechargeForm from './components/RechargeForm.vue'
 
 type TableDataRecord = RechargeApply
 
@@ -21,9 +21,10 @@ const defaultSearchForm = reactive<BaseRechargeApplySearch>({
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
-const formRef = ref<InstanceType<typeof RechargeApplyForm> | null>(null)
+const formRef = ref<InstanceType<typeof RechargeForm> | null>(null)
 const formType = ref<FormType>('edit')
 const editData = ref<Record<string, any>>()
+
 
 // 搜索
 const handleSearch = (values: BaseRechargeApplySearch) => {
@@ -72,14 +73,14 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '6',
+        permissionId: '6-1',
         actions: (row.status === 1 || row.status === 2) ? ['detail'] : [],
         onAction: handleTableAction,
         // 添加自定义按钮
         customButtons: [
           ...((row.status === 0) ? [{
             label: '充值',
-            action: 'rechargeApply',
+            action: 'recharge',
             onClick: (row: TableDataRecord) => handleRecharge(row)
           }] : [])
         ],
@@ -109,9 +110,16 @@ const handleRecharge = (row: TableDataRecord) => {
 
 // 处理详情按钮点击
 const handleDetail = async (row: TableDataRecord) => {
-  editData.value = row
-  formType.value = 'detail'
-  drawerRef.value?.open()
+  try {
+    const { code, data } = await rechargeApplyApi.getRechargeApplyDetail(row.id as number)
+    if (code === 200) {
+      editData.value =  data
+      formType.value = 'detail'
+      drawerRef.value?.open()
+    }
+  } catch (error) {
+    console.error('获取充值详情失败:', error)
+  }
 }
 
 const refreshList = () => {
@@ -161,14 +169,15 @@ const refreshList = () => {
     <DrawerForm
       ref="drawerRef"
       :form-ref="formRef"
-      :form-type="formType"
+      form-type="edit"
       edit-title="充值申请"
-      :edit-api="rechargeApplyApi.rechargeApply"
+      :edit-api="rechargeApplyApi.recharge"
       :refresh-list="refreshList"
       :extra-fields="['id']"
       :edit-data="editData"
+      :show-footer="formType === 'detail' ? false : true"
     >
-      <RechargeApplyForm ref="formRef" />
+      <RechargeForm ref="formRef" :_formType="formType" />
     </DrawerForm>
 
   </TablePageLayout>

@@ -25,12 +25,11 @@ const logTypeOptions = [
 
 // 搜索参数转换
 const transformSearchParams = (params: any) => {
-  console.log('transformSearchParams:', params)
   const { dateRange, ...rest } = params;
   return {
     ...rest,
-    startTime: dateRange?.[0] || null,
-    endTime: dateRange?.[1] || null
+    startDate: dateRange?.[0] ? new Date(dateRange[0]).toISOString().split('T')[0] : null,
+    endDate: dateRange?.[1] ? new Date(dateRange[1]).toISOString().split('T')[0] : null
   }
 }
 

@@ -24,11 +24,23 @@ const permissionCustomerMap = {
   addContract: '添加合同',
 }
 
+// 充值申请
+const permissionRechargeApplyMap = {
+  recharge: '充值',
+}
+
+// 广告主管理
+const advertiserManagementMap = {
+  clearBalance: '清空余额',
+}
+
 // 权限操作按钮映射
 export const permissionMap = {
   ...permissionBasicMap,
   ...permissionAdvertMap,
-  ...permissionCustomerMap
+  ...permissionCustomerMap,
+  ...permissionRechargeApplyMap,
+  ...advertiserManagementMap,
 }
 
 // 权限配置
@@ -62,6 +74,32 @@ export const permissionMenus = [
     name: '客户管理',
     isChecked: false,
     permissions: ['audit', 'detail', 'updatePassword', 'addContract']
+  },
+  {
+    id: '6',
+    name: '充值管理',
+    isChecked: false,
+    permissions: [],
+    children: [
+      {
+        id: '6-1',
+        name: '充值申请',
+        isChecked: false,
+        permissions: ['recharge', 'detail']
+      },
+      {
+        id: '6-2',
+        name: '广告主管理',
+        isChecked: false,
+        permissions: ['clearBalance']
+      },
+      {
+        id: '6-3',
+        name: '余额变动',
+        isChecked: false,
+        permissions: []
+      }
+    ]
   },
   // {
   //   id: '5',
