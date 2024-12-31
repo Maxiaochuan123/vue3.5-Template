@@ -98,27 +98,41 @@ const handleTableAction = async (type: RowActionType, row: TableDataRecord) => {
       break
   }
 }
-// 充值
-const handleRecharge = (row: TableDataRecord) => {
-  const { status, ...otherRow } = row
-  editData.value = {
-    ...otherRow
+
+// 获取详情数据
+const fetchDetail = async (id: number) => {
+  try {
+    const { code, data } = await rechargeApplyApi.getRechargeApplyDetail(id)
+    if (code === 200) {
+      return data
+    }
+    return null
+  } catch (error) {
+    console.error('获取详情失败:', error)
+    return null
   }
-  formType.value = 'edit'
-  drawerRef.value?.open()
+}
+
+// 充值
+const handleRecharge = async (row: TableDataRecord) => {
+  const data = await fetchDetail(row.id as number)
+  if (data) {
+    editData.value = {
+      ...data,
+      status: data.status === 0 ? 1 : data.status
+    }
+    formType.value = 'edit'
+    drawerRef.value?.open()
+  }
 }
 
 // 处理详情按钮点击
 const handleDetail = async (row: TableDataRecord) => {
-  try {
-    const { code, data } = await rechargeApplyApi.getRechargeApplyDetail(row.id as number)
-    if (code === 200) {
-      editData.value =  data
-      formType.value = 'detail'
-      drawerRef.value?.open()
-    }
-  } catch (error) {
-    console.error('获取充值详情失败:', error)
+  const data = await fetchDetail(row.id as number)
+  if (data) {
+    editData.value = data
+    formType.value = 'detail'
+    drawerRef.value?.open()
   }
 }
 
