@@ -13,10 +13,10 @@ export interface AccountEquity {
 }
 
 export interface BaseAccountEquitySearch {
-  key?: string
-  dateRange?: [number, number] | null
-  status: ChangeStatusType
-  type?: ChangeTypeType
+  key?: string | null
+  dateRange?: [] | null
+  status?: ChangeStatusType | null
+  type?: ChangeTypeType | null
 }
 
 export interface AccountEquitySearch extends ListRequest, BaseAccountEquitySearch {}

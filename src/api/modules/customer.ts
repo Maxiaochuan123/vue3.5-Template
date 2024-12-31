@@ -54,10 +54,10 @@ export interface AddContract {
 }
 
 export interface BaseCustomerSearch {
-  key?: string
-  dateRange?: [number, number] | null
-  mobile?: string
-  status?: AuditStatusType
+  key?: string | null
+  dateRange?: [] | null
+  mobile?: string | null
+  status?: AuditStatusType | null
 }
 
 export interface CustomerSearch extends ListRequest, BaseCustomerSearch {}

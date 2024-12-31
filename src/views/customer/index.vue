@@ -103,8 +103,7 @@ const columns: DataTableColumns<TableDataRecord> = [
       return h(TableActions, {
         row,
         permissionId: '5',
-        currentPermission: 'customer',
-        actions: (row.status === 1 || row.status === -1) ? ['detail'] : [],
+        actions: (row.status === 1 || row.status === 2) ? ['detail'] : [],
         onAction: handleTableAction,
         // 添加自定义按钮
         customButtons: [
@@ -120,7 +119,7 @@ const columns: DataTableColumns<TableDataRecord> = [
             type: 'info' as const,
             onClick: (row: TableDataRecord) => handleUpdatePassword(row)
           }] : []),
-          ...((row.status === 1 || row.status === -1) ? [{
+          ...((row.status === 1 || row.status === 2) ? [{
             label: '添加合同',
             type: 'warning' as const,
             action: 'addContract',

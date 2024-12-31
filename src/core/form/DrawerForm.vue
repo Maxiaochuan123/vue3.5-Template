@@ -4,7 +4,7 @@ import { NDrawer, NDrawerContent, NButton, NIcon, NScrollbar, type FormInst } fr
 import { useFormSubmit } from './hooks/useFormSubmit'
 import { ArrowBack } from '@vicons/ionicons5'
 
-export type FormType = 'add' | 'edit' | 'view'
+export type FormType = 'add' | 'edit' | 'view' | 'detail'
 
 interface CustomFormInst {
   validate: () => Promise<void>
@@ -174,11 +174,11 @@ defineExpose({
       <template #footer>
         <div v-if="showFooter" class="page-footer">
           <NButton :disabled="submitLoading" size="large" @click="close">
-            {{ props.formType === 'view' ? '关闭' : cancelText }}
+            {{ props.formType === 'view' || props.formType === 'detail' ? '关闭' : cancelText }}
           </NButton>
           
           <NButton
-            v-if="props.formType !== 'view'"
+            v-if="props.formType !== 'view' && props.formType !== 'detail'"
             type="primary"
             size="large"
             :loading="submitLoading"

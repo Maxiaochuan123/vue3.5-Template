@@ -9,8 +9,8 @@ import DrawerForm, { type FormType } from '@/core/form/DrawerForm.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
 import { advertisingTypeOptions, advertPlacementStatusOptions, getOptionLabel } from '@/enum/options'
 import { renderAdvertisingInfo } from '@/components/TableColumns/renderAdvertisingInfo'
-import AdvertisingPlacementForm, { type FormState } from './components/AdvertisingPlacementForm.vue'
-import { advertisingPlacementApi, type BaseAdvertPlacementSearch, type AdvertisingPlacement } from '@/api/modules/advertisingPlacement'
+import AdvertisingPlacementForm from './components/AdvertisingPlacementForm.vue'
+import { advertisingPlacementApi, type BaseAdvertPlacementSearch, type AdvertisingPlacement, type AdvertisingPlacementFormState } from '@/api/modules/advertisingPlacement'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -19,8 +19,8 @@ type TableDataRecord = AdvertisingPlacement
 
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<BaseAdvertPlacementSearch>({
-  key: null,
-  dateRange: null,
+  key: '',
+  dateRange: [],
   status: null,
   type: null,
 })
@@ -40,7 +40,7 @@ const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const drawerRef = ref<InstanceType<typeof DrawerForm> | null>(null)
 const formRef = ref<InstanceType<typeof AdvertisingPlacementForm> | null>(null)
 const formType = ref<FormType>('add')
-const editData = ref<Partial<FormState>>({})
+const editData = ref<Partial<AdvertisingPlacementFormState>>({})
 
 // 搜索
 const handleSearch = (values: BaseAdvertPlacementSearch) => {
@@ -122,7 +122,6 @@ const columns: DataTableColumns<TableDataRecord> = [
       return h(TableActions, {
         row,
         permissionId: '4',
-        currentPermission: 'advertisingPlacement',
         // 添加自定义按钮
         customButtons: [
           {

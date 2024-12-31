@@ -1,30 +1,16 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/core/stores/modules/auth'
+import coreRoutes from '@/core/router/index'
 import {
   HomeOutline,
   WalletOutline,
   MegaphoneOutline,
-  CashOutline,
-  DocumentTextOutline,
-  ReceiptOutline,
-  KeyOutline,
   PersonOutline,
-  ShieldOutline,
-  DocumentLockOutline,
   AppsOutline,
 } from '@vicons/ionicons5'
 
 const routes: RouteRecordRaw[] = [
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/core/views/auth/login.vue'),
-    meta: {
-      requiresAuth: false,
-      title: '登录',
-    },
-  },
+  ...coreRoutes,
   {
     path: '/',
     name: 'Layout',
@@ -96,45 +82,14 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
-        path: 'permission',
-        name: 'permission',
+        path: 'recharge-apply',
+        name: 'recharge-apply',
+        component: () => import('@/views/recharge-apply/index.vue'),
         meta: {
           requiresAuth: true,
-          title: '权限管理',
-          icon: KeyOutline,
-        },
-        children: [
-          {
-            path: 'account',
-            name: 'permission-account',
-            component: () => import('@/core/views/permission/account/index.vue'),
-            meta: {
-              requiresAuth: true,
-              title: '账号管理',
-              icon: PersonOutline,
-            },
-          },
-          {
-            path: 'role',
-            name: 'permission-role',
-            component: () => import('@/core/views/permission/role/index.vue'),
-            meta: {
-              requiresAuth: true,
-              title: '角色管理',
-              icon: ShieldOutline,
-            },
-          },
-          {
-            path: 'log',
-            name: 'permission-log',
-            component: () => import('@/core/views/permission/log/index.vue'),
-            meta: {
-              requiresAuth: true,
-              title: '系统日志',
-              icon: DocumentLockOutline,
-            },
-          },
-        ],
+          title: '充值申请',
+          icon: PersonOutline,
+        }
       },
       {
         path: 'robot-management',

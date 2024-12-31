@@ -38,10 +38,10 @@ export interface SetAdvertAccountFormState {
 }
 
 export interface BaseAdvertSearch {
-  key?: string
-  dateRange?: [number, number] | null
-  status: AuditStatusType
-  type: AdvertisingType
+  key?: string | null
+  dateRange?: [] | null
+  status?: AuditStatusType | null
+  type?: AdvertisingType | null
 }
 
 export interface AdvertSearch extends ListRequest, BaseAdvertSearch {}

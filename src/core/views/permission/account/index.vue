@@ -7,7 +7,7 @@ import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
 import TableActions from '@/core/table/table-actions/index.vue'
-import DialogForm from '@/core/form/DialogForm.vue'
+import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import AccountForm from './components/AccountForm.vue'
 import ResetPassword from './components/ResetPassword.vue'
 import { enableDisableOptions } from '@/enum/options'
@@ -28,7 +28,7 @@ const defaultSearchForm = reactive<BaseUserSearch>({
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const dialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const formRef = ref<InstanceType<typeof AccountForm> | null>(null)
-const formType = ref<'add' | 'edit' | 'view'>('add')
+const formType = ref<FormType>('add')
 const editData = ref<Partial<Account>>({})
 const resetPasswordDialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const resetPasswordFormRef = ref<InstanceType<typeof ResetPassword> | null>(null)

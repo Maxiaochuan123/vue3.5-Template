@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
+import { submitAuditStatusOptions, type SubmitAuditStatusType } from '@/enum/options'
 
 const props = defineProps<{
   rowData: Record<string, any>
@@ -8,7 +9,7 @@ const props = defineProps<{
 
 interface AuditForm {
   id: number
-  status: 1 | -1 // 1: 通过, -1: 不通过
+  status: SubmitAuditStatusType
   auditContent: string
 }
 
@@ -21,7 +22,7 @@ const formData = ref<AuditForm>({
 })
 
 // 计算审核意见是否必填（不通过时必填）
-const auditContentRequired = computed(() => formData.value.status === -1)
+const auditContentRequired = computed(() => formData.value.status === 2)
 
 // 表单验证规则
 const rules = computed<FormRules>(() => ({
@@ -37,12 +38,6 @@ const rules = computed<FormRules>(() => ({
     trigger: ['blur', 'input']
   }
 }))
-
-// 审核状态选项
-const statusOptions = [
-  { label: '通过', value: 1 },
-  { label: '不通过', value: -1 }
-]
 
 // 暴露给父组件的方法和数据
 defineExpose({
@@ -64,7 +59,7 @@ defineExpose({
       <NFormItem label="审核结果" path="status" required>
         <NRadioGroup v-model:value="formData.status">
           <NRadio
-            v-for="option in statusOptions"
+            v-for="option in submitAuditStatusOptions"
             :key="option.value"
             :value="option.value"
           >
@@ -76,7 +71,7 @@ defineExpose({
       <NFormItem 
         label="审核意见" 
         path="auditContent" 
-        :required="formData.status === -1"
+        :required="formData.status === 2"
       >
         <NInput
           v-model:value="formData.auditContent"

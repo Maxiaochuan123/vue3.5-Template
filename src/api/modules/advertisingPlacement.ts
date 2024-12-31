@@ -12,16 +12,16 @@ export interface AdvertisingPlacement {
 }
 
 export interface AdvertisingPlacementFormState {
-  adverInfoId: number
-  type: AdvertisingType
-  price: number
+  adverInfoId: number | null
+  type: AdvertisingType | null
+  price: number | null
 }
 
 export interface BaseAdvertPlacementSearch {
   key?: string
-  dateRange?: [number, number] | null
-  status?: AuditStatusType
-  type?: AdvertisingType
+  dateRange?: []
+  status?: AuditStatusType | null
+  type?: AdvertisingType | null
 }
 
 export interface AdvertPlacementSearch extends ListRequest, BaseAdvertPlacementSearch {}

@@ -48,10 +48,27 @@ export type AdvertPlacementStatusType = ExtractOptionsValue<typeof advertPlaceme
 export const auditStatusOptions = [
   { label: '待审核', value: 0 },
   { label: '审核通过', value: 1 },
-  { label: '审核失败', value: -1 },
+  { label: '审核失败', value: 2 },
 ]
 // 导出状态类型
 export type AuditStatusType = ExtractOptionsValue<typeof auditStatusOptions>
+
+// 提交审核状态选项
+export const submitAuditStatusOptions = [
+  { label: '通过', value: 1 },
+  { label: '不通过', value: 2 },
+]
+// 导出状态类型
+export type SubmitAuditStatusType = ExtractOptionsValue<typeof submitAuditStatusOptions>
+
+// 充值申请状态选项
+export const rechargeApplyStatusOptions = [
+  { label: '待处理', value: 0 },
+  { label: '已充值', value: 1 },
+  { label: '已拒绝', value: 2 },
+]
+// 导出状态类型
+export type RechargeApplyStatusType = ExtractOptionsValue<typeof rechargeApplyStatusOptions>
 
 // 变动类型选项
 export const changeTypeOptions = [

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, inject, type Ref, onMounted } from 'vue'
-import { useThemeVars, useMessage } from 'naive-ui'
+import { useThemeVars } from 'naive-ui'
 import type { FormInst, SelectOption } from 'naive-ui'
 import { advertisingTypeOptions, type AdvertisingType } from '@/enum/options'
 import { useFormData } from '@/core/form/hooks/useFormData'
@@ -9,12 +9,13 @@ import { advertisingApi, type AdvertisingOptions } from '@/api/modules/advertisi
 import { advertisingPlacementApi, type BillingMethod } from '@/api/modules/advertisingPlacement'
 import { userApi } from '@/api/modules/user'
 import { type AdvertisingPlacementFormState } from '@/api/modules/advertisingPlacement'
+import { type FormType } from '@/core/form/DialogForm.vue'
 
 const themeVars = useThemeVars()
 
 // 注入响应式的 formType
 const editData = inject<Ref<Partial<AdvertisingPlacementFormState>>>('editData')!
-const formType = inject<Ref<'add' | 'edit' | 'view'>>('formType')!
+const formType = inject<Ref<FormType>>('formType')!
 
 const url = ref('')
 const formRef = ref<FormInst | null>(null)

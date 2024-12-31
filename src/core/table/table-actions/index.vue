@@ -61,7 +61,6 @@ interface Props<T = Record<string, any>> {
   actions?: RowActionType[]
   customButtons?: CustomButton[]
   permissionId: string
-  currentPermission?: string
   onAction?: (type: RowActionType, row: any) => void
   deleteConfig?: {
     content?: string

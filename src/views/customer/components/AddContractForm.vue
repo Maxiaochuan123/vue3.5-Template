@@ -12,7 +12,7 @@ const formRef = ref<FormInst | null>(null)
 const editData = inject<Ref<Partial<AddContract>>>('editData')!
 
 // 媒体文件最大数量
-const contractUrlMaxCount = 10
+const contractUrlMaxCount = 8
 const pricePrincipalMaxCount = 1
 
 const { formData, initialData } = useFormData<AddContract>({

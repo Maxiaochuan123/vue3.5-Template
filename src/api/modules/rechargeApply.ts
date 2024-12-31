@@ -1,6 +1,6 @@
 import { get, put } from '@/api/server'
 import type { ApiResult, ListRequest, ListResponse } from '@/api/types'
-import type { AuditStatusType } from '@/enum/options'
+import type { RechargeApplyStatusType, SubmitAuditStatusType } from '@/enum/options'
 
 export interface RechargeApply {
   id: number
@@ -10,8 +10,8 @@ export interface RechargeApply {
   mobile: string
   principal: string
   realName: string
-  status: AuditStatusType
-  type: string
+  status: RechargeApplyStatusType
+  type?: string
 }
 
 export interface RechargeApplyDetail {
@@ -27,19 +27,20 @@ export interface RechargeApplyDetail {
   realName: string
   rechargeGift: string
   rechargePrincipal: string
-  status: AuditStatusType
+  status: RechargeApplyStatusType
+  type: string
 }
 
 export interface RechargeApplyAuditForm {
-  id: number
-  status: AuditStatusType
-  content: string
+  id: number | null
+  status: SubmitAuditStatusType
+  autditContent: string
 }
 
 export interface BaseRechargeApplySearch {
   key?: string
   mobile?: string
-  status?: AuditStatusType
+  status?: RechargeApplyStatusType | null
 }
 
 export interface RechargeApplySearch extends ListRequest, BaseRechargeApplySearch {}
@@ -49,13 +50,7 @@ export interface RegionResponse {
   total: number
 }
 
-export interface AuditForm {
-  id: number
-  status: AuditStatusType
-  auditContent: string
-}
-
-export const customerApi = {
+export const rechargeApplyApi = {
   /**
    * 获取充值管理列表
    */
@@ -71,9 +66,9 @@ export const customerApi = {
   },
 
   /**
-   * 审核
+   * 充值申请
    */
-  audit(data: AuditForm): Promise<ApiResult<void>> {
+  rechargeApply(data: RechargeApplyAuditForm): Promise<ApiResult<void>> {
     return put('/api/v1/mjRecharge/status', data)
   }
 }

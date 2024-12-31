@@ -141,6 +141,13 @@ export const useAuthStore = defineStore('auth', () => {
           permissions: ['audit', 'detail', 'updatePassword', 'addContract'],
           children: [],
         },
+        {
+          id: '6',
+          name: '充值申请',
+          isChecked: true,
+          permissions: ['rechargeApply', 'detail'],
+          children: [],
+        },
         // {
         //   id: '5',
         //   name: '权限管理',
