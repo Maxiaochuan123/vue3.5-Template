@@ -1,10 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
-import {
-    KeyOutline,
-    PersonOutline,
-    ShieldOutline,
-    DocumentLockOutline,
-  } from '@vicons/ionicons5'
+import { KeyOutline } from '@vicons/ionicons5'
 
 const coreRoutes: RouteRecordRaw[] = [
     {
@@ -31,8 +26,7 @@ const coreRoutes: RouteRecordRaw[] = [
             component: () => import('@/core/views/permission/account/index.vue'),
             meta: {
               requiresAuth: true,
-              title: '账号管理',
-              icon: PersonOutline,
+              title: '账号管理'
             },
           },
           {
@@ -41,8 +35,7 @@ const coreRoutes: RouteRecordRaw[] = [
             component: () => import('@/core/views/permission/role/index.vue'),
             meta: {
               requiresAuth: true,
-              title: '角色管理',
-              icon: ShieldOutline,
+              title: '角色管理'
             },
           },
           {
@@ -51,8 +44,7 @@ const coreRoutes: RouteRecordRaw[] = [
             component: () => import('@/core/views/permission/log/index.vue'),
             meta: {
               requiresAuth: true,
-              title: '系统日志',
-              icon: DocumentLockOutline,
+              title: '系统日志'
             },
           },
         ],

@@ -47,90 +47,95 @@ export const permissionMap = {
 export const permissionMenus = [
   {
     id: '1',
-    name: '首页',
-    isChecked: false,
-    permissions: []
+    name: '账户权益',
+    isChecked: true,
+    permissions: [],
+    children: [],
   },
   {
     id: '2',
-    name: '账户权益',
-    isChecked: false,
-    permissions: []
+    name: '广告管理',
+    isChecked: true,
+    permissions: ['add', 'edit', 'delete', 'setAdvertisingAccount'],
+    children: [],
   },
   {
     id: '3',
-    name: '广告管理',
-    isChecked: false,
-    permissions: ['add', 'edit', 'delete', 'setAdvertisingAccount']
+    name: '广告投放',
+    isChecked: true,
+    permissions: ['advertisingPlacement', 'followUpInvestment', 'placementData'],
+    children: [],
   },
   {
     id: '4',
-    name: '广告投放',
-    isChecked: false,
-    permissions: ['advertisingPlacement', 'followUpInvestment', 'placementData']
+    name: '数据概览',
+    isChecked: true,
+    permissions: [],
+    children: [],
   },
   {
     id: '5',
     name: '客户管理',
-    isChecked: false,
-    permissions: ['audit', 'detail', 'updatePassword', 'addContract']
+    isChecked: true,
+    permissions: ['audit', 'detail', 'updatePassword', 'addContract'],
+    children: [],
   },
   {
     id: '6',
     name: '充值管理',
-    isChecked: false,
+    isChecked: true,
     permissions: [],
     children: [
       {
         id: '6-1',
         name: '充值申请',
-        isChecked: false,
-        permissions: ['recharge', 'detail']
+        isChecked: true,
+        permissions: ['recharge', 'detail'],
+        children: [],
       },
       {
         id: '6-2',
         name: '广告主管理',
-        isChecked: false,
-        permissions: ['clearBalance']
+        isChecked: true,
+        permissions: ['clearBalance'],
+        children: [],
       },
       {
         id: '6-3',
         name: '余额变动',
-        isChecked: false,
-        permissions: []
-      }
-    ]
+        isChecked: true,
+        permissions: [],
+        children: [],
+      },
+    ],
   },
-  // {
-  //   id: '5',
-  //   name: '权限管理',
-  //   isChecked: false,
-  //   permissions: [],
-  //   children: [
-  //     {
-  //       id: '4-1',
-  //       name: '账号管理',
-  //       isChecked: false,
-  //       permissions: ['add', 'edit', 'status', 'delete', 'view']
-  //     },
-  //     {
-  //       id: '4-2',
-  //       name: '角色管理',
-  //       isChecked: false,
-  //       permissions: ['add', 'edit', 'status', 'delete', 'view']
-  //     },
-  //     {
-  //       id: '4-3',
-  //       name: '系统日志',
-  //       isChecked: false,
-  //       permissions: []
-  //     }
-  //   ]
-  // },
-  // {
-  //   id: '5',
-  //   name: '机器人管理',
-  //   isChecked: false,
-  //   permissions: []
-  // }
+  {
+    id: '7',
+    name: '权限管理',
+    isChecked: true,
+    permissions: [],
+    children: [
+      {
+        id: '7-1',
+        name: '账号管理',
+        isChecked: true,
+        permissions: ['add', 'edit', 'status', 'delete', 'view'],
+        children: [],
+      },
+      {
+        id: '7-2',
+        name: '角色管理',
+        isChecked: true,
+        permissions: ['add', 'edit', 'status', 'delete', 'view'],
+        children: [],
+      },
+      {
+        id: '7-3',
+        name: '系统日志',
+        isChecked: true,
+        permissions: [],
+        children: [],
+      },
+    ],
+  },
 ]

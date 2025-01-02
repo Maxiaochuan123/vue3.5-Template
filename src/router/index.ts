@@ -1,16 +1,20 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/core/stores/modules/auth'
+import type { Permission } from '@/core/api/modules/auth'
 import coreRoutes from '@/core/router/index'
 import {
   HomeOutline,
   WalletOutline,
   MegaphoneOutline,
   PersonOutline,
-  AppsOutline,
+  KeyOutline,
+  ShieldOutline,
+  DocumentLockOutline,
 } from '@vicons/ionicons5'
 
 const routes: RouteRecordRaw[] = [
-  ...coreRoutes,
+  // 从 coreRoutes 获取登录路由
+  ...coreRoutes.filter(route => route.name === 'Login'),
   {
     path: '/',
     name: 'Layout',
@@ -120,28 +124,9 @@ const routes: RouteRecordRaw[] = [
           }
         ]
       },
-      {
-        path: 'robot-management',
-        name: 'robot-management',
-        component: () => import('@/views/robot-management/index.vue'),
-        meta: {
-          requiresAuth: true,
-          title: '机器人管理',
-          icon: AppsOutline,
-        },
-        children: [
-          {
-            path: ':id',
-            name: 'robot-detail',
-            component: () => import('@/views/robot-management/detail/index.vue'),
-            meta: {
-              requiresAuth: true,
-              title: '机器人详情',
-              hideInMenu: true,
-            },
-          },
-        ],
-      },
+      
+      // 从 coreRoutes 获取权限管理路由
+      ...coreRoutes.filter(route => route.name === 'permission'),
     ],
   },
 ]
@@ -188,7 +173,7 @@ router.beforeEach((to, from, next) => {
 
     if (!hasAllPermissions) {
       // 重定向到第一个有权限的路由
-      const firstPermittedRoute = authStore.auth.permissions.find(p => p.isChecked)
+      const firstPermittedRoute = authStore.auth.permissions.find((p: Permission) => p.isChecked)
       if (firstPermittedRoute) {
         const route = routes[1].children?.find(r => r.meta?.title === firstPermittedRoute.name)
         if (route) {

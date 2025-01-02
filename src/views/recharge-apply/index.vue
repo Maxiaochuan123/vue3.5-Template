@@ -115,11 +115,12 @@ const fetchDetail = async (id: number) => {
 
 // 充值
 const handleRecharge = async (row: TableDataRecord) => {
-  const data = await fetchDetail(row.id as number)
-  if (data) {
+  const { id, ...otherData } = await fetchDetail(row.id as number)
+  if (otherData) {
     editData.value = {
-      ...data,
-      status: data.status === 0 ? 1 : data.status
+      ...otherData,
+      id: row.id,
+      status: otherData.status === 0 ? 1 : otherData.status
     }
     formType.value = 'edit'
     drawerRef.value?.open()
