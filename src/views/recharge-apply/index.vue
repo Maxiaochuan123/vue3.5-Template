@@ -50,7 +50,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     key: 'principal',
   },
   {
-    title: '充值余额',
+    title: '充值赠送',
     key: 'figtAmount',
   },
   {
@@ -123,6 +123,8 @@ const handleRecharge = async (row: TableDataRecord) => {
       id: row.id,
       status: otherData.status === 0 ? 1 : otherData.status
     }
+    console.log(editData.value)
+
     formType.value = 'edit'
     drawerRef.value?.open()
   }

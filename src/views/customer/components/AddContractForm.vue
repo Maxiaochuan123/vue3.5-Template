@@ -174,9 +174,9 @@ defineExpose({
                 style="width: 100%"
               />
             </NFormItem>
-            <NFormItem label="充值金额" path="figtAmount" required>
+            <NFormItem label="充值金额" path="principal" required>
               <NInputNumber
-                v-model:value="formData.figtAmount"
+                v-model:value="formData.principal"
                 placeholder="请输入充值金额"
                 :min="0"
                 :show-button="false"
@@ -186,9 +186,9 @@ defineExpose({
                 <template #suffix>元</template>
               </NInputNumber>
             </NFormItem>
-            <NFormItem label="赠送金额" path="principal" required>
+            <NFormItem label="赠送金额" path="figtAmount" required>
               <NInputNumber
-                v-model:value="formData.principal"
+                v-model:value="formData.figtAmount"
                 placeholder="请输入赠送金额"
                 :min="0"
                 :show-button="false"

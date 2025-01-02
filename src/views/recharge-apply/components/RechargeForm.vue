@@ -113,7 +113,7 @@ defineExpose({
                 <NDescriptionsItem label="充值对象">{{ editData?.realName }}</NDescriptionsItem>
                 <NDescriptionsItem label="公司名称">{{ editData?.companyName }}</NDescriptionsItem>
                 <NDescriptionsItem label="手机号">{{ editData?.mobile }}</NDescriptionsItem>
-                <NDescriptionsItem label="充值类型">{{ editData?.type }}</NDescriptionsItem>
+                <NDescriptionsItem label="充值类型">{{ editData?.types }}</NDescriptionsItem>
                 <NDescriptionsItem label="充值本金">{{ editData?.rechargePrincipal }}</NDescriptionsItem>
                 <NDescriptionsItem label="赠送金额">{{ editData?.rechargeGift }}</NDescriptionsItem>
               </NDescriptions>
