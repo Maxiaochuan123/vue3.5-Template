@@ -5,7 +5,7 @@ import naive from 'naive-ui'
 
 import App from './App.vue'
 import router from './router'
-import { btnPermission } from './core/directives/permission'
+import { btnPermission } from '@/core/directives/btnPermission'
 
 const app = createApp(App)
 const pinia = createPinia()

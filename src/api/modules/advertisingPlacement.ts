@@ -19,7 +19,7 @@ export interface AdvertisingPlacementFormState {
 
 export interface BaseAdvertPlacementSearch {
   key?: string
-  dateRange?: []
+  dateRange?: [] | null
   status?: AuditStatusType | null
   type?: AdvertisingType | null
 }

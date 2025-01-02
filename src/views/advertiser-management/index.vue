@@ -67,7 +67,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '6-2',
+        permissionId: 'advertiser-management',
         customButtons: [
           {
             label: '清空余额',

@@ -89,7 +89,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '3',
+        permissionId: 'advertising',
         actions: ['edit', 'view', 'delete'],
         deleteConfig: {
           content: '确定要删除该广告吗？删除后不可恢复！',
@@ -190,11 +190,18 @@ const handleSetAdvertAccount = () => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <TableToolbarActions :on-add="handleAdd" permission-id="3">
-        <template #default>
-          <NButton type="primary" v-btnPermission="['3', 'setAdvertisingAccount']" @click="handleSetAdvertAccount"> 设置投放账号 </NButton>
-        </template>
-      </TableToolbarActions>
+      <TableToolbarActions
+        permission-id="advertising"
+        :actions="['add']"
+        :custom-buttons="[
+          {
+            label: '设置投放账号',
+            action: 'setAdvertisingAccount',
+            type: 'primary',
+            onClick: handleSetAdvertAccount
+          }
+        ]"
+      />
     </template>
 
     <!-- 表格 -->

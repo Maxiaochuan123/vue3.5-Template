@@ -98,7 +98,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '7-1',
+        permissionId: 'permission-account',
         actions: ['edit', 'view', 'delete'],
         deleteConfig: {
           content: '确定要删除该账号吗？删除后不可恢复！',
@@ -194,8 +194,9 @@ const handleResetPassword = (row: Record<string, any>) => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <TableToolbarActions 
-        :permission-id="'7-1'"
+      <TableToolbarActions
+        :actions="['add']"
+        permission-id="permission-account"
         :on-add="handleAdd"
       />
     </template>

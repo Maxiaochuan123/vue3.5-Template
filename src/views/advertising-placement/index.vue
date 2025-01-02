@@ -20,7 +20,7 @@ type TableDataRecord = AdvertisingPlacement
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<BaseAdvertPlacementSearch>({
   key: '',
-  dateRange: [],
+  dateRange: null,
   status: null,
   type: null,
 })
@@ -121,7 +121,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '4',
+        permissionId: 'advertising-placement',
         // 添加自定义按钮
         customButtons: [
           {
@@ -203,7 +203,7 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
     <template #toolbar>
       <NButton
         type="primary"
-        v-btnPermission="['4', 'advertisingPlacement']"
+        v-btnPermission="['advertising-placement', 'advertisingPlacement']"
         @click="handleAdd"
       >
         投放广告
@@ -216,7 +216,7 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
     </template>
 
     <!-- 投放/追投广告 -->
-    <DrawerForm
+    <!-- <DrawerForm
       ref="drawerRef"
       :form-ref="formRef"
       :formType="formType"
@@ -229,7 +229,7 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
       :edit-data="editData"
     >
       <AdvertisingPlacementForm ref="formRef" />
-    </DrawerForm>
+    </DrawerForm> -->
 
   </TablePageLayout>
 </template>

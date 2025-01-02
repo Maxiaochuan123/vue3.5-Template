@@ -73,7 +73,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '6-1',
+        permissionId: 'recharge-apply',
         actions: (row.status === 1 || row.status === 2) ? ['detail'] : [],
         onAction: handleTableAction,
         // 添加自定义按钮
