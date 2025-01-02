@@ -1,14 +1,13 @@
 <template>
   <span v-btnPermission="permissionId">
     <NButton size="small" quaternary type="primary" @click="$emit('click')">
-      {{ permissionMap.edit }}
+      {{ buttonPermissionMap.edit }}
     </NButton>
   </span>
 </template>
 
 <script setup lang="ts">
-import { NButton } from 'naive-ui'
-import { permissionMap } from '@/core/permissions'
+import { buttonPermissionMap } from '@/core/permissions-config/buttonMap'
 
 defineProps<{
   permissionId: [string, string]

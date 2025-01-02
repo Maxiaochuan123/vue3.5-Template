@@ -26,7 +26,8 @@ const coreRoutes: RouteRecordRaw[] = [
             component: () => import('@/core/views/permission/account/index.vue'),
             meta: {
               requiresAuth: true,
-              title: '账号管理'
+              title: '账号管理',
+              permissions: ['add', 'edit', 'status', 'delete', 'view'],
             },
           },
           {
@@ -35,7 +36,8 @@ const coreRoutes: RouteRecordRaw[] = [
             component: () => import('@/core/views/permission/role/index.vue'),
             meta: {
               requiresAuth: true,
-              title: '角色管理'
+              title: '角色管理',
+              permissions: ['add', 'edit', 'status', 'delete', 'view'],
             },
           },
           {

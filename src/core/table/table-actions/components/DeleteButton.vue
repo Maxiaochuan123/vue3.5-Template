@@ -7,7 +7,7 @@
     >
       <template #trigger>
         <NButton size="small" quaternary type="error">
-          {{ permissionMap.delete }}
+          {{ buttonPermissionMap.delete }}
         </NButton>
       </template>
       {{ content }}
@@ -16,8 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { NButton, NPopconfirm } from 'naive-ui'
-import { permissionMap } from '@/core/permissions'
+import { buttonPermissionMap } from '@/core/permissions-config/buttonMap'
 
 interface Props {
   content?: string

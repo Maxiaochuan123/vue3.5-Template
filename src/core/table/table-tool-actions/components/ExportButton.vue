@@ -3,14 +3,13 @@
     <template #icon>
       <NIcon><DownloadOutline /></NIcon>
     </template>
-    {{ permissionMap.export }}
+    {{ buttonPermissionMap.export }}
   </NButton>
 </template>
 
 <script setup lang="ts">
-import { NButton, NIcon } from 'naive-ui'
 import { DownloadOutline } from '@vicons/ionicons5'
-import { permissionMap } from '@/core/permissions'
+import { buttonPermissionMap } from '@/core/permissions-config/buttonMap'
 
 defineEmits<{
   (e: 'click'): void

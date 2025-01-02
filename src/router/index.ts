@@ -51,6 +51,7 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           title: '广告管理',
           icon: MegaphoneOutline,
+          permissions: ['add', 'edit', 'delete', 'setAdvertisingAccount'],
         },
       },
       {
@@ -61,6 +62,7 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           title: '广告投放',
           icon: MegaphoneOutline,
+          permissions: ['advertisingPlacement', 'followUpInvestment', 'placementData'],
         },
         children: [
           {
@@ -83,6 +85,7 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           title: '客户管理',
           icon: PersonOutline,
+          permissions: ['audit', 'detail', 'updatePassword', 'addContract'],
         }
       },
       {
@@ -102,6 +105,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               requiresAuth: true,
               title: '充值申请',
+              permissions: ['recharge', 'detail'],
             }
           },
           {
@@ -111,6 +115,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               requiresAuth: true,
               title: '广告主管理',
+              permissions: ['clearBalance'],
             }
           },
           {
