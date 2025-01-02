@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
   ...coreRoutes.filter(route => route.name === 'login'),
   {
     path: '/',
-    name: 'layout',
+    name: 'Layout',
     component: () => import('@/core/layout/PageLayout.vue'),
     meta: {
       requiresAuth: true,

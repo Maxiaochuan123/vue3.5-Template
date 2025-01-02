@@ -117,7 +117,7 @@ function renderIcon(icon: any) {
 
 // 递归查找权限
 const findPermission = (permissions: any[], title: string): any | null => {
-  // console.log('查���权限:', { title, permissions })
+  // console.log('查找权限:', { title, permissions })
 
   for (const permission of permissions) {
     // console.log('比较权限:', { permissionName: permission.name, searchTitle: title })
