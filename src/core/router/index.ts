@@ -4,7 +4,7 @@ import { KeyOutline } from '@vicons/ionicons5'
 const coreRoutes: RouteRecordRaw[] = [
     {
         path: '/login',
-        name: 'Login',
+        name: 'login',
         component: () => import('@/core/views/auth/login.vue'),
         meta: {
             requiresAuth: false,

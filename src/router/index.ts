@@ -14,10 +14,10 @@ import {
 
 const routes: RouteRecordRaw[] = [
   // 从 coreRoutes 获取登录路由
-  ...coreRoutes.filter(route => route.name === 'Login'),
+  ...coreRoutes.filter(route => route.name === 'login'),
   {
     path: '/',
-    name: 'Layout',
+    name: 'layout',
     component: () => import('@/core/layout/PageLayout.vue'),
     meta: {
       requiresAuth: true,
@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'Dashboard',
+        name: 'dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         meta: {
           requiresAuth: true,

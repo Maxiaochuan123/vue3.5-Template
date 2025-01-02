@@ -83,7 +83,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,
-        permissionId: '5-2',
+        permissionId: '7-2',
         actions: ['edit', 'view', 'delete'],
         deleteConfig: {
           content: '确定要删除该角色吗？删除后不可恢复！',
@@ -148,7 +148,7 @@ const handleRoleForm = (row: Record<string, any>, type: 'edit' | 'view') => {
 
     <!-- 工具栏 -->
     <template #toolbar>
-      <TableToolbarActions permissionId="5-2" :on-add="handleAdd" />
+      <TableToolbarActions permissionId="7-2" :on-add="handleAdd" />
     </template>
 
     <!-- 表格区域 -->

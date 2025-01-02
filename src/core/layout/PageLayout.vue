@@ -221,7 +221,7 @@ const breadcrumbs = computed(() => {
     })
     .map((route) => {
       // 如果是首页，特殊处理路径
-      if (route.name === 'Dashboard') {
+      if (route.name === 'dashboard') {
         return {
           title: route.meta.title as string,
           path: '/',
