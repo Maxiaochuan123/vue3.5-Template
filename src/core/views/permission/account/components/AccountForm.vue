@@ -2,7 +2,7 @@
 import { ref, computed, inject, type Ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import { useFormData } from '@/core/form/hooks/useFormData'
-import type { Account } from '@/core/api/modules/account'
+import type { Account, AccountFormState } from '@/core/api/modules/account'
 import { useAuthStore } from '@/core/stores/modules/auth'
 import { type FormType } from '@/core/form/DrawerForm.vue'
 
@@ -14,7 +14,7 @@ const editData = inject<Ref<Partial<Account>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
 
-const { formData } = useFormData<Account>({
+const { formData } = useFormData<AccountFormState>({
   initialData: {
     nickname: '',
     userName: '',

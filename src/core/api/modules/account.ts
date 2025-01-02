@@ -1,11 +1,22 @@
 import { post, get, put, del } from '@/api/server'
 import type { ApiResult, ListRequest, ListResponse } from '@/api/types'
+import AccountForm from '@/core/views/permission/account/components/AccountForm.vue'
 
 export interface Account {
   id?: number
   nickname: string
   userName: string
   password?: string
+  mobile: string
+  roleId: number | null
+  status: number
+}
+
+export interface AccountFormState {
+  id?: number
+  nickname: string
+  userName: string
+  password: string
   mobile: string
   roleId: number | null
 }

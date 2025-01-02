@@ -174,7 +174,7 @@ defineExpose({
               v-model:value="checkAll"
               :round="false"
               :disabled="isViewMode"
-              @update:value="checked => handleCheckAllChange(checked, updateFormData)">
+              @update:value="(checked: boolean) => handleCheckAllChange(checked, updateFormData)">
               <template #checked>
                 取消勾选全部菜单权限
               </template>
@@ -194,7 +194,7 @@ defineExpose({
               :expanded-keys="expandedKeys"
               :disabled="isViewMode"
               :show-irrelevant-nodes="false"
-              @update:checked-keys="keys => handleUpdateChecked(keys, updateFormData)"
+              @update:checked-keys="(keys: string[]) => handleUpdateChecked(keys, updateFormData)"
               @update:expanded-keys="handleUpdateExpanded"
             />
           </div>

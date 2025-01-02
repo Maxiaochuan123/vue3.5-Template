@@ -6,7 +6,7 @@ import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
-import TableActions from '@/core/table/table-actions/index.vue'
+import TableActions, { type RowActionType } from '@/core/table/table-actions/index.vue'
 import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import AccountForm from './components/AccountForm.vue'
 import ResetPassword from './components/ResetPassword.vue'
@@ -118,7 +118,7 @@ const columns: DataTableColumns<TableDataRecord> = [
 ]
 
 // 处理表格操作
-const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<string, any>) => {
+const handleTableAction = async (type: RowActionType, row: TableDataRecord) => {
   if (!row.id) return
   switch (type) {
     case 'edit':

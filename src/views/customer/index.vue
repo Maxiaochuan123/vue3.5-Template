@@ -258,7 +258,7 @@ const refreshList = () => {
       :add-api="customerApi.updatePassword"
       :refresh-list="refreshList"
     >
-      <UpdatePassword ref="updatePasswordFormRef" :rowData="editData" />
+      <UpdatePassword ref="updatePasswordFormRef" :row-data="editData!" />
     </DialogForm>
 
     <!-- 审核 -->
@@ -270,7 +270,7 @@ const refreshList = () => {
       :add-api="customerApi.audit"
       :refresh-list="refreshList"
     >
-      <AuditForm ref="auditFormRef" :rowData="editData" />
+      <AuditForm ref="auditFormRef" :row-data="editData!" />
     </DialogForm>
 
   </TablePageLayout>

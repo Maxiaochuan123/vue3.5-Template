@@ -112,15 +112,15 @@ const consumeData = ref<ConsumeData>({
 // 添加一个过滤函数，将 null 值转换为 0
 const filterNullValues = <T extends Record<string, any>>(data: T): T => {
   const result = { ...data }
-  Object.keys(result).forEach(key => {
+  Object.keys(result).forEach((key: keyof T) => {
     if (result[key] === null) {
-      result[key] = 0
+      result[key] = 0 as T[keyof T]
     }
   })
   return result
 }
 
-// 加载数��
+// 加载数
 const loadData = async () => {
   try {
     // 加载广告主注册数据

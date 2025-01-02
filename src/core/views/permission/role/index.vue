@@ -6,10 +6,11 @@ import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
-import TableActions from '@/core/table/table-actions/index.vue'
+import TableActions, { type RowActionType } from '@/core/table/table-actions/index.vue'
 import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import RoleForm from './components/RoleForm.vue'
 import { roleApi, type Role, type BaseRoleSearch } from '@/core/api/modules/role'
+
 
 type TableDataRecord = Role
 
@@ -96,7 +97,7 @@ const columns: DataTableColumns<TableDataRecord> = [
 
 
 // 处理表格操作
-const handleTableAction = async (type: 'edit' | 'view' | 'delete', row: Record<string, any>) => {
+const handleTableAction = async (type: RowActionType, row: TableDataRecord) => {
   if (!row.id) return
   switch (type) {
     case 'edit':
@@ -160,7 +161,7 @@ const handleRoleForm = (row: Record<string, any>, type: 'edit' | 'view') => {
       <Table 
         ref="tableRef" 
         :columns="columns" 
-        :fetch-api="(params: Record<string, any>) => roleApi.getRoleList(params as any)" 
+        :fetch-api="roleApi.getRoleList" 
       />
     </template>
 

@@ -134,7 +134,7 @@ const refreshList = () => {
       :add-api="advertiserManagementApi.clearBalance"
       :on-success="refreshList"
     >
-      <ClearBalanceForm ref="clearBalanceFormRef" :row-data="rowData"/>
+      <ClearBalanceForm ref="clearBalanceFormRef" :row-data="rowData!" />
     </DialogForm>
   </TablePageLayout>
 </template>

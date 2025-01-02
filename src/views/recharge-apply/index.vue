@@ -115,8 +115,9 @@ const fetchDetail = async (id: number) => {
 
 // 充值
 const handleRecharge = async (row: TableDataRecord) => {
-  const { id, ...otherData } = await fetchDetail(row.id as number)
-  if (otherData) {
+  const detail = await fetchDetail(row.id as number)
+  if (detail) {
+    const { id, ...otherData } = detail
     editData.value = {
       ...otherData,
       id: row.id,
