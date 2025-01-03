@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, ref, reactive } from 'vue'
-import { NButton, type DataTableColumns } from 'naive-ui'
+import { NButton, type DataTableColumns, type FormInst } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
@@ -29,7 +29,6 @@ const defaultSearchForm = reactive<BaseAdvertSearch>({
 
 // 搜索参数转换
 const transformSearchParams = (params: any) => {
-  console.log('transformSearchParams:', params)
   const { dateRange, ...rest } = params;
   return {
     ...rest,
@@ -231,6 +230,7 @@ const handleSetAdvertAccount = () => {
       title="设置投放账号"
       :form-ref="setAdvertAccountFormRef"
       :add-api="advertisingApi.setAdvertisingAccount"
+      :refresh-list="refreshList"
     >
       <SetAdvertAccountForm ref="setAdvertAccountFormRef" />
     </DialogForm>

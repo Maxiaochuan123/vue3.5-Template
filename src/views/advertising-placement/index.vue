@@ -19,7 +19,7 @@ type TableDataRecord = AdvertisingPlacement
 
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<BaseAdvertPlacementSearch>({
-  key: '',
+  key: null,
   dateRange: null,
   status: null,
   type: null,
@@ -27,7 +27,6 @@ const defaultSearchForm = reactive<BaseAdvertPlacementSearch>({
 
 // 搜索参数转换
 const transformSearchParams = (params: any) => {
-  console.log('transformSearchParams:', params)
   const { dateRange, ...rest } = params;
   return {
     ...rest,
@@ -157,7 +156,7 @@ const refreshList = () => {
 // 投放数据
 const handlePlacementData = (row: Record<string, any>) => {
   router.push({
-    path: `/advertising-placement/${row.id}`,
+    path: `/advertising-placement/${row.adverInfoId}`,
     query: {
       type: row.type
     }
@@ -223,7 +222,7 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
       add-title="投放广告"
       edit-title="追投广告"
       :add-api="advertisingPlacementApi.createAdvertisingPlacement"
-      :edit-api="advertisingPlacementApi.updateAdvertisingPlacement"
+      :edit-api="advertisingPlacementApi.createAdvertisingPlacement"
       :refresh-list="refreshList"
       :extra-fields="['id']"
       :edit-data="editData"

@@ -26,7 +26,6 @@ const defaultSearchForm = reactive<BaseCustomerSearch>({
 
 // 搜索参数转换
 const transformSearchParams = (params: any) => {
-  console.log('transformSearchParams:', params)
   const { dateRange, ...rest } = params;
   return {
     ...rest,

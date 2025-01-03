@@ -1,29 +1,34 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
-import { NDrawer, NDrawerContent, NButton, NIcon, NScrollbar, type FormInst } from 'naive-ui'
+import { NDrawer, NDrawerContent, NButton, NIcon, NScrollbar } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
 import { ArrowBack } from '@vicons/ionicons5'
 
 export type FormType = 'add' | 'edit' | 'view' | 'detail'
 
-interface CustomFormInst {
-  validate: () => Promise<void>
-  formData: Record<string, any>
-  initialData?: Record<string, any>
-}
-
 interface Props {
-  formRef?: FormInst | CustomFormInst | null
+  formRef?: any
+  // 新增 API
   addApi?: (...args: any[]) => Promise<any>
+  // 编辑 API
   editApi?: (...args: any[]) => Promise<any>
+  // 表单类型
   formType?: FormType
+  // 编辑数据
   editData?: Record<string, any>
+  // 额外字段
   extraFields?: string[]
+  // 刷新列表
   refreshList?: () => void
+  // 新增标题
   addTitle?: string
+  // 编辑标题
   editTitle?: string
+  // 是否显示底部
   showFooter?: boolean
+  // 提交按钮文本
   submitText?: string
+  // 取消按钮文本
   cancelText?: string
 }
 
@@ -34,6 +39,9 @@ const props = withDefaults(defineProps<Props>(), {
   showFooter: true,
   extraFields: () => [],
 })
+
+// 抽屉是否显示
+const visible = ref(false)
 
 // 创建响应式的 formType
 const currentFormType = ref<FormType>(props.formType)
@@ -76,7 +84,6 @@ const drawerTitle = computed(() => {
   }
 })
 
-const visible = ref(false)
 const { submitLoading, submitDisabled, handleSubmit } = useFormSubmit()
 
 // 处理提交
@@ -84,7 +91,7 @@ const handleFormSubmit = async () => {
   if (!props.formRef) return
   
   try {
-    const formInstance = props.formRef as CustomFormInst
+    const formInstance = props.formRef
     if (currentFormType.value !== 'add' && currentFormType.value !== 'edit') {
       console.error('Invalid form type for submission')
       return

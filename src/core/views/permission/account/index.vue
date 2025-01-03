@@ -44,6 +44,7 @@ const handleSearch = (values: BaseUserSearch) => {
 
 // 刷新列表
 const refreshList = () => {
+  console.log('refreshList', tableRef.value)
   if (tableRef.value) {
     tableRef.value.refresh()
   }
@@ -239,12 +240,13 @@ onMounted(() => {
     </DialogForm>
 
     <!-- 重置密码 -->
-    <DialogForm 
+    <DialogForm
       ref="resetPasswordDialogRef" 
       :width="440" 
       title="重置密码"
       :form-ref="resetPasswordFormRef"
       :add-api="userApi.updatePassword"
+      :refresh-list="refreshList"
     >
       <ResetPassword ref="resetPasswordFormRef" :id="editData.id ?? 0" />
     </DialogForm>

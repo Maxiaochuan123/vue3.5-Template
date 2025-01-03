@@ -5,7 +5,7 @@ import TablePageLayout from '@/core/table/TableLayout.vue'
 import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import { balanceChangeApi, type BaseBalanceChangeSearch, type BalanceChange } from '@/api/modules/balanceChange'
-import { balanceChangeTypeOptions, changeStatusOptions } from '@/enum/options'
+import { changeTypeOptions, changeStatusOptions } from '@/enum/options'
 
 type TableDataRecord = BalanceChange
 
@@ -47,7 +47,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     title: '变动类型',
     key: 'type',
     render: (row: TableDataRecord) => {
-      return balanceChangeTypeOptions.find(item => item.value === row.type)?.label || '--'
+      return changeTypeOptions.find(item => item.value === row.type)?.label || '--'
     }
   },
   {
@@ -99,7 +99,7 @@ const columns: DataTableColumns<TableDataRecord> = [
           </NFormItem>
 
           <NFormItem label="类型" data-width="md">
-            <NSelect v-model:value="searchForm.type" :options="balanceChangeTypeOptions" />
+            <NSelect v-model:value="searchForm.type" :options="changeTypeOptions" />
           </NFormItem>
 
           <!-- 变动日期范围 -->

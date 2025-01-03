@@ -1,5 +1,5 @@
 <template>
-  <NSpace justify="center" align="center">
+  <NSpace justify="center" align="center" :size="customButtons.length > 1 ? 12 : 0">
     <template v-for="action in actions" :key="action">
       <EditButton 
         v-if="action === 'edit'"
@@ -69,7 +69,7 @@ interface Props<T = Record<string, any>> {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  actions: () => ['edit', 'view', 'delete', 'detail'],
+  actions: () => [],
   customButtons: () => [],
   deleteConfig: () => ({
     content: '是否确认删除该条数据？',

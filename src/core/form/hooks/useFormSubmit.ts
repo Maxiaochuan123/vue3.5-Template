@@ -8,7 +8,7 @@ import { useDebounceFn } from '@vueuse/core'
  * 用于支持非 naive-ui 的表单组件
  */
 interface CustomFormInst {
-  validate: () => Promise<void>
+  validate: () => Promise<any>
   formData: any
   initialData?: Record<string, any>
 }
@@ -56,7 +56,7 @@ interface FormSubmitOptions {
   submitApi?: (...args: any[]) => Promise<any>
 
   /** 表单实例，用于验证表单 */
-  formRef: FormInst | CustomFormInst | null
+  formRef: any
 
   /** 要提交的表单数据 */
   formData: any

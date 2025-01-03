@@ -18,7 +18,7 @@ export interface AdvertisingPlacementFormState {
 }
 
 export interface BaseAdvertPlacementSearch {
-  key?: string
+  key?: string | null
   dateRange?: [] | null
   status?: AuditStatusType | null
   type?: AdvertisingType | null
@@ -67,13 +67,6 @@ export const advertisingPlacementApi = {
    */
   createAdvertisingPlacement(data: AdvertisingPlacementFormState): Promise<ApiResult<void>> {
     return post('/api/v1/advertPlacement', data)
-  },
-
-  /**
-   * 编辑广告投放
-   */
-  updateAdvertisingPlacement(data: AdvertisingPlacementFormState): Promise<ApiResult<void>> {
-    return put('/api/v1/advertPlacement', data)
   },
 }
 

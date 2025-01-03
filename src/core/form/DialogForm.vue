@@ -1,28 +1,33 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
-import { NModal, NButton, type FormInst, NPopconfirm } from 'naive-ui'
+import { NModal, NButton, NPopconfirm } from 'naive-ui'
 import { useFormSubmit } from './hooks/useFormSubmit'
-
+  
 export type FormType = 'add' | 'edit' | 'view'
 
-interface CustomFormInst {
-  validate: () => Promise<void>
-  formData: Record<string, any>
-  initialData?: Record<string, any>
-}
-
 interface Props {
-  formRef?: FormInst | CustomFormInst | null
+  formRef?: any
+  // 新增 API
   addApi?: (...args: any[]) => Promise<any>
+  // 编辑 API
   editApi?: (...args: any[]) => Promise<any>
+  // 表单类型
   formType?: FormType
+  // 刷新列表
   refreshList?: () => void
+  // 额外字段
   extraFields?: string[]
+  // 是否显示底部
   showFooter?: boolean
+  // 提交按钮文本
   submitText?: string
+  // 取消按钮文本
   cancelText?: string
+  // 编辑数据
   editData?: Record<string, any>
+  // 宽度
   width?: number | string
+  // 确认消息
   confirmMessage?: string
 }
 
@@ -73,7 +78,7 @@ const handleFormSubmit = async () => {
   if (!props.formRef) return
   
   try {
-    const formInstance = props.formRef as CustomFormInst
+    const formInstance = props.formRef
     if (currentFormType.value !== 'add' && currentFormType.value !== 'edit') {
       console.error('Invalid form type for submission')
       return
@@ -102,7 +107,6 @@ const handleFormSubmit = async () => {
       extraFields: props.extraFields,
       originalData: formInstance.formData,
       onSuccess: () => {
-        console.log('onSuccess')
         props.refreshList?.()
         close()
       }
