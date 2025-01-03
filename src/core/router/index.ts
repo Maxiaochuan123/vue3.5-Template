@@ -14,6 +14,7 @@ const coreRoutes: RouteRecordRaw[] = [
     {
         path: '/permission',
         name: 'permission',
+        redirect: '/permission/account',
         meta: {
           requiresAuth: true,
           title: '权限管理',

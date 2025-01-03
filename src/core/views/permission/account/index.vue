@@ -95,6 +95,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     key: 'actions',
     width: 200,
     fixed: 'right',
+    align: 'center',
     render: (row: TableDataRecord) => {
       return h(TableActions, {
         row,

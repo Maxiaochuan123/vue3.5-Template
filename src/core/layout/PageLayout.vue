@@ -17,6 +17,7 @@
         :options="menuOptions"
         :collapsed-width="64"
         @update:value="handleSelect"
+        accordion
       />
     </n-layout-sider>
 
