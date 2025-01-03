@@ -1,19 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { authApi, type Permission } from '@/core/api/modules/auth'
-import { roleApi, type RoleOptions } from '@/core/api/modules/role'
+import { roleApi } from '@/core/api/modules/role'
 
 interface Auth {
   token: string
   permissions: Permission[]
-  roleOptions: RoleOptions[]
 }
 
 export const useAuthStore = defineStore('auth', () => {
   const auth = ref<Auth>({
     token: '',
     permissions: [],
-    roleOptions: [],
   })
   const isAuthenticated = ref(false)
 
@@ -183,23 +181,17 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated.value = true
 
         // 获取权限数据
-        // const permissionResponse = await authApi.getPermissions()
-        // if (permissionResponse.code === 200) {
-        //   try {
-        //     // 解析返回的权限字符串为 JSON 对象
-        //     const parsedPermissions = JSON.parse(permissionResponse.data) as Permission[]
-        //     auth.value.permissions = parsedPermissions
-        //   } catch (error) {
-        //     throw new Error('解析权限数据失败')
-        //   }
-        // }
-        auth.value.permissions = mockPermissions
-
-        // 获取角色下拉列表
-        const roleOptionsResponse = await roleApi.getRoleOptions()
-        if (roleOptionsResponse.code === 200) {
-          auth.value.roleOptions = roleOptionsResponse.data
+        const permissionResponse = await authApi.getPermissions()
+        if (permissionResponse.code === 200) {
+          try {
+            // 解析返回的权限字符串为 JSON 对象
+            const parsedPermissions = JSON.parse(permissionResponse.data) as Permission[]
+            auth.value.permissions = parsedPermissions
+          } catch (error) {
+            throw new Error('解析权限数据失败')
+          }
         }
+        // auth.value.permissions = mockPermissions
 
         // 持久化存储
         localStorage.setItem('auth', JSON.stringify(auth.value))
@@ -217,7 +209,6 @@ export const useAuthStore = defineStore('auth', () => {
     auth.value = {
       token: '',
       permissions: [],
-      roleOptions: [],
     }
     isAuthenticated.value = false
 

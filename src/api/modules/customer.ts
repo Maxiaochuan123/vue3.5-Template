@@ -44,12 +44,13 @@ export interface CustomerSaveForm {
 }
 
 export interface AddContract {
+  id: string
   customerId: number | null
   contractUrl: string[]
   pricePrincipal: string
-  contractPrice: string
-  figtAmount: string
-  principal: string
+  contractPrice: number | null
+  figtAmount: number | null
+  principal: number | null
   type: string
 }
 

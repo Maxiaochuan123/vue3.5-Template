@@ -149,7 +149,18 @@ const getUserBalance = async () => {
   } catch (error) {
     console.error('获取用户余额失败:', error)
   }
-} 
+}
+
+const validate = async () => {
+  try {
+    await formRef.value?.validate()
+    if (!agreementChecked.value) {
+      throw new Error('请先阅读并同意《媒体平台广告投放协议》')
+  }
+  } catch (error) {
+    throw error
+  }
+}
 
 onMounted(async () => {
   await getAdvertisingOptions()
@@ -159,19 +170,9 @@ onMounted(async () => {
 
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
   formData,
   initialData,
-  validate: async () => {
-    try {
-      await formRef.value?.validate()
-      if (!agreementChecked.value) {
-        throw new Error('请先阅读并同意《媒体平台广告投放协议》')
-      }
-    } catch (error) {
-      throw error
-    }
-  }
+  validate
 })
 </script>
 

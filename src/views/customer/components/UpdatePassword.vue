@@ -27,11 +27,12 @@ const rules: FormRules = {
 
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
-  formData: computed(() => ({
-    ...formData.value,
-    password: formData.value.password ? md5(formData.value.password) : ''
-  })),
+  get formData() {
+    return {
+      ...formData.value,
+      password: formData.value.password ? md5(formData.value.password) : ''
+    }
+  },
   validate: () => formRef.value?.validate()
 })
 </script>

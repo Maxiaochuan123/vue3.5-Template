@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, inject, type Ref } from 'vue'
+import { ref, computed, inject, type Ref, onMounted } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
 import { useFormData } from '@/core/form/hooks/useFormData'
 import type { Account, AccountFormState } from '@/core/api/modules/account'
-import { useAuthStore } from '@/core/stores/modules/auth'
 import { type FormType } from '@/core/form/DrawerForm.vue'
+import { md5 } from '@/utils/crypto'
+import type { RoleOptions } from '@/core/api/modules/role'
 
-const authStore = useAuthStore()
+const props = defineProps<{
+  roleOptions: RoleOptions[]
+}>()
+
+// 是否为查看模式
+const isViewMode = computed(() => formType.value === 'view')
 
 // 注入响应式的 formType 和 editData
 const formType = inject<Ref<FormType>>('formType')!
@@ -14,7 +20,7 @@ const editData = inject<Ref<Partial<Account>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
 
-const { formData } = useFormData<AccountFormState>({
+const { formData, initialData } = useFormData<AccountFormState>({
   initialData: {
     nickname: '',
     userName: '',
@@ -25,15 +31,12 @@ const { formData } = useFormData<AccountFormState>({
   editData
 })
 
-// 是否为查看模式
-const isViewMode = computed(() => formType.value === 'view')
-
 // 表单验证规则
 const rules: FormRules = {
   nickname: { required: true, message: '请输入昵称', trigger: 'blur' },
   userName: { required: true, message: '请输入用户名', trigger: 'blur' },
   password: { required: true, message: '请输入密码', trigger: 'blur' },
-  mobile: { required: true, message: '请输入手机号', trigger: 'blur' },
+  mobile: { required: true, pattern: /^1[3-9]\d{9}$/, message: '请输入手机号', trigger: 'blur' },
   roleId: { 
     required: true, 
     type: 'number',
@@ -42,12 +45,16 @@ const rules: FormRules = {
   }
 }
 
-
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
-  formData,
-  validate: () => formRef.value?.validate()
+  get formData() {
+    return {
+      ...formData,
+      password: md5(formData.password)
+    }
+  },
+  initialData,
+  validate: () => formRef.value?.validate(),
 })
 </script>
 
@@ -85,16 +92,10 @@ defineExpose({
       <NFormItem label="角色" path="roleId">
         <NSelect
           v-model:value="formData.roleId"
-          :options="authStore.auth.roleOptions"
+          :options="props.roleOptions"
           placeholder="请选择角色"
         />
       </NFormItem>
     </NForm>
   </div>
 </template>
-
-<!-- <style scoped lang="less">
-.form-content {
-  width: 100%;
-}
-</style>  -->

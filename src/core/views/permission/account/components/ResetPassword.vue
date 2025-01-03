@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
+import { md5 } from '@/utils/crypto'
 
 const props = defineProps<{
   id: number
 }>()
 
 type ResetPasswordForm = {
-  password: string
   id: number
+  password: string
 }
 
 const formRef = ref<FormInst | null>(null)
 
 const formData = ref<ResetPasswordForm>({
-  password: '',
-  id: props.id
+  id: props.id,
+  password: ''
 })
 
 // 表单验证规则
@@ -26,8 +27,12 @@ const rules: FormRules = {
 
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
-  formData,
+  get formData() {
+    return {
+      ...formData.value,
+      password: md5(formData.value.password)
+    }
+  },
   validate: () => formRef.value?.validate()
 })
 </script>

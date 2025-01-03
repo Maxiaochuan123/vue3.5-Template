@@ -193,6 +193,7 @@ const handleSetAdvertAccount = () => {
       <TableToolbarActions
         permission-id="advertising"
         :actions="['add']"
+        :on-add="handleAdd"
         :custom-buttons="[
           {
             label: '设置投放账号',

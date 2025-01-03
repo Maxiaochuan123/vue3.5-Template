@@ -1,6 +1,5 @@
 <template>
-  <NSpace :size="12">
-    
+  <NSpace :size="customButtons.length >= 1 ? 12 : 0">
     <AddButton 
       v-if="actions.includes('add')"
       v-btnPermission="[permissionId, 'add']"
@@ -63,8 +62,8 @@ withDefaults(defineProps<Props>(), {
   onExport: () => {}
 })
 
-const slots: Slots = useSlots()
-const slotCount = computed((): number => {
-  return slots.default?.()?.length || 0
-})
+// const slots: Slots = useSlots()
+// const slotCount = computed((): number => {
+//   return slots.default?.()?.length || 0
+// })
 </script> 

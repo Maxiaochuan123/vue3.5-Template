@@ -6,6 +6,7 @@ import type { EnableDisableType } from '@/enum/options'
 // 角色权限菜单类型
 export interface RolePermission {
   id: string
+  key: string
   name: string
   isChecked: boolean
   permissions: string[]

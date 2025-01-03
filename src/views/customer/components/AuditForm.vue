@@ -41,7 +41,6 @@ const rules = computed<FormRules>(() => ({
 
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
   formData,
   validate: () => formRef.value?.validate()
 })

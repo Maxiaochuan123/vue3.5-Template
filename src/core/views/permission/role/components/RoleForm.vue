@@ -14,8 +14,9 @@ const editData = inject<Ref<Partial<RoleForm>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
 
-const { formData } = useFormData<RoleForm>({
+const { formData, initialData } = useFormData<RoleForm>({
   initialData: {
+    id: undefined,
     name: '',
     menuTree: []
   },
@@ -31,10 +32,12 @@ const {
   checkedKeys,
   treeData,
   checkAll,
+  checkAllPermissions,
   handleUpdateExpanded,
   handleUpdateChecked,
   handlePermissionChange,
   handleCheckAllChange,
+  handleCheckAllPermissionsChange,
   initializeFormData
 } = useRoleTree()
 
@@ -145,11 +148,14 @@ const validate = async () => {
 }
 
 defineExpose({
+  get formData() {
+    return {
+      ...formData,
+      menuTree: JSON.stringify(formData.menuTree)
+    }
+  },
+  initialData,
   validate,
-  formData: {
-    ...formData,
-    menuTree: JSON.stringify(formData.menuTree)
-  }
 })
 </script>
 <template>
@@ -180,6 +186,19 @@ defineExpose({
               </template>
               <template #unchecked>
                 勾选全部菜单权限
+              </template>
+            </NSwitch>
+            <NSwitch
+              v-if="checkAll"
+              v-model:value="checkAllPermissions"
+              :round="false"
+              :disabled="isViewMode"
+              @update:value="(checked: boolean) => handleCheckAllPermissionsChange(checked, updateFormData)">
+              <template #checked>
+                取消勾选所有功能权限
+              </template>
+              <template #unchecked>
+                勾选所有功能权限
               </template>
             </NSwitch>
           </div>
@@ -225,8 +244,8 @@ defineExpose({
 .switch-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 200px;
+  justify-content: center;
+  gap: 16px;
   margin: 0 auto;
 }
 

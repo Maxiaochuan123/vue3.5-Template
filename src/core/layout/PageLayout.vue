@@ -237,11 +237,6 @@ const breadcrumbs = computed(() => {
 
 const userOptions = [
   {
-    label: '个人信息',
-    key: 'profile',
-    icon: renderIcon(MenuOutline),
-  },
-  {
     label: '退出登录',
     key: 'logout',
     icon: renderIcon(LogOutOutline),
@@ -294,6 +289,10 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.header-right {
+  cursor: pointer;
 }
 
 .layout-content {

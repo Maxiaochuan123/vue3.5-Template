@@ -1,4 +1,4 @@
-import { ref, h } from 'vue'
+import { ref, h, watch } from 'vue'
 import type { TreeOption } from 'naive-ui'
 import { NCheckboxGroup, NCheckbox, NSpace } from 'naive-ui'
 import { permissionMenus } from '../../../../permissions-config/treeGenerator'
@@ -161,6 +161,7 @@ export const updateFormPermissions = (keys: string[]): RolePermission[] => {
       return {
         id: menu.id,
         name: menu.name,
+        key: menu.key,
         isChecked,
         permissions: currentPermissions,
         children: children
@@ -217,11 +218,52 @@ export const generateCheckedKeys = (permissions: RolePermission[]): string[] => 
   return keys
 }
 
+// 检查是否所有权限都被选中
+const checkIfAllPermissionsSelected = (checkedKeys: string[], menus: RolePermission[]): boolean => {
+  const allPermissionKeys = new Set<string>()
+  const selectedPermissionKeys = new Set<string>()
+
+  // 收集所有可能的权限keys
+  const collectAllPermissions = (items: RolePermission[]) => {
+    items.forEach(menu => {
+      if (menu.permissions && menu.permissions.length > 0) {
+        menu.permissions.forEach(permission => {
+          allPermissionKeys.add(`${menu.id}-${permission}`)
+        })
+      }
+      if (menu.children) {
+        collectAllPermissions(menu.children)
+      }
+    })
+  }
+
+  // 收集选中的权限keys
+  checkedKeys.forEach(key => {
+    if (isPermissionKey(key)) {
+      selectedPermissionKeys.add(key)
+    }
+  })
+
+  collectAllPermissions(menus)
+
+  // 检查是否所有权限都被选中
+  return Array.from(allPermissionKeys).every(key => selectedPermissionKeys.has(key))
+}
+
 export const useRoleTree = () => {
   const expandedKeys = ref<string[]>([])
   const checkedKeys = ref<string[]>([])
   const treeData = ref<TreeOption[]>([])
-  const checkAll = ref(true) // 默认为 true，因为菜单默认全选
+  const checkAll = ref(false) // 修改默认值为 false
+  const checkAllPermissions = ref(false)
+
+  // 监听 checkedKeys 变化，更新 checkAll 和 checkAllPermissions 状态
+  watch(checkedKeys, (newKeys) => {
+    const menuKeys = newKeys.filter(key => !isPermissionKey(key))
+    const allMenuIds = getAllMenuIds(permissionMenus)
+    checkAll.value = allMenuIds.every(id => menuKeys.includes(id))
+    checkAllPermissions.value = checkIfAllPermissionsSelected(newKeys, permissionMenus)
+  })
 
   // 获取所有菜单ID（包括子菜单）
   const getAllMenuIds = (menus: RolePermission[]): string[] => {
@@ -405,6 +447,45 @@ export const useRoleTree = () => {
     checkAll.value = allMenuIds.every(id => otherKeys.includes(id))
   }
 
+  // 获取所有可用的权限keys
+  const getAllPermissionKeys = (menus: RolePermission[]): string[] => {
+    const keys: string[] = []
+    const collect = (items: RolePermission[]) => {
+      items.forEach(menu => {
+        if (menu.permissions && menu.permissions.length > 0) {
+          menu.permissions.forEach(permission => {
+            keys.push(`${menu.id}-${permission}`)
+          })
+        }
+        if (menu.children) {
+          collect(menu.children)
+        }
+      })
+    }
+    collect(menus)
+    return keys
+  }
+
+  // 处理功能权限全选开关变化
+  const handleCheckAllPermissionsChange = (checked: boolean, updateFormData: (permissions: RolePermission[]) => void) => {
+    checkAllPermissions.value = checked
+    if (checked && checkAll.value) {
+      // 获取所有菜单ID和权限
+      const allMenuIds = getAllMenuIds(permissionMenus)
+      const allPermissionKeys = getAllPermissionKeys(permissionMenus)
+      // 更新选中状态
+      checkedKeys.value = [...allMenuIds, ...allPermissionKeys]
+      // 更新表单数据
+      updateFormData(updateFormPermissions(checkedKeys.value))
+    } else {
+      // 只保留菜单的选中状态，移除所有权限
+      const menuKeys = checkedKeys.value.filter(key => !isPermissionKey(key))
+      checkedKeys.value = menuKeys
+      // 更新表单数据
+      updateFormData(updateFormPermissions(checkedKeys.value))
+    }
+  }
+
   // 初始化时，如果是全选状态，需要手动触发一次全选逻辑
   const initializeFormData = (updateFormData: (permissions: RolePermission[]) => void) => {
     if (checkAll.value) {
@@ -419,10 +500,12 @@ export const useRoleTree = () => {
     checkedKeys,
     treeData,
     checkAll,
+    checkAllPermissions,
     handleUpdateExpanded,
     handleUpdateChecked,
     handlePermissionChange,
     handleCheckAllChange,
+    handleCheckAllPermissionsChange,
     initializeFormData
   }
 } 

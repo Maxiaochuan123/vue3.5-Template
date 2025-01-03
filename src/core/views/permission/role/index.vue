@@ -10,7 +10,9 @@ import TableActions, { type RowActionType } from '@/core/table/table-actions/ind
 import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import RoleForm from './components/RoleForm.vue'
 import { roleApi, type Role, type BaseRoleSearch } from '@/core/api/modules/role'
+import { usePermissionRender } from '@/core/table/table-actions/hooks/usePermissionRender'
 
+const { withPermission } = usePermissionRender()
 
 type TableDataRecord = Role
 
@@ -64,12 +66,10 @@ const columns: DataTableColumns<TableDataRecord> = [
     title: '状态',
     key: 'status',
     width: 100,
-    render: (row) => {
-      return h(NSwitch, {
-        value: row.status === 1,
-        onUpdateValue: (value) => handleStatusChange(row, value),
-      })
-    },
+    render: (row) => withPermission(NSwitch, {
+      value: row.status === 1,
+      onUpdateValue: (value: boolean) => handleStatusChange(row, value),
+    }, 'permission-role', 'status'),
   },
   {
     title: '创建时间',
@@ -124,11 +124,10 @@ const handleAdd = () => {
 }
 
 // 编辑处理
-const handleRoleForm = (row: Record<string, any>, type: 'edit' | 'view') => {
-  formType.value = type
+const handleRoleForm = (row: TableDataRecord, type: RowActionType) => {
+  formType.value = 'edit'
   editData.value = {
-    id: row.id,
-    name: row.name,
+    ...row,
     menuTree: JSON.parse(row.menuTree as unknown as string),
   }
   dialogRef.value?.open()

@@ -19,7 +19,7 @@ const formRef = ref<FormInst | null>(null)
 const mediaMaxCount = 1
 const adIconMaxCount = 1
 
-const { formData } = useFormData<AdvertisingFormState>({
+const { formData, initialData } = useFormData<AdvertisingFormState>({
   initialData: {
     type: 1,
     title: '',
@@ -88,8 +88,8 @@ const isViewMode = computed(() => formType.value === 'view')
 
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
   formData,
+  initialData,
   validate: () => formRef.value?.validate()
 })
 </script>

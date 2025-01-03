@@ -17,12 +17,13 @@ const pricePrincipalMaxCount = 1
 
 const { formData, initialData } = useFormData<AddContract>({
   initialData: {
+    id: '',
     customerId: null,
-    contractPrice: '',
+    contractPrice: null,
     contractUrl: [],
-    figtAmount: '',
+    figtAmount: null,
     pricePrincipal: '',
-    principal: '',
+    principal: null,
     type: '',
   },
   editData
@@ -77,14 +78,13 @@ const rules = {
 
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
-  formData: computed(() => {
+  get formData() {
     const { id, ...other } = formData
     return {
       ...other,
-      customerId: id
+      customerId: editData.value.id
     }
-  }),
+  },
   initialData,
   validate: () => formRef.value?.validate()
 })
@@ -103,7 +103,10 @@ defineExpose({
         <div class="form-grid">
           <!-- 左侧列：合同凭证 -->
           <div class="form-column">
-            <div class="column-title">合同凭证</div>
+            <div class="column-title">
+              合同凭证
+              <span class="required-mark">*</span>
+            </div>
             <NFormItem path="contractUrl">
               <MediaUpload
                 v-model="formData.contractUrl"
@@ -123,7 +126,10 @@ defineExpose({
 
           <!-- 中间列：汇款凭证 -->
           <div class="form-column">
-            <div class="column-title">汇款凭证</div>
+            <div class="column-title">
+              汇款凭证
+              <span class="required-mark">*</span>
+            </div>
             <NFormItem path="pricePrincipal">
               <MediaUpload
                 v-model="formData.pricePrincipal"
@@ -225,6 +231,11 @@ defineExpose({
           display: flex;
           align-items: center;
           gap: 4px;
+
+          .required-mark {
+            color: #f00;
+            margin-left: 4px;
+          }
         }
       }
     }

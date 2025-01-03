@@ -40,7 +40,6 @@
 
 <script setup lang="ts">
 import { NSpace, NButton } from 'naive-ui'
-import { useRoute } from 'vue-router'
 import EditButton from './components/EditButton.vue'
 import ViewButton from './components/ViewButton.vue'
 import DeleteButton from './components/DeleteButton.vue'

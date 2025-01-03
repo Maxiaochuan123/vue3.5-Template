@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, h } from 'vue'
+import { ref, reactive, h, onMounted } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
 import { NSwitch } from 'naive-ui'
 import TablePageLayout from '@/core/table/TableLayout.vue'
@@ -11,10 +11,11 @@ import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import AccountForm from './components/AccountForm.vue'
 import ResetPassword from './components/ResetPassword.vue'
 import { enableDisableOptions } from '@/enum/options'
-import { useAuthStore } from '@/core/stores/modules/auth'
 import { userApi, type Account, type BaseUserSearch } from '@/core/api/modules/account'
+import { roleApi, type RoleOptions } from '@/core/api/modules/role'
+import { usePermissionRender } from '@/core/table/table-actions/hooks/usePermissionRender'
 
-const authStore = useAuthStore()
+const { withPermission } = usePermissionRender()
 
 type TableDataRecord = Account
 
@@ -25,6 +26,8 @@ const defaultSearchForm = reactive<BaseUserSearch>({
   roleId: null,
 })
 
+// 角色选项
+const roleOptions = ref<RoleOptions[]>([])
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const dialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const formRef = ref<InstanceType<typeof AccountForm> | null>(null)
@@ -75,7 +78,7 @@ const columns: DataTableColumns<TableDataRecord> = [
     key: 'role',
     width: 120,
     render: (row) => {
-      const roleOption = authStore.auth.roleOptions.find(option => option.value === row.roleId)
+      const roleOption = roleOptions.value.find(option => option.value === row.roleId)
       return roleOption?.label || '-'
     }
   },
@@ -83,12 +86,10 @@ const columns: DataTableColumns<TableDataRecord> = [
     title: '状态',
     key: 'status',
     width: 100,
-    render: (row) => {
-      return h(NSwitch, {
-        value: row.status === 1,
-        onUpdateValue: (value) => handleStatusChange(row, value),
-      })
-    }
+    render: (row) => withPermission(NSwitch, {
+      value: row.status === 1,
+      onUpdateValue: (value: boolean) => handleStatusChange(row, value),
+    }, 'permission-account', 'status'),
   },
   {
     title: '操作',
@@ -157,6 +158,21 @@ const handleResetPassword = (row: Record<string, any>) => {
   resetPasswordDialogRef.value?.open()
 }
 
+// 获取角色选项
+const getRoleOptions = async () => {
+  try {
+    const roleOptionsResponse = await roleApi.getRoleOptions()
+    if (roleOptionsResponse.code === 200) {
+      roleOptions.value = roleOptionsResponse.data
+    }
+  } catch (error) {
+    console.error('获取角色选项失败:', error)
+  }
+}
+
+onMounted(() => {
+  getRoleOptions()
+})
 </script>
 
 <template>
@@ -184,7 +200,7 @@ const handleResetPassword = (row: Record<string, any>) => {
           <NFormItem label="角色">
             <NSelect
               v-model:value="searchForm.roleId"
-              :options="authStore.auth.roleOptions"
+              :options="roleOptions"
               placeholder="请选择角色"
               clearable
             />
@@ -219,7 +235,7 @@ const handleResetPassword = (row: Record<string, any>) => {
       :extra-fields="['id']"
       :edit-data="editData"
     >
-      <AccountForm ref="formRef" />
+      <AccountForm ref="formRef" :role-options="roleOptions" />
     </DialogForm>
 
     <!-- 重置密码 -->

@@ -59,7 +59,6 @@ const showRejectReason = computed(() => editData.value?.status === 1)
 
 // 暴露给父组件的方法和数据
 defineExpose({
-  formRef,
   formData,
   initialData,
   validate: () => formRef.value?.validate()

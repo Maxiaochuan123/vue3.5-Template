@@ -216,7 +216,7 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
     </template>
 
     <!-- 投放/追投广告 -->
-    <!-- <DrawerForm
+    <DrawerForm
       ref="drawerRef"
       :form-ref="formRef"
       :formType="formType"
@@ -229,7 +229,7 @@ const handleAdvertisingForm = (row: Record<string, any>) => {
       :edit-data="editData"
     >
       <AdvertisingPlacementForm ref="formRef" />
-    </DrawerForm> -->
+    </DrawerForm>
 
   </TablePageLayout>
 </template>
