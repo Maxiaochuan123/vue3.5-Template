@@ -44,13 +44,13 @@ const mediaValidator = useMediaUploaderValidator({
 })
 
 // 图标验证器
-const adIconMediaValidator = useMediaUploaderValidator({
-  formRef,
-  key: 'icon',
-  required: computed(() => [2, 3].includes(formData.type)), 
-  message: '请上传广告图标',
-  requiredCount: adIconMaxCount
-})
+// const adIconMediaValidator = useMediaUploaderValidator({
+//   formRef,
+//   key: 'icon',
+//   required: computed(() => [2, 3].includes(formData.type)), 
+//   message: '请上传广告图标',
+//   requiredCount: adIconMaxCount
+// })
 
 // 表单验证规则
 const rules = {
@@ -60,7 +60,7 @@ const rules = {
     { required: true, message: '请输入广告标题', trigger: 'blur' },
     { max: 20, message: '标题最多20个字符', trigger: 'input' },
   ],
-  icon: adIconMediaValidator.rule,
+  // icon: adIconMediaValidator.rule,
   button: { 
     required: computed(() => [2, 3].includes(formData.type)),
     message: '请输入按钮文案',
@@ -165,8 +165,8 @@ defineExpose({
               direction="row"
               :max-count="adIconMaxCount"
               :is-delete="isViewMode"
-              @upload-success="adIconMediaValidator.revalidate"
-            >
+              >
+              <!-- @upload-success="adIconMediaValidator.revalidate" -->
               <template #description>
                   <span>建议480*480尺寸</span>
               </template>

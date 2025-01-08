@@ -51,7 +51,7 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
   {
     title: '充值赠送',
-    key: 'figtAmount',
+    key: 'giftAmount',
   },
   {
     title: '状态',

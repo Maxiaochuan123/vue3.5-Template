@@ -15,7 +15,7 @@
         :value="activeMenu"
         :collapsed="isCollapse"
         :options="menuOptions"
-        :collapsed-width="64"
+        :icon-size="24"
         @update:value="handleSelect"
         accordion
       />
@@ -25,13 +25,9 @@
       <n-layout-header bordered class="layout-header">
         <div class="header-content">
           <div class="header-left">
-            <n-button quaternary circle @click="toggleCollapse">
-              <template #icon>
-                <n-icon size="18">
-                  <MenuOutline />
-                </n-icon>
-              </template>
-            </n-button>
+            <n-icon size="24" class="collapse-icon" @click="toggleCollapse">
+              <component :is="isCollapse ? MenuUnfoldOutlined : MenuFoldOutlined" />
+            </n-icon>
             <n-breadcrumb>
               <n-breadcrumb-item
                 v-for="item in breadcrumbs"
@@ -65,10 +61,13 @@
 import { h, ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { MenuOutline, PersonOutline, LogOutOutline } from '@vicons/ionicons5'
-import { NBreadcrumb, NBreadcrumbItem, NIcon } from 'naive-ui'
+import { MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined } from '@vicons/antd'
+import { NBreadcrumb, NBreadcrumbItem, NIcon, NEllipsis } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
 import { useAuthStore } from '@/core/stores/modules/auth'
+import { useThemeVars } from 'naive-ui'
+
+const themeVars = useThemeVars()
 
 interface CustomRouteMeta {
   title?: string
@@ -161,7 +160,7 @@ const generateMenuFromRoute = (route: RouteRecordRaw, parentPath = ''): MenuOpti
   const fullPath = parentPath + (route.path.startsWith('/') ? route.path : `/${route.path}`)
 
   const menuOption: MenuOption = {
-    label: meta.title,
+    label: () => h(NEllipsis, null, { default: () => meta.title }),
     key: fullPath,
     icon: meta.icon ? renderIcon(meta.icon) : undefined,
   }
@@ -239,7 +238,7 @@ const userOptions = [
   {
     label: '退出登录',
     key: 'logout',
-    icon: renderIcon(LogOutOutline),
+    icon: renderIcon(LogoutOutlined),
   },
 ]
 
@@ -306,5 +305,14 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
 
 :deep(.n-layout-header) {
   background: #fff;
+}
+
+.collapse-icon {
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.collapse-icon:hover {
+  color: v-bind('themeVars.primaryColor');
 }
 </style>
