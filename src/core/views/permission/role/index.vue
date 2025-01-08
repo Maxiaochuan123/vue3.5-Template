@@ -10,7 +10,7 @@ import TableActions, { type RowActionType } from '@/core/table/table-actions/ind
 import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import RoleForm from './components/RoleForm.vue'
 import { roleApi, type Role, type BaseRoleSearch } from '@/core/api/modules/role'
-import { usePermissionRender } from '@/core/table/table-actions/hooks/usePermissionRender'
+import { usePermissionRender } from '@/core/table/hooks/usePermissionRender'
 
 const { withPermission } = usePermissionRender()
 

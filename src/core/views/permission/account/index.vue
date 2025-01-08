@@ -13,7 +13,7 @@ import ResetPassword from './components/ResetPassword.vue'
 import { enableDisableOptions } from '@/enum/options'
 import { userApi, type Account, type BaseUserSearch } from '@/core/api/modules/account'
 import { roleApi, type RoleOptions } from '@/core/api/modules/role'
-import { usePermissionRender } from '@/core/table/table-actions/hooks/usePermissionRender'
+import { usePermissionRender } from '@/core/table/hooks/usePermissionRender'
 
 const { withPermission } = usePermissionRender()
 
