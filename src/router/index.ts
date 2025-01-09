@@ -1,13 +1,17 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/core/stores/modules/auth'
-import type { Permission } from '@/core/api/modules/auth'
+import type { RolePermission } from '@/core/api/modules/role'
 import coreRoutes from '@/core/router/index'
+import { createDiscreteApi } from 'naive-ui'
 import {
   HomeOutline,
   WalletOutline,
   MegaphoneOutline,
   PersonOutline,
 } from '@vicons/ionicons5'
+
+const { loadingBar } = createDiscreteApi(['loadingBar'])
+
 
 const routes: RouteRecordRaw[] = [
   // 从 coreRoutes 获取登录路由
@@ -139,29 +143,39 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  // 开始加载进度条
+  loadingBar.start()
+  
   const authStore = useAuthStore()
   
   // 首先检查是否需要认证
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    loadingBar.error()
     next('/login')
     return
   }
 
   // 然后检查权限
   if (to.meta.requiresAuth) {
-    // 获取当前路由及其所有父级路由的权限标题，排除 hideInMenu 为 true 的路由
-    const routeTitles = to.matched
-      .filter(route => route.meta?.title && !route.meta?.hideInMenu)
-      .map(route => route.meta?.title as string)
+    // 获取当前路由及其所有父级路由的 name（key），排除 Layout 和 hideInMenu 为 true 的路由
+    const routeKeys = to.matched
+      .filter(route => route.name && route.name !== 'Layout' && !route.meta?.hideInMenu)
+      .map(route => route.name as string)
+
+    // 如果没有需要检查的路由（比如只有 Layout），则允许访问
+    if (routeKeys.length === 0) {
+      next()
+      return
+    }
 
     // 递归检查权限
-    const checkPermission = (permissions: any[], title: string): boolean => {
+    const checkPermission = (permissions: RolePermission[], key: string): boolean => {
       for (const permission of permissions) {
-        if (permission.name === title) {
+        if (permission.key === key) {
           return permission.isChecked
         }
         if (permission.children?.length) {
-          const hasPermission = checkPermission(permission.children, title)
+          const hasPermission = checkPermission(permission.children, key)
           if (hasPermission) return true
         }
       }
@@ -169,26 +183,36 @@ router.beforeEach((to, from, next) => {
     }
 
     // 检查路由链上的所有权限
-    const hasAllPermissions = routeTitles.every(title => {
-      return checkPermission(authStore.auth.permissions, title)
+    const hasAllPermissions = routeKeys.every(key => {
+      const hasPermission = checkPermission(authStore.auth.permissions, key)
+      return hasPermission
     })
 
     if (!hasAllPermissions) {
       // 重定向到第一个有权限的路由
-      const firstPermittedRoute = authStore.auth.permissions.find((p: Permission) => p.isChecked)
+      const firstPermittedRoute = authStore.auth.permissions.find((p: RolePermission) => p.isChecked)
+      
       if (firstPermittedRoute) {
-        const route = routes[1].children?.find(r => r.meta?.title === firstPermittedRoute.name)
+        const route = routes[1].children?.find(r => r.name === firstPermittedRoute.key)
         if (route) {
+          loadingBar.error()
           next(route.path)
           return
         }
       }
+      loadingBar.error()
       next('/login')
       return
     }
   }
   
   next()
+})
+
+// 添加全局后置钩子
+router.afterEach(() => {
+  // 结束加载进度条
+  loadingBar.finish()
 })
 
 export default router

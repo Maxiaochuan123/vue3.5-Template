@@ -2,7 +2,12 @@
   <div class="login-container">
     <div class="login-box">
       <div class="login-header">
-        <h2>谋将广告联盟平台</h2>
+        <img 
+          src="http://download.moujiang.com/logo.png" 
+          alt="谋将Logo" 
+          class="login-logo"
+        />
+        <h2>谋将 - 广告联盟平台</h2>
       </div>
       <component 
         :is="currentView === 'RegisterForm' ? RegisterForm : LoginForm" 
@@ -33,10 +38,10 @@ const handleViewChange = (view: string) => {
   align-items: center;
   background: linear-gradient(
     -45deg,
-    #ee7752,
-    #e73c7e,
-    #23a6d5,
-    #23d5ab
+    #2193b0,
+    #1565C0,
+    #4A569D,
+    #6B8DD6
   );
   background-size: 400% 400%;
   animation: gradientFlow 15s ease infinite;
@@ -84,10 +89,30 @@ const handleViewChange = (view: string) => {
   margin-bottom: 40px;
 }
 
+.login-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .login-header h2 {
   color: #333;
   font-size: 28px;
   font-weight: 600;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  background: linear-gradient(
+    -45deg,
+    #2193b0,
+    #1565C0,
+    #4A569D,
+    #6B8DD6
+  );
+  background-size: 400% 400%;
+  animation: gradientFlow 15s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
 }
 </style>

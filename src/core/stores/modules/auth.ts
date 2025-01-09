@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { authApi, type Permission } from '@/core/api/modules/auth'
-import { roleApi } from '@/core/api/modules/role'
+import { authApi } from '@/core/api/modules/auth'
+import type { RolePermission } from '@/core/api/modules/role'
 
 interface Auth {
   token: string
-  permissions: Permission[]
+  permissions: RolePermission[]
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -185,7 +185,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (permissionResponse.code === 200) {
           try {
             // 解析返回的权限字符串为 JSON 对象
-            const parsedPermissions = JSON.parse(permissionResponse.data) as Permission[]
+            const parsedPermissions = JSON.parse(permissionResponse.data) as RolePermission[]
             auth.value.permissions = parsedPermissions
           } catch (error) {
             throw new Error('解析权限数据失败')

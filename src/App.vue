@@ -4,11 +4,13 @@ import { zhCN, dateZhCN } from 'naive-ui'
 
 <template>
   <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
-    <n-dialog-provider>
-      <n-message-provider>
-        <router-view></router-view>
-      </n-message-provider>
-    </n-dialog-provider>
+    <n-loading-bar-provider>
+      <n-dialog-provider>
+        <n-message-provider>
+          <router-view />
+        </n-message-provider>
+      </n-dialog-provider>
+    </n-loading-bar-provider>
   </n-config-provider>
 </template>
 
