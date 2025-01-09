@@ -98,11 +98,11 @@ const updateActiveMenu = () => {
   } else {
     activeMenu.value = route.path
   }
-  console.log('当前激活菜单:', activeMenu.value)
-  console.log(
-    '路由匹配:',
-    route.matched.map((r) => ({ path: r.path, meta: r.meta })),
-  )
+  // console.log('当前激活菜单:', activeMenu.value)
+  // console.log(
+  //   '路由匹配:',
+  //   route.matched.map((r) => ({ path: r.path, meta: r.meta })),
+  // )
 }
 
 // 初始化时设置激活菜单
@@ -205,7 +205,7 @@ const menuOptions = computed(() => {
     })
     .filter(Boolean) as MenuOption[]
 
-  console.log('最终生成的菜单:', result)
+  // console.log('最终生成的菜单:', result)
   return result
 })
 

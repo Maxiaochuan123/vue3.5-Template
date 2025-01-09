@@ -132,68 +132,53 @@ export const isPermissionKey = (key: string): boolean => {
   return findMenu(permissionMenus)
 }
 
-// 更新表单权限数据
-export const updateFormPermissions = (keys: string[]): RolePermission[] => {
-  // 分别获取菜单keys和权限keys
-  const menuKeys = keys.filter(key => !isPermissionKey(key))
-  const permissionKeys = keys.filter(isPermissionKey)
+// 根据选中的 keys 更新表单权限数据
+export const updateFormPermissions = (checkedKeys: string[]): RolePermission[] => {
+  console.log('=== 更新表单权限数据 ===')
+  console.log('选中的 keys:', checkedKeys)
 
-  // 递归处理菜单树
-  const processMenuTree = (menus: RolePermission[], parentChecked: boolean = true): RolePermission[] => {
-    const processedMenus = menus.map(menu => {
-      // 如果父节点未选中，则当前节点也未选中
-      const isChecked = parentChecked ? menuKeys.includes(menu.id) : false
+  // 创建一个映射，用于存储每个菜单的权限
+  const menuPermissions = new Map<string, string[]>()
+  
+  // 收集所有权限
+  checkedKeys.forEach(key => {
+    if (isPermissionKey(key)) {
+      const parts = key.split('-')
+      const permission = parts.pop()
+      const menuKey = parts.join('-')
+      if (permission && menuKey) {
+        const perms = menuPermissions.get(menuKey) || []
+        perms.push(permission)
+        menuPermissions.set(menuKey, perms)
+      }
+    }
+  })
+
+  // 递归更新权限树
+  const updateMenus = (menus: RolePermission[]): RolePermission[] => {
+    return menus.map(menu => {
+      const isChecked = checkedKeys.includes(menu.key)
+      const permissions = menuPermissions.get(menu.key) || []
       
-      // 获取当前菜单的权限
-      const currentPermissions = isChecked ? permissionKeys
-        .filter(key => {
-          const parts = key.split('-')
-          const permission = parts.pop() // 最后一部分是权限
-          const menuId = parts.join('-') // 余分菜ID
-          return menuId === menu.id
-        })
-        .map(key => key.split('-').pop())
-        .filter((p): p is string => !!p) : []
+      console.log(`处理菜单 ${menu.key}:`)
+      console.log('- 是否选中:', isChecked)
+      console.log('- 权限列表:', permissions)
 
-      // 递归处理子菜单，传递当前节点的选中状态
-      const children = menu.children ? processMenuTree(menu.children, isChecked) : []
-
-      return {
-        id: menu.id,
-        name: menu.name,
-        key: menu.key,
+      const result: RolePermission = {
+        ...menu,
         isChecked,
-        permissions: currentPermissions,
-        children: children
+        permissions: isChecked ? permissions : [],
+        children: menu.children ? updateMenus(menu.children) : undefined
       }
-    })
 
-    // 过滤处理后的菜单
-    return processedMenus.filter(item => {
-      // 如果父节点未选中，保留所有节点但状态都是未选中
-      if (!parentChecked) {
-        return true
-      }
-      
-      // 如果当前节点选中或有权限，则保留
-      if (item.isChecked || (item.permissions?.length ?? 0) > 0) {
-        return true
-      }
-      
-      // 如果有子节点且子节点中有选中的或有权限的，则保留
-      if (item.children) {
-        return item.children.some(child => 
-          child.isChecked || 
-          (child.permissions?.length ?? 0) > 0 ||
-          (child.children && child.children.length > 0)
-        )
-      }
-      
-      return false
+      console.log('- 更新结果:', result)
+      return result
     })
   }
 
-  return processMenuTree(permissionMenus)
+  const result = updateMenus(permissionMenus)
+  console.log('更新后的权限树:', JSON.stringify(result, null, 2))
+  return result
 }
 
 // 生成初始选中keys
@@ -202,12 +187,13 @@ export const generateCheckedKeys = (permissions: RolePermission[]): string[] => 
   permissions.forEach(item => {
     // 添加菜单节点（如果被选中）
     if (item.isChecked) {
+      // 添加菜单节点
       keys.push(item.id)
-    }
-    
-    // 添加权限
-    if (item.permissions.length > 0) {
-      keys.push(...item.permissions.map((p: string) => `${item.id}-${p}`))
+      
+      // 只有当菜单被选中时，才添加其权限
+      if (item.permissions.length > 0) {
+        keys.push(...item.permissions.map((p: string) => `${item.id}-${p}`))
+      }
     }
     
     // 递归处理子菜单
@@ -248,6 +234,138 @@ const checkIfAllPermissionsSelected = (checkedKeys: string[], menus: RolePermiss
 
   // 检查是否所有权限都被选中
   return Array.from(allPermissionKeys).every(key => selectedPermissionKeys.has(key))
+}
+
+// 合并新旧权限树
+export const mergePermissionTree = (latestTree: RolePermission[], oldTree: RolePermission[]): RolePermission[] => {
+  console.log('=== 合并权限树 ===')
+  console.log('最新权限树:', JSON.stringify(latestTree, null, 2))
+  console.log('旧权限树:', JSON.stringify(oldTree, null, 2))
+
+  // 创建一个映射，用于快速查找旧菜单的选中状态
+  const oldMenuMap = new Map<string, RolePermission>()
+  const buildMenuMap = (menus: RolePermission[]) => {
+    menus.forEach(menu => {
+      oldMenuMap.set(menu.key, menu)
+      if (menu.children) {
+        buildMenuMap(menu.children)
+      }
+    })
+  }
+  buildMenuMap(oldTree)
+
+  // 递归合并菜单树
+  const mergeMenus = (menus: RolePermission[]): RolePermission[] => {
+    return menus.map(menu => {
+      const oldMenu = oldMenuMap.get(menu.key)
+      console.log(`处理菜单 ${menu.key}:`)
+      console.log('- 当前菜单:', menu)
+      console.log('- 旧菜单:', oldMenu)
+
+      // 如果找到对应的旧菜单，保留其选中状态和权限
+      const result: RolePermission = {
+        ...menu,
+        isChecked: oldMenu?.isChecked ?? false,
+        permissions: oldMenu?.isChecked ? oldMenu.permissions.filter(perm => menu.permissions.includes(perm)) : [],
+        children: menu.children ? mergeMenus(menu.children) : undefined
+      }
+
+      console.log('- 合并结果:', result)
+      return result
+    })
+  }
+
+  const result = mergeMenus(latestTree)
+  console.log('合并后的权限树:', JSON.stringify(result, null, 2))
+  return result
+}
+
+// 定义变更信息接口
+export interface PermissionChanges {
+  hasChanges: boolean;
+  removedPermissions: Array<{
+    menuName: string;
+    permissions: string[];
+  }>;
+  nameChanges: Array<{
+    key: string;
+    oldName: string;
+    newName: string;
+  }>;
+}
+
+// 检查权限配置是否有变更
+export const checkPermissionChanges = (latestTree: RolePermission[], oldTree: RolePermission[]): PermissionChanges => {
+  // console.log('=== 检查权限变更 ===')
+  // console.log('最新权限树:', JSON.stringify(latestTree, null, 2))
+  // console.log('旧权限树:', JSON.stringify(oldTree, null, 2))
+
+  const changes: PermissionChanges = {
+    hasChanges: false,
+    removedPermissions: [],
+    nameChanges: []
+  }
+
+  // 创建一个映射，用于快速查找旧菜单的权限
+  const oldMenuMap = new Map<string, RolePermission>()
+  const buildMenuMap = (menus: RolePermission[]) => {
+    menus.forEach(menu => {
+      // 只记录 isChecked 为 true 的菜单
+      if (menu.isChecked) {
+        oldMenuMap.set(menu.key, menu)
+      }
+      if (menu.children) {
+        buildMenuMap(menu.children)
+      }
+    })
+  }
+  buildMenuMap(oldTree)
+
+  // 递归检查权限变更
+  const checkMenuChanges = (menus: RolePermission[]) => {
+    menus.forEach(menu => {
+      const oldMenu = oldMenuMap.get(menu.key)
+      // console.log(`检查菜单 ${menu.key}:`)
+      // console.log('- 当前菜单:', menu)
+      // console.log('- 旧菜单:', oldMenu)
+      
+      if (oldMenu) {
+        // 只有当旧菜单是选中状态时，才检查名称变更
+        if (oldMenu.isChecked && oldMenu.name !== menu.name) {
+          console.log('- 发现名称变更:', { old: oldMenu.name, new: menu.name })
+          changes.hasChanges = true
+          changes.nameChanges.push({
+            key: menu.key,
+            oldName: oldMenu.name,
+            newName: menu.name
+          })
+        }
+
+        // 检查权限是否被移除（只检查旧菜单中存在的权限）
+        const removedPerms = oldMenu.permissions.filter(
+          perm => !menu.permissions.includes(perm)
+        )
+        
+        if (removedPerms.length > 0) {
+          console.log('- 发现被移除的权限:', removedPerms)
+          changes.hasChanges = true
+          changes.removedPermissions.push({
+            menuName: menu.name,
+            permissions: removedPerms
+          })
+        }
+      }
+
+      // 递归检查子菜单
+      if (menu.children) {
+        checkMenuChanges(menu.children)
+      }
+    })
+  }
+
+  checkMenuChanges(latestTree)
+  // console.log('检查结果:', changes)
+  return changes
 }
 
 export const useRoleTree = () => {

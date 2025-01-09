@@ -1,8 +1,25 @@
 import type { RouteRecordRaw } from 'vue-router'
 import router from '@/router/index'
 
+// 缓存生成的权限菜单树
+let cachedPermissionMenus: any = null
+let cachedRouteConfig: string = ''
+
 // 从路由配置生成权限菜单
 const generatePermissionMenus = () => {
+  // 获取当前路由配置的字符串表示
+  const currentRouteConfig = JSON.stringify(router.options.routes.map(route => ({
+    name: route.name,
+    meta: route.meta,
+    children: route.children
+  })))
+
+  // 如果配置没有变化且已有缓存，直接返回缓存
+  if (cachedRouteConfig === currentRouteConfig && cachedPermissionMenus) {
+    return cachedPermissionMenus
+  }
+
+  // console.log('\n=== 生成权限菜单 ===')
   const mainRoutes: RouteRecordRaw[] = []
   const routes = router.options.routes
   
@@ -37,6 +54,9 @@ const generatePermissionMenus = () => {
     // 生成当前节点的ID
     const currentId = getNextId(parentId)
     
+    // console.log(`处理路由: ${String(route.name)}`)
+    // console.log('Meta:', route.meta)
+    
     const result = {
       id: currentId,
       key: route.name as string,
@@ -45,6 +65,13 @@ const generatePermissionMenus = () => {
       permissions: (route.meta.permissions as string[]) || [],
       children: [] as any[]
     }
+    
+    // console.log('生成节点:', {
+    //   id: result.id,
+    //   key: result.key,
+    //   name: result.name,
+    //   permissions: result.permissions
+    // })
     
     // 处理子路由
     if (route.children) {
@@ -61,11 +88,21 @@ const generatePermissionMenus = () => {
     .map(route => processRoute(route))
     .filter(menu => menu !== null)
 
-  // 打印生成的权限菜单，方便检查
-  console.log('Generated Permission Menus:', JSON.stringify(permissionMenus, null, 2))
+  // console.log('\n生成的权限菜单树:', JSON.stringify(permissionMenus, null, 2))
+
+  // 更新缓存
+  cachedRouteConfig = currentRouteConfig
+  cachedPermissionMenus = permissionMenus
 
   return permissionMenus
 }
 
 // 权限配置
 export const permissionMenus = generatePermissionMenus()
+
+// 导出重新生成权限菜单的方法，以便在需要时手动触发
+export const regeneratePermissionMenus = () => {
+  cachedRouteConfig = ''
+  cachedPermissionMenus = null
+  return generatePermissionMenus()
+}

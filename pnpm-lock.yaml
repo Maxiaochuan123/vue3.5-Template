@@ -14,6 +14,9 @@ importers:
       '@vicons/antd':
         specifier: ^0.13.0
         version: 0.13.0
+      '@vicons/carbon':
+        specifier: ^0.13.0
+        version: 0.13.0
       '@vicons/ionicons5':
         specifier: ^0.12.0
         version: 0.12.0
@@ -739,6 +742,9 @@ packages:
 
   '@vicons/antd@0.13.0':
     resolution: {integrity: sha512-yrUGoUSz2BbGupk9ghQOahc04n5H3MwUDM9pVPsLh9U1uqB47oRWZvYRiZaT1JKPqgTgSE6BXcVw4i9MOF4M+g==}
+
+  '@vicons/carbon@0.13.0':
+    resolution: {integrity: sha512-Z/jExyyS4gsXJc66oTqV/j98nsaiX2JlQ0IUwu9Ms3rztf8VOHEQRuX8Jey1/zbxJpFY/tU+bWvKPRFYGIvCWQ==}
 
   '@vicons/ionicons5@0.12.0':
     resolution: {integrity: sha512-Iy1EUVRpX0WWxeu1VIReR1zsZLMc4fqpt223czR+Rpnrwu7pt46nbnC2ycO7ItI/uqDLJxnbcMC7FujKs9IfFA==}
@@ -3184,6 +3190,8 @@ snapshots:
       eslint-visitor-keys: 4.2.0
 
   '@vicons/antd@0.13.0': {}
+
+  '@vicons/carbon@0.13.0': {}
 
   '@vicons/ionicons5@0.12.0': {}
 

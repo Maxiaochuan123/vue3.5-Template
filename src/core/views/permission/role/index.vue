@@ -9,8 +9,11 @@ import TableToolbarActions from '@/core/table/table-tool-actions/index.vue'
 import TableActions, { type RowActionType } from '@/core/table/table-actions/index.vue'
 import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import RoleForm from './components/RoleForm.vue'
-import { roleApi, type Role, type BaseRoleSearch } from '@/core/api/modules/role'
+import { roleApi, type Role, type BaseRoleSearch, type RolePermission } from '@/core/api/modules/role'
 import { usePermissionRender } from '@/core/table/hooks/usePermissionRender'
+import { permissionMenus } from '@/core/permissions-config/treeGenerator'
+import { mergePermissionTree, checkPermissionChanges, type PermissionChanges } from './components/RoleFormConfig'
+import PermissionChangeDialog from './components/PermissionChangeDialog.vue'
 
 const { withPermission } = usePermissionRender()
 
@@ -24,8 +27,30 @@ const defaultSearchForm = reactive<BaseRoleSearch>({
 const tableRef = ref<InstanceType<typeof Table> | null>(null)
 const dialogRef = ref<InstanceType<typeof DialogForm> | null>(null)
 const formRef = ref<InstanceType<typeof RoleForm> | null>(null)
+const permissionDialogRef = ref<InstanceType<typeof PermissionChangeDialog> | null>(null)
 const formType = ref<FormType>('add')
 const editData = ref<Partial<Role>>({})
+
+// 权限变更对话框
+const permissionChanges = ref<PermissionChanges>({
+  hasChanges: false,
+  removedPermissions: [],
+  nameChanges: []
+})
+
+// 处理权限变更确认
+const handlePermissionChangeConfirm = () => {
+  if (!permissionChanges.value || !editData.value.menuTree) return
+  
+  // 合并权限树，保留已有选择
+  const mergedMenuTree = mergePermissionTree(permissionMenus, editData.value.menuTree as RolePermission[])
+  // console.log('合并后的权限树:', JSON.stringify(mergedMenuTree, null, 2))
+  editData.value = {
+    ...editData.value,
+    menuTree: mergedMenuTree
+  }
+  dialogRef.value?.open()
+}
 
 // 搜索
 const handleSearch = (values: BaseRoleSearch) => {
@@ -103,7 +128,7 @@ const handleTableAction = async (type: RowActionType, row: TableDataRecord) => {
   switch (type) {
     case 'edit':
     case 'view':
-      handleRoleForm(row, type)
+      handleRoleForm(row, type as FormType)
       break
     case 'delete':
       try {
@@ -118,18 +143,49 @@ const handleTableAction = async (type: RowActionType, row: TableDataRecord) => {
 
 // 新增角色
 const handleAdd = () => {
-  formType.value = 'add'
-  editData.value = {}
-  dialogRef.value?.open()
+  handleRoleForm({} as TableDataRecord, 'add')
 }
 
 // 编辑处理
-const handleRoleForm = (row: TableDataRecord, type: RowActionType) => {
-  formType.value = 'edit'
-  editData.value = {
-    ...row,
-    menuTree: JSON.parse(row.menuTree as unknown as string),
+const handleRoleForm = async (row: TableDataRecord, type: FormType) => {
+  formType.value = type
+  
+  if (type === 'edit' || type === 'view') {
+    const currentMenuTree = JSON.parse(row.menuTree as unknown as string) as RolePermission[]
+    
+    // 如果是编辑模式，检查权限配置是否有变更
+    if (type === 'edit') {
+      // 获取最新的权限配置
+      const latestPermissionMenus = permissionMenus
+      // console.log('=== 编辑角色权限 ===')
+      // console.log('角色名称:', row.name)
+      // console.log('当前菜单树:', JSON.stringify(currentMenuTree, null, 2))
+      // console.log('最新权限配置:', JSON.stringify(latestPermissionMenus, null, 2))
+      
+      const changes = checkPermissionChanges(latestPermissionMenus, currentMenuTree)
+      // console.log('检测到变更:', changes)
+      
+      if (changes.hasChanges) {
+        editData.value = {
+          ...row,
+          menuTree: currentMenuTree
+        }
+        permissionChanges.value = changes
+        permissionDialogRef.value?.open()
+        return
+      }
+    }
+    
+    // 如果没有变更或是查看模式，直接使用当前权限树
+    editData.value = {
+      ...row,
+      menuTree: currentMenuTree
+    }
+  } else {
+    // 新增时使用空数据
+    editData.value = {}
   }
+  
   dialogRef.value?.open()
 }
 
@@ -179,5 +235,12 @@ const handleRoleForm = (row: TableDataRecord, type: RowActionType) => {
     >
       <RoleForm ref="formRef" />
     </DialogForm>
+
+    <!-- 权限变更提示对话框 -->
+    <PermissionChangeDialog
+      ref="permissionDialogRef"
+      :changes="permissionChanges"
+      @confirm="handlePermissionChangeConfirm"
+    />
   </TablePageLayout>
 </template>

@@ -7,9 +7,6 @@ import {
   WalletOutline,
   MegaphoneOutline,
   PersonOutline,
-  KeyOutline,
-  ShieldOutline,
-  DocumentLockOutline,
 } from '@vicons/ionicons5'
 
 const routes: RouteRecordRaw[] = [
@@ -29,7 +26,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/dashboard/index.vue'),
         meta: {
           requiresAuth: true,
-          title: '数据概览AAAAA',
+          title: '数据概览',
           icon: HomeOutline,
         },
       },

@@ -43,11 +43,22 @@ const {
 
 // 更新表单数据
 const updateFormData = (menuTree: RolePermission[]) => {
-  formData.menuTree = menuTree
+  // console.log('=== 更新表单数据 ===')
+  // console.log('新的菜单树:', JSON.stringify(menuTree, null, 2))
+  
+  // 深拷贝菜单树，避免引用问题
+  formData.menuTree = JSON.parse(JSON.stringify(menuTree))
+  
+  // 更新树形数据
+  updateTreeData()
 }
 
 // 更新树形数据
 const updateTreeData = () => {
+  // console.log('=== 更新树形数据 ===')
+  // console.log('当前选中的 keys:', checkedKeys.value)
+  // console.log('当前菜单树:', JSON.stringify(formData.menuTree, null, 2))
+  
   treeData.value = transformMenuToTree(
     permissionMenus,
     checkedKeys.value,
@@ -75,13 +86,20 @@ onMounted(() => {
 watch(
   editData,
   (newData) => {
+    // console.log('=== 编辑数据变化 ===')
+    // console.log('新的编辑数据:', newData)
     if (newData) {
       formData.name = newData.name ?? ''
       
       // 设置初始权限数据
-      formData.menuTree = Array.isArray(newData.menuTree) ? newData.menuTree : []
+      const menuTree = Array.isArray(newData.menuTree) ? newData.menuTree : []
+      // console.log('设置初始菜单树:', JSON.stringify(menuTree, null, 2))
+      formData.menuTree = JSON.parse(JSON.stringify(menuTree))
+      
       // 设置选中状态
-      checkedKeys.value = Array.isArray(newData.menuTree) ? generateCheckedKeys(newData.menuTree) : []
+      const keys = generateCheckedKeys(menuTree)
+      // console.log('设置选中的 keys:', keys)
+      checkedKeys.value = keys
       
       // 更新树形数据
       updateTreeData()
@@ -147,12 +165,16 @@ const validate = async () => {
   }
 }
 
+// 暴露给父组件的方法和数据
 defineExpose({
   get formData() {
-    return {
+    // console.log('=== 获取表单数据 ===')
+    const data = {
       ...formData,
       menuTree: JSON.stringify(formData.menuTree)
     }
+    // console.log('返回的表单数据:', data)
+    return data
   },
   initialData,
   validate,
