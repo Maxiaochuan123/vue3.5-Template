@@ -38,10 +38,10 @@ const handleViewChange = (view: string) => {
   align-items: center;
   background: linear-gradient(
     -45deg,
-    #2193b0,
-    #1565C0,
-    #4A569D,
-    #6B8DD6
+    #184E77,  /* 深青蓝 */
+    #1A759F,  /* 深青绿 */
+    #34A0A4,  /* 青绿 */
+    #76C893   /* 翠绿 */
   );
   background-size: 400% 400%;
   animation: gradientFlow 15s ease infinite;
@@ -67,7 +67,7 @@ const handleViewChange = (view: string) => {
   padding: 40px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  box-shadow: 0 8px 32px 0 rgba(24, 78, 119, 0.25);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
@@ -94,7 +94,7 @@ const handleViewChange = (view: string) => {
   height: 80px;
   margin-bottom: 16px;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .login-header h2 {
@@ -104,10 +104,10 @@ const handleViewChange = (view: string) => {
   margin: 0;
   background: linear-gradient(
     -45deg,
-    #2193b0,
-    #1565C0,
-    #4A569D,
-    #6B8DD6
+    #184E77,  /* 深青蓝 */
+    #1A759F,  /* 深青绿 */
+    #34A0A4,  /* 青绿 */
+    #76C893   /* 翠绿 */
   );
   background-size: 400% 400%;
   animation: gradientFlow 15s ease infinite;
