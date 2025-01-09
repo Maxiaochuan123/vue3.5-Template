@@ -11,6 +11,16 @@
       @expand="isCollapse = false"
       class="layout-sider"
     >
+      <div class="logo-container">
+        <img 
+          src="http://download.moujiang.com/logo.png" 
+          alt="谋将Logo" 
+          class="company-logo"
+          :class="{ 'collapsed': isCollapse }"
+        />
+        <div class="company-name" :class="{ 'collapsed': isCollapse }">谋将 - 广告联盟平台</div>
+      </div>
+      <n-divider />
       <n-menu
         :value="activeMenu"
         :collapsed="isCollapse"
@@ -314,5 +324,40 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
 
 .collapse-icon:hover {
   color: v-bind('themeVars.primaryColor');
+}
+
+.logo-container {
+  padding-top: 16px;
+  text-align: center;
+}
+
+.n-divider{
+  margin: 10px 0;
+}
+
+.company-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.3s;
+}
+
+.company-logo.collapsed {
+  width: 32px;
+  height: 32px;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+.company-name {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+  transition: opacity 0.3s;
+}
+
+.company-name.collapsed {
+  display: none;
 }
 </style>
