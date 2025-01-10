@@ -6,6 +6,8 @@ import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import { logApi, type BaseLogSearch, type Log } from '@/core/api/modules/log'
 
+type TableDataRecord = Log
+
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<BaseLogSearch>({
   name: null,
@@ -39,7 +41,7 @@ const handleSearch = (values: BaseLogSearch) => {
 }
 
 // 表列定义
-const columns: DataTableColumns<Log> = [
+const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '日志类型',
     key: 'typeId',

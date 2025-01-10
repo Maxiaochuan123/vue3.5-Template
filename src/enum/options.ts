@@ -77,7 +77,7 @@ export const changeTypeOptions = [
   { label: '充值', value: 3 },
 ]
 // 导出状态类型
-export type ChangeTypeType = ExtractOptionsValue<typeof changeTypeOptions>
+export type ChangeType = ExtractOptionsValue<typeof changeTypeOptions>
 
 // 变动状态选项
 export const changeStatusOptions = [

@@ -1,6 +1,6 @@
 import { get } from '@/api/server'
 import type { ListRequest, ListResponse } from '@/api/types'
-import type { ChangeStatusType, BalanceChangeTypeType } from '@/enum/options'
+import type { ChangeStatusType, ChangeType } from '@/enum/options'
 
 
 export interface BalanceChange {
@@ -12,14 +12,14 @@ export interface BalanceChange {
   time: string
   username: string
   realName: string
-  type: BalanceChangeTypeType
+  type: ChangeType
   status: ChangeStatusType
 }
 
 export interface BaseBalanceChangeSearch {
   key?: string | null
   dateRange?: [] | null
-  status?: BalanceChangeTypeType | null
+  status?: ChangeType | null
   type?: ChangeStatusType | null
 }
 

@@ -3,7 +3,7 @@ import type { ApiResult, ListRequest, ListResponse } from '@/api/types'
 
 // 日志信息类型
 export interface Log {
-  id: string
+  id?: number
   name: string
   message: string
   typeId: 1 | 2 | 3 // 1 操作日志 2 异常日志 3 登录日志
@@ -11,15 +11,16 @@ export interface Log {
   ipAddress: string
 }
 
+// 基础日志搜索参数
 export interface BaseLogSearch {
-  name: string | null
-  message: string | null
-  typeId: 1 | 2 | 3 | null // 1 操作日志 2 异常日志 3 登录日志
-  dateRange: string | null
+  name?: string | null
+  message?: string | null
+  typeId?: 1 | 2 | 3 | null // 1 操作日志 2 异常日志 3 登录日志
+  dateRange?: string | null
 }
   
 // 日志列表查询参数
-export interface LogListQuery extends ListRequest, BaseLogSearch {}
+export type LogListQuery = ListRequest & Partial<BaseLogSearch>
 
 export const logApi = {
   /**

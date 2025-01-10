@@ -1,10 +1,10 @@
 import { get } from '@/api/server'
 import type { ListRequest, ListResponse } from '@/api/types'
-import type { ChangeTypeType, ChangeStatusType } from '@/enum/options'
+import type { ChangeType, ChangeStatusType } from '@/enum/options'
 
 
 export interface AccountEquity {
-  type: ChangeTypeType
+  type: ChangeType
   status: ChangeStatusType
   principalAmount: string
   giftAmount: string
@@ -16,7 +16,7 @@ export interface BaseAccountEquitySearch {
   key?: string | null
   dateRange?: [] | null
   status?: ChangeStatusType | null
-  type?: ChangeTypeType | null
+  type?: ChangeType | null
 }
 
 export interface AccountEquitySearch extends ListRequest, BaseAccountEquitySearch {}
