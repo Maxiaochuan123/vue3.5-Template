@@ -29,7 +29,6 @@ const routes: RouteRecordRaw[] = [
         name: 'dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         meta: {
-          requiresAuth: true,
           title: '数据概览',
           icon: HomeOutline,
         },
@@ -39,7 +38,6 @@ const routes: RouteRecordRaw[] = [
         name: 'account-equity',
         component: () => import('@/views/account-equity/index.vue'),
         meta: {
-          requiresAuth: true,
           title: '账户权益',
           icon: WalletOutline,
         },
@@ -49,7 +47,6 @@ const routes: RouteRecordRaw[] = [
         name: 'advertising',
         component: () => import('@/views/advertising/index.vue'),
         meta: {
-          requiresAuth: true,
           title: '广告管理',
           icon: MegaphoneOutline,
           permissions: ['add', 'edit', 'delete', 'setAdvertisingAccount'],
@@ -60,7 +57,6 @@ const routes: RouteRecordRaw[] = [
         name: 'advertising-placement',
         component: () => import('@/views/advertising-placement/index.vue'),
         meta: {
-          requiresAuth: true,
           title: '广告投放',
           icon: MegaphoneOutline,
           permissions: ['advertisingPlacement', 'followUpInvestment', 'placementData'],
@@ -71,7 +67,6 @@ const routes: RouteRecordRaw[] = [
             name: 'advertising-placement-detail',
             component: () => import('@/views/advertising-placement/detail/index.vue'),
             meta: {
-              requiresAuth: true,
               title: '投放数据',
               hideInMenu: true,
             },
@@ -83,7 +78,6 @@ const routes: RouteRecordRaw[] = [
         name: 'customer',
         component: () => import('@/views/customer/index.vue'),
         meta: {
-          requiresAuth: true,
           title: '客户管理',
           icon: PersonOutline,
           permissions: ['audit', 'detail', 'updatePassword', 'addContract'],
@@ -94,7 +88,6 @@ const routes: RouteRecordRaw[] = [
         name: 'recharge-management',
         redirect: '/recharge-management/recharge-apply',
         meta: {
-          requiresAuth: true,
           title: '充值管理',
           icon: WalletOutline,
         },
@@ -104,7 +97,6 @@ const routes: RouteRecordRaw[] = [
             name: 'recharge-apply',
             component: () => import('@/views/recharge-apply/index.vue'),
             meta: {
-              requiresAuth: true,
               title: '充值申请',
               permissions: ['recharge', 'detail'],
             }
@@ -114,7 +106,6 @@ const routes: RouteRecordRaw[] = [
             name: 'advertiser-management',
             component: () => import('@/views/advertiser-management/index.vue'),
             meta: {
-              requiresAuth: true,
               title: '广告主管理',
               permissions: ['clearBalance'],
             }
@@ -124,7 +115,6 @@ const routes: RouteRecordRaw[] = [
             name: 'balance-change',
             component: () => import('@/views/balance-change/index.vue'),
             meta: {
-              requiresAuth: true,
               title: '余额变动',
             }
           }
@@ -148,15 +138,16 @@ router.beforeEach((to, from, next) => {
   
   const authStore = useAuthStore()
   
-  // 首先检查是否需要认证
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+  // 检查认证
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  if (requiresAuth && !authStore.token) {
     loadingBar.error()
     next('/login')
     return
   }
 
-  // 然后检查权限
-  if (to.meta.requiresAuth) {
+  // 检查权限
+  if (requiresAuth) {
     // 获取当前路由及其所有父级路由的 name（key），排除 Layout 和 hideInMenu 为 true 的路由
     const routeKeys = to.matched
       .filter(route => route.name && route.name !== 'Layout' && !route.meta?.hideInMenu)
@@ -184,13 +175,13 @@ router.beforeEach((to, from, next) => {
 
     // 检查路由链上的所有权限
     const hasAllPermissions = routeKeys.every(key => {
-      const hasPermission = checkPermission(authStore.auth.permissions, key)
+      const hasPermission = checkPermission(authStore.permissions, key)
       return hasPermission
     })
 
     if (!hasAllPermissions) {
       // 重定向到第一个有权限的路由
-      const firstPermittedRoute = authStore.auth.permissions.find((p: RolePermission) => p.isChecked)
+      const firstPermittedRoute = authStore.permissions.find((p: RolePermission) => p.isChecked)
       
       if (firstPermittedRoute) {
         const route = routes[1].children?.find(r => r.name === firstPermittedRoute.key)

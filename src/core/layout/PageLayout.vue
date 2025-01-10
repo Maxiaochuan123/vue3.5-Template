@@ -159,7 +159,7 @@ const generateMenuFromRoute = (route: RouteRecordRaw, parentPath = ''): MenuOpti
   }
 
   // 查找对应的权限配置
-  const permission = findPermission(authStore.auth.permissions, meta.title)
+  const permission = findPermission(authStore.permissions, meta.title)
 
   // 如果没有找到权限配置或未被选中，则不显示
   if (!permission || !permission.isChecked) {
@@ -193,7 +193,7 @@ const generateMenuFromRoute = (route: RouteRecordRaw, parentPath = ''): MenuOpti
 // 计算菜单选项
 const menuOptions = computed(() => {
   // console.log('开始生成菜单')
-  // console.log('当前权限数据:', authStore.auth.permissions)
+  // console.log('当前权限数据:', authStore.permissions)
 
   const layoutRoute = router.getRoutes().find((route) => route.name === 'Layout')
   if (!layoutRoute?.children) {

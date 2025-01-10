@@ -4,6 +4,8 @@
   import { isImage, isVideo, parseBytes } from '../utils'
   import { qiniuUploader } from '../plugins/qiniuUpload'
   import type { FileItem } from '../interface'
+  // import commonApi from '@/api/modules/common'
+  import { useAuthStore } from '@/core/stores/modules/auth'
   import MediaPreviewMask from './preview/MediaPreviewMask.vue'
   import AddSVG from '../icons/Add.svg'
   import SeeSVG from '../icons/See.svg'
@@ -12,7 +14,7 @@
   import Rotate360SVG from '../icons/Rotate360.svg'
 
   const themeVars = useThemeVars()
-
+  const authStore = useAuthStore()
   // 文件类型映射
   const ACCEPT_MAPPING = {
     img: '.jpg,.jpeg,.png,.gif',
@@ -40,8 +42,6 @@
   const message = useMessage()
 
   // v-model
-  // const modelValue = defineModel<string | string[]>({ default: () => props.maxCount === 1 ? '' : [] })
-    // const modelValue = defineModel<string | string[]>({ 'modelValue', default: '' })
   const modelValue = defineModel<string | string[]>("modelValue", {  default: '' })
 
   // 定义 emit
@@ -55,6 +55,14 @@
   const fileList = ref<FileItem[]>([])
   const previewVisible = ref(false)
   const currentPreviewFile = ref<{ url: string; file?: File }>()
+
+  // 获取上传凭证
+  // const token = ref<string>('')
+  // const getUploadToken = async () => {
+  //   const { data: uploadToken  } = await commonApi.uploadToken()
+  //   token.value = uploadToken 
+  // }
+  // getUploadToken()
 
   // 重置组件状态的方法
   const reset = () => {
@@ -241,7 +249,7 @@
         fileList.value.push(fileItem)
         
         // 开始上传
-        await qiniuUploader.upload(file)
+        await qiniuUploader.upload(file, authStore.uploadToken)
       } catch (error) {
         URL.revokeObjectURL(fileItem.url!)
         // 从 fileList 中移除失败的文件
@@ -423,6 +431,20 @@
     &.direction-row {
       flex-direction: row;
       align-items: flex-end;
+
+      .media-upload {
+        .file-list:not(:empty) + .upload-area {
+          margin-left: 8px;
+        }
+      }
+    }
+
+    &:not(.direction-row) {
+      .media-upload {
+        .file-list:not(:empty) + .upload-area {
+          margin-top: 8px;
+        }
+      }
     }
 
     .media-upload {
@@ -430,7 +452,6 @@
       flex-direction: row;
       flex-wrap: wrap;
       align-items: flex-start;
-
 
       .upload-area {
         order: 2;
@@ -445,19 +466,11 @@
         align-items: center;
         justify-content: center;
         color: #999;
+        margin: 0;
 
         &:hover {
-          // border-color: #1890ff;
-          // color: #1890ff;
           border-color: v-bind('themeVars.primaryColor');
           color: v-bind('themeVars.primaryColor');
-        }
-
-        // .upload-icon {
-        // }
-
-        .upload-text {
-          font-size: 12px;
         }
 
         input {

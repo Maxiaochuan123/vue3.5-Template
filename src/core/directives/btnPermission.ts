@@ -21,7 +21,7 @@ export const btnPermission: Directive = {
       return null
     }
 
-    const permission = findPermission(authStore.auth.permissions)
+    const permission = findPermission(authStore.permissions)
     
     // 如果没有权限，移除元素
     if (!permission?.permissions?.includes(action)) {

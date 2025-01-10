@@ -24,8 +24,8 @@ export function createAxiosInstance(baseURL: string): AxiosInstance {
   service.interceptors.request.use(
     (config) => {
       const authStore = useAuthStore()
-      if (authStore.auth.token) {
-        config.headers['Authorization'] = `${authStore.auth.token}`
+      if (authStore.token) {
+        config.headers['Authorization'] = `${authStore.token}`
       }
       return config
     },

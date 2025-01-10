@@ -1,5 +1,4 @@
 import * as qiniu from 'qiniu-js'
-import commonApi from '@/api/modules/common'
 
 /**
  * 文件上传状态类型
@@ -42,7 +41,7 @@ interface UploadConfig {
   domain: string
   uploadConfig: {
     useCdnDomain: boolean
-    region: string
+    region: 'z0' | 'z1' | 'z2' | 'na0' | 'as0' | 'cn-east-2'
     forceDirect: boolean
   }
 }
@@ -54,7 +53,7 @@ const DEFAULT_CONFIG: UploadConfig = {
   domain: 'https://file.moujiang.com/',
   uploadConfig: {
     useCdnDomain: true,
-    region: qiniu.region.z2, // 华南区域
+    region: 'z2', // 华南区域
     forceDirect: true,
   },
 }
@@ -106,19 +105,18 @@ class QiniuUploader {
    * 上传单个文件
    * @private
    * @param {UploadFile} uploadFile - 要上传的文件信息
+   * @param {string} token - 上传凭证
    */
-  private async uploadFile(uploadFile: UploadFile): Promise<void> {
+  private async uploadFile(uploadFile: UploadFile, token?: string): Promise<void> {
     try {
       // 生成唯一的文件名
       const key = `moujiang/${Date.now()}-${uploadFile.file.name}`
-      // 获取上传凭证
-      const { data: uploadToken } = await commonApi.uploadToken()
 
       // 上传额外参数配置
       const putExtra = {
         fname: uploadFile.file.name,
         params: {},
-        mimeType: null,
+        mimeType: undefined,
       }
 
       // 初始化上传状态
@@ -130,7 +128,7 @@ class QiniuUploader {
       const observable = qiniu.upload(
         uploadFile.file,
         key,
-        uploadToken,
+        token || '',
         putExtra,
         this.config.uploadConfig
       )
@@ -168,7 +166,7 @@ class QiniuUploader {
    * 上传文件（公共方法）
    * @param {File | File[]} files - 要上传的文件或文件数组
    */
-  async upload(files: File | File[]) {
+  async upload(files: File | File[], token?: string) {
     const fileArray = Array.isArray(files) ? files : [files]
 
     for (const file of fileArray) {
@@ -181,7 +179,7 @@ class QiniuUploader {
 
       this.fileList.push(uploadFile)
       this.notifySubscribers()
-      await this.uploadFile(uploadFile)
+      await this.uploadFile(uploadFile, token)
     }
   }
 

@@ -44,14 +44,16 @@ export function useMediaUploaderValidator(options: MediaValidatorOptions) {
   } = options
 
   // 创建一个用于重新验证的函数
-  const revalidate = () => {
-    console.log('revalidate:', formRef.value)
-    if (formRef.value) {
-      formRef.value.validate((errors) => {
-        if (errors) {
-          console.error(errors)
-        }
-      }, (rule) => rule?.key === key)
+  const revalidate = async () => {
+    try {
+      if (formRef.value) {
+        await formRef.value.validate(undefined, (rule) => {
+          return rule?.key === key
+        })
+      }
+    } catch (error) {
+      // 验证错误是预期的行为，不需要额外处理
+      return
     }
   }
 
@@ -61,9 +63,14 @@ export function useMediaUploaderValidator(options: MediaValidatorOptions) {
     required: unref(required),
     message,
     trigger: ['change', 'blur'],
-    validator(rule: FormItemRule, value: string | string[]) {
+    validator(rule: FormItemRule, value: string | string[] | undefined | null) {
+      // 处理空值情况
+      if (value === undefined || value === null) {
+        return unref(required) ? new Error(message) : true
+      }
+
       // 将单个值转换为数组统一处理
-      const files = Array.isArray(value) ? value : value ? [value] : []
+      const files = Array.isArray(value) ? value : (value ? [value] : [])
       
       // 如果是空数组且不是必填，直接通过
       if (files.length === 0 && !unref(required)) {
