@@ -8,6 +8,7 @@ import svgLoader from 'vite-svg-loader'
 
 // https://vitejs.cn/vite5-cn/config/
 export default defineConfig({
+  base: process.env.NODE_ENV === 'production' ? '/advertising/' : '/',
   plugins: [
     vue(),
     svgLoader({

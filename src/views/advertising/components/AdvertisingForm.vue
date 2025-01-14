@@ -61,6 +61,7 @@ const rules = {
     { max: 20, message: '标题最多20个字符', trigger: 'input' },
   ],
   // icon: adIconMediaValidator.rule,
+  descs: { required: true, message: '请输入广告描述', trigger: 'blur' },
   button: { 
     required: computed(() => [2, 3].includes(formData.type)),
     message: '请输入按钮文案',
@@ -144,7 +145,7 @@ defineExpose({
             />
           </NFormItem>
 
-          <NFormItem label="广告描述">
+          <NFormItem label="广告描述" path="descs">
             <NInput
               v-model:value="formData.descs"
               type="textarea"
@@ -209,7 +210,7 @@ defineExpose({
       </NForm>
     </div>
     <div class="preview-content">
-      <MediaPreviewPhone :url="formData.content" title="预览广告创意" />
+      <MediaPreviewPhone :url="formData.content" title="预览广告创意" :data="{ _type: 'advertising', ...formData }" />
     </div>
   </div>
 </template>

@@ -11,6 +11,7 @@ interface Props {
   title?: string
   showTitle?: boolean
   showShadow?: boolean
+  data?: Record<string, any>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -18,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
   title: '预览',
   showTitle: true,
   showShadow: true,
+  data: () => ({}),
 })
 
 const videoRef = ref<HTMLVideoElement | null>(null)
@@ -115,7 +117,6 @@ const play = async () => {
     console.error('Failed to play video:', error)
   }
 }
-
 // 暴露 play 方法给父组件
 defineExpose({
   play
@@ -148,11 +149,27 @@ defineExpose({
         </div>
 
         <div class="progress-container">
-          <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
+          <!-- <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div> -->
           <div class="progress-bar" @click="handleProgressClick">
             <div class="progress" :style="{ width: `${(currentTime / duration) * 100}%` }" />
           </div>
         </div>
+      </div>
+      <div class="message-container" v-if="data._type === 'advertising'">
+        <div class="card" v-show="data.type === 2 || data.type === 3">
+          <div class="left-icon">
+            <img :src="data.icon" alt="icon" v-if="data.icon">
+            <span v-else>图标</span>
+          </div>
+          <div class="content">
+            <div class="title">{{ data.title || '标题' }}</div>
+            <div class="card-describe">{{ data.descs || '描述' }}</div>
+          </div>
+          <div class="right-btn">
+            <NButton type="primary" size="tiny">{{ data.button || '按钮文字' }}</NButton>
+          </div>
+        </div>
+        <div class="describe">{{ data.descs || '描述' }}</div>
       </div>
     </template>
     <div v-else class="empty-state">上传后即可预览效果</div>
@@ -169,6 +186,75 @@ defineExpose({
   border-radius: 24px;
   box-shadow: v-bind('props.showShadow ? "20px 20px 40px #d1d1d1, -20px -20px 40px #ffffff" : "none"');
   border: none;
+}
+
+.message-container {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  color: #fff;
+  padding: 16px 10px 20px;
+  font-size: 12px;
+  width: 100%;
+  box-sizing: border-box;
+
+  .card{
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+
+    .left-icon{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      img{
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+      }
+    }
+
+    .content{
+      width: 100px;
+      flex-shrink: 0;
+
+      .title,.card-describe{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .title {
+        font-size: 14px;
+      }
+      .card-describe {
+        font-size: 12px;
+      }
+    }
+
+    .right-btn{
+      flex-shrink: 0;
+    }
+  }
+
+  .describe{
+    width: 100%;
+    font-size: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+  }
 }
 
 .preview-title {
@@ -213,7 +299,6 @@ defineExpose({
   .overlay {
     position: absolute;
     inset: 0;
-    background-color: rgba(240, 240, 240, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -232,7 +317,7 @@ defineExpose({
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #666;
+      color: #fff;
       cursor: pointer;
       opacity: 0.9;
       transition: all 0.2s;
@@ -250,9 +335,9 @@ defineExpose({
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 20px;
+    padding: 10px;
     background: linear-gradient(transparent, rgba(240, 240, 240, 0.3));
-    opacity: 0;
+    opacity: v-bind('isPlaying ? 1 : 0');
     transition: opacity 0.3s;
     z-index: 2;
     display: flex;
@@ -296,12 +381,6 @@ defineExpose({
         margin-top: -1px;
         margin-bottom: -1px;
       }
-    }
-  }
-
-  &:hover {
-    .progress-container {
-      opacity: 1;
     }
   }
 }
