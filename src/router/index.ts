@@ -128,7 +128,7 @@ const routes: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.NODE_ENV === 'production' ? '/advertising/' : '/'),
+  history: createWebHistory(import.meta.env.VITE_APP_PUBLIC_PATH),
   routes,
 })
 
