@@ -24,7 +24,7 @@ const { formData, initialData } = useFormData<AddContract>({
     figtAmount: null,
     pricePrincipal: '',
     principal: null,
-    type: '',
+    type: '1',
   },
   editData
 })
@@ -57,11 +57,11 @@ const rules = {
     trigger: ['blur', 'input'],
     type: 'number'
   },
-  type: {
-    required: true,
-    message: '请输入充值类型',
-    trigger: ['blur', 'input']
-  },
+  // type: {
+  //   required: true,
+  //   message: '请输入充值类型',
+  //   trigger: ['blur', 'input']
+  // },
   figtAmount: {
     required: true,
     message: '请输入充值金额',
@@ -172,14 +172,14 @@ defineExpose({
                 <template #suffix>元</template>
               </NInputNumber>
             </NFormItem>
-            <NFormItem label="充值类型" path="type" required>
+            <!-- <NFormItem label="充值类型" path="type" required>
               <NInput
                 v-model:value="formData.type"
                 placeholder="请输入充值类型"
                 clearable
                 style="width: 100%"
               />
-            </NFormItem>
+            </NFormItem> -->
             <NFormItem label="充值金额" path="principal" required>
               <NInputNumber
                 v-model:value="formData.principal"

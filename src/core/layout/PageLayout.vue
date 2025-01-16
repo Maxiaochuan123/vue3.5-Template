@@ -1,7 +1,6 @@
 <template>
   <n-layout has-sider>
     <n-layout-sider
-      bordered
       collapse-mode="width"
       :collapsed="isCollapse"
       :collapsed-width="64"
@@ -284,7 +283,6 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
 .layout-header {
   height: 64px;
   padding: 12px 24px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .header-content {
@@ -309,8 +307,8 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
   min-height: calc(100vh - 64px);
 }
 
-:deep(.n-menu .n-menu-item-content) {
-  margin: 4px 8px;
+:deep(.n-menu-item-content) {
+  padding-left: 20px !important;
 }
 
 :deep(.n-layout-header) {
@@ -332,7 +330,7 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
 }
 
 .n-divider{
-  margin: 10px 0;
+  margin: 9px 0;
 }
 
 .company-logo {
@@ -354,10 +352,18 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
   font-size: 14px;
   color: #333;
   line-height: 1.5;
-  transition: opacity 0.3s;
+  width: 176px; /* 240px - 64px padding */
+  margin: 0 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .company-name.collapsed {
-  display: none;
+  opacity: 0;
+  transform: scale(0.5);
+  width: 0;
 }
 </style>

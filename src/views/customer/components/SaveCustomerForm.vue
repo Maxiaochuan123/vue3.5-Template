@@ -2,10 +2,13 @@
 import { ref, inject, type Ref, computed } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { useFormData } from '@/core/form/hooks/useFormData'
-import { type CustomerDetail, type CustomerSaveForm } from '@/api/modules/customer'
+import { type CustomerSaveForm } from '@/api/modules/customer'
 import { getOptionLabel, genderOptions, auditStatusOptions } from '@/enum/options'
 import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
 import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
+import { useThemeVars } from 'naive-ui'
+
+const themeVars = useThemeVars()
 
 // 注入响应式的数据
 const formRef = ref<FormInst | null>(null)
@@ -89,7 +92,7 @@ defineExpose({
               <NDescriptionsItem label="充值本金">{{ editData?.rechargePrincipal }}</NDescriptionsItem>
               <NDescriptionsItem label="赠送金额">{{ editData?.rechargeGift }}</NDescriptionsItem>
               <NDescriptionsItem label="充值记录">
-                <NButton text type="primary" size="small">点击查询 ></NButton>
+                <router-link to="/recharge-management/recharge-apply" class="link-btn">点击查询 ></router-link>
               </NDescriptionsItem>
             </NDescriptions>
           </div>
@@ -100,7 +103,7 @@ defineExpose({
               <NDescriptionsItem label="当前本金">{{ editData?.principal }}</NDescriptionsItem>
               <NDescriptionsItem label="当前赠金">{{ editData?.gift }}</NDescriptionsItem>
               <NDescriptionsItem label="变动明细">
-                <NButton text type="primary" size="small">点击查询 ></NButton>
+                <router-link to="/recharge-management/balance-change" class="link-btn">点击查询 ></router-link>
               </NDescriptionsItem>
             </NDescriptions>
           </div>
@@ -197,6 +200,10 @@ defineExpose({
       gap: 24px;
       .info-section {
         flex: 1;
+        .link-btn {
+          color: v-bind('themeVars.primaryColor');
+          text-decoration: none;
+        }
         .section-title {
           font-size: 14px;
           font-weight: 600;

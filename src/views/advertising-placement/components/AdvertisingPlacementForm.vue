@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, inject, type Ref, onMounted } from 'vue'
+import { ref, inject, type Ref, onMounted, computed } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import type { FormInst, SelectOption } from 'naive-ui'
 import { advertisingTypeOptions, type AdvertisingType } from '@/enum/options'
@@ -25,6 +25,14 @@ const billingMethod = ref<BillingMethod | null>(null)
 const balance = ref<number | null>(null)
 const agreementChecked = ref(false)
 
+// 添加计算属性判断是否为有效的自定义金额
+const isCustomPrice = computed(() => {
+  return customPrice.value && 
+         customPrice.value >= 1000 && 
+         customPrice.value % 1000 === 0 && 
+         !priceOptions.includes(customPrice.value)
+})
+
 const { formData, initialData } = useFormData<AdvertisingPlacementFormState>({
   initialData: {
     adverInfoId: null,
@@ -39,10 +47,11 @@ const rules = {
   adverInfoId: {  type: 'number', required: true, message: '请选择广告', trigger: 'change' },
   type: { type: 'number', required: true, message: '请选择广告类型', trigger: 'change' },
   price: {
+    key: 'price',
     type: 'number',
     required: true, 
     message: '金额最低1000倍数', 
-    trigger: 'change',
+    trigger: ['blur', 'change'],
     validator: (rule: any, value: number) => {
       if (!value) return new Error('金额最低1000倍数')
       if (value < 1000 || value % 1000 !== 0) return new Error('金额最低1000倍数')
@@ -80,6 +89,10 @@ const handleCustomPriceInput = (value: number | null) => {
 const selectPrice = (price: number) => {
   formData.price = formData.price === price ? null : price
   customPrice.value = null
+
+  formRef.value?.validate(undefined, (rule) => {
+    return rule?.key === 'price'
+  })
 }
 
 // 监听广告选择变化
@@ -216,7 +229,7 @@ defineExpose({
               </div>
             </div>
            </NFormItem>
-        <NFormItem label="投放金额" path="price">
+        <NFormItem label="投放金额">
           <div class="price">
             <span class="balance-info">选择投放金额（当前账户余额：¥{{ formatPrice(balance || 0) }}）</span>
             <div class="price-options">
@@ -230,21 +243,23 @@ defineExpose({
                 ¥{{ formatPrice(price) }}
               </div>
               <div class="price-option custom">
-                <NInputNumber
-                  v-model:value="customPrice"
-                  placeholder="其他金额"
-                  :step="1000"
-                  :min="1000"
-                  button-placement="right"
-                  @update:value="handleCustomPriceInput"
-                >
-                  <template #prefix>
-                    ￥
-                  </template>
-                </NInputNumber>
+                <NFormItem path="price" :class="{ 'is-custom-price': isCustomPrice }">
+                  <NInputNumber
+                    v-model:value="customPrice"
+                    placeholder="其他金额"
+                    :step="1000"
+                    :min="1000"
+                    button-placement="right"
+                    @update:value="handleCustomPriceInput"
+                  >
+                    <template #prefix>
+                      ￥
+                    </template>
+                  </NInputNumber>
+                </NFormItem>
               </div>
             </div>
-        </div>
+          </div>
         </NFormItem>
       </NForm>
       <div class="agreement">
@@ -267,11 +282,9 @@ defineExpose({
   .form-content {
     flex: 1;
 
-    :deep(.n-form-item.price) {
-      .n-form-item-feedback-wrapper {
-        padding-left: 178px;
-      }
-    }
+    // :deep(.n-form-item-feedback-wrapper) {
+    //   padding-left: 52%;
+    // }
   }
   .preview-content {
     display: flex;
@@ -322,11 +335,44 @@ defineExpose({
     border-color: v-bind('themeVars.primaryColor');
     color: white;
   }
-  
+
   &.custom {
+    height: 100%;
     padding: 0;
     border: none;
-    
+    position: relative;
+
+    :deep(.n-form-item) {
+      height: 100%;
+      margin: 0;
+
+      .n-form-item-feedback__line {
+        text-align: left;
+      }
+
+      &.is-custom-price .n-form-item-blank::after {
+        border-color: v-bind('themeVars.primaryColor');
+      }
+
+      .n-form-item-blank {
+        height: 100%;
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border: 1px solid v-bind('themeVars.borderColor');
+          border-radius: 4px;
+          pointer-events: none;
+          transition: all 0.3s;
+        }
+      }
+    }
+
     :deep(.n-input-number) {
       width: 100%;
       

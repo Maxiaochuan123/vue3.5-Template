@@ -66,7 +66,7 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
   {
     title: '操作人',
-    key: 'username',
+    key: 'realName',
   },
   {
     title: '时间',
