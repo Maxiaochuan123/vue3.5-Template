@@ -30,7 +30,7 @@
       />
     </n-layout-sider>
 
-    <n-layout>
+    <n-layout class="layout-container">
       <n-layout-header bordered class="layout-header">
         <div class="header-content">
           <div class="header-left">
@@ -60,14 +60,16 @@
       </n-layout-header>
 
       <n-layout-content class="layout-content">
-        <router-view />
+        <transition name="fade-slide" mode="out-in">
+          <router-view />
+        </transition>
       </n-layout-content>
     </n-layout>
   </n-layout>
 </template>
 
 <script setup lang="ts">
-import { h, ref, computed, watch, onMounted } from 'vue'
+import { h, ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined } from '@vicons/antd'
@@ -88,6 +90,23 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const isCollapse = ref(false)
+
+// 添加窗口大小监听
+const handleResize = () => {
+  const windowWidth = window.innerWidth
+  isCollapse.value = windowWidth <= 900
+}
+
+// 组件挂载时添加监听器
+onMounted(() => {
+  handleResize() // 初始化时执行一次
+  window.addEventListener('resize', handleResize)
+})
+
+// 组件卸载时移除监听器
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 
 const activeMenu = ref(route.path)
 
@@ -280,6 +299,10 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
   border-right: 1px solid #eee;
 }
 
+.layout-container {
+  min-width: 640px;
+}
+
 .layout-header {
   height: 64px;
   padding: 12px 24px;
@@ -305,10 +328,6 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
 .layout-content {
   background-color: #f5f7fa;
   min-height: calc(100vh - 64px);
-}
-
-:deep(.n-menu-item-content) {
-  padding-left: 20px !important;
 }
 
 :deep(.n-layout-header) {
@@ -352,18 +371,63 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
   font-size: 14px;
   color: #333;
   line-height: 1.5;
-  width: 176px; /* 240px - 64px padding */
+  width: 176px;
   margin: 0 auto;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   transform-origin: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .company-name.collapsed {
   opacity: 0;
   transform: scale(0.5);
   width: 0;
+  height: 0;
+  position: absolute;
+  margin: 0;
+}
+
+:deep(.n-menu.n-menu--collapsed) {
+  .n-menu-item-content {
+    padding-left: 20px !important;
+  }
+}
+
+/* 路由过渡动画 - 平移 */
+/* .fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+} */
+
+/* 路由过渡动画 - 缩放 */
+.fade-slide-enter-active {
+  transition: all 0.4s cubic-bezier(0.1, 0, 0.1, 1);
+}
+
+.fade-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.1, 0, 0.1, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: scale(0.98);
 }
 </style>

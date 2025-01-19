@@ -43,8 +43,10 @@ const authStore = useAuthStore()
 const loading = ref(false)
 const loginFormRef = ref<FormInst | null>(null)
 const loginForm = ref({
-  userName: '13111866988',
-  password: '123456',
+  // userName: '13111866988',
+  // password: '123456',
+  userName: '',
+  password: '',
 })
 
 const loginRules = {

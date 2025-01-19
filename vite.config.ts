@@ -1,17 +1,20 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import svgLoader from 'vite-svg-loader'
 import type { ConfigEnv, UserConfig } from 'vite'
-
+import { resolve } from 'path'
+import fs from 'fs'
+import archiver from 'archiver'
 
 // https://vitejs.cn/vite5-cn/config/
 export default ({ mode }: ConfigEnv): UserConfig => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
+  const desktopPath = resolve(process.env.USERPROFILE || process.env.HOME || '', 'Desktop', '广告平台')
+  const zipPath = resolve(process.env.USERPROFILE || process.env.HOME || '', 'Desktop', '广告平台.zip')
 
   return {
     base: env.VITE_APP_PUBLIC_PATH,
@@ -24,6 +27,29 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       }),
       vueJsx(),
       vueDevTools(),
+      {
+        name: 'zip-build',
+        closeBundle: async () => {
+          const output = fs.createWriteStream(zipPath)
+          const archive = archiver('zip', {
+            zlib: { level: 9 }
+          })
+
+          output.on('close', () => {
+            console.log('Build has been zipped successfully!')
+            // 删除原始构建文件夹
+            fs.rmSync(desktopPath, { recursive: true, force: true })
+          })
+
+          archive.on('error', (err: Error) => {
+            throw err
+          })
+
+          archive.pipe(output)
+          archive.directory(desktopPath, false)
+          await archive.finalize()
+        }
+      }
     ],
     resolve: {
       alias: {
@@ -41,7 +67,9 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       minify: 'esbuild',
       cssMinify: 'esbuild',
       chunkSizeWarningLimit: 2000,
-      reportCompressedSize: false, // 禁用 gzip 压缩大小报告，提高大型项目的构建性能
+      reportCompressedSize: false,
+      outDir: desktopPath,
+      emptyOutDir: true,
       rollupOptions: {
         output: {
           manualChunks: {
