@@ -65,14 +65,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import DataCard from './components/DataCard/index.vue'
 import { dataOverviewApi } from '@/api/modules/dataOverview'
 import type { AdvertiserData, AdData, RechargeData, ConsumeData } from '@/api/modules/dataOverview'
 import { useThemeVars } from 'naive-ui'
 import { NScrollbar } from 'naive-ui'
+import { useSystemConfigStore } from '@/core/stores/modules/systemConfig'
 
 const themeVars = useThemeVars()
+const systemConfigStore = useSystemConfigStore()
+
+// 计算卡片阴影
+const cardShadow = computed(() => {
+  const isDark = systemConfigStore.themeMode === 'dark'
+  return {
+    normal: `0 2px 12px 0 ${isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.05)'}`,
+    hover: `0 4px 20px 0 ${isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.08)'}`
+  }
+})
+
 // 广告主注册数据
 const advertiserData = ref<AdvertiserData>({
   num: 0,
@@ -173,8 +185,11 @@ onMounted(() => {
   box-sizing: border-box;
   display: flex;
   gap: 24px;
-  background-color: #f5f7fa;
+  background-color: v-bind('themeVars.bodyColor');
   min-width: min-content;
+  max-width: 1800px;
+  margin: 0 auto;
+  width: 100%;
 
   .left-container,
   .right-container {
@@ -182,20 +197,19 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    min-width: 600px;
+    width: 100%;
   }
 
   .card {
     border-radius: 12px;
-    padding: 20px;
-    transition: all 0.3s ease;
-    background: #fff;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-    min-width: 600px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: v-bind('themeVars.cardColor');
+    box-shadow: v-bind('cardShadow.normal');
+    width: 100%;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+      box-shadow: v-bind('cardShadow.hover');
     }
 
     .card-header {
@@ -204,12 +218,12 @@ onMounted(() => {
       align-items: center;
       margin-bottom: 24px;
       padding-bottom: 16px;
-      border-bottom: 1px solid #ebeef5;
+      border-bottom: 1px solid v-bind('themeVars.dividerColor');
 
       .title {
         font-size: 18px;
         font-weight: 600;
-        color: #303133;
+        color: v-bind('themeVars.textColor1');
         position: relative;
         padding-left: 12px;
 
@@ -229,39 +243,47 @@ onMounted(() => {
 
     .data-box {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 16px 16px;
-      row-gap: 26px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
       padding: 8px;
     }
   }
 }
 
-// 响应式布局
-@media screen and (min-width: 1567px) {
+// 响应式布局优化
+@media screen and (min-width: 1600px) {
   .card .data-box {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-}
-
-@media screen and (max-width: 1566px) {
-  .card .data-box {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 }
 
 @media screen and (max-width: 1400px) {
   .dashboard-container {
     flex-direction: column;
-    width: fit-content;
   }
 }
 
-@media screen and (max-width: 1200px) {
-  .card .data-box {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px 12px;
-    row-gap: 22px;
+@media screen and (max-width: 768px) {
+  .dashboard-container {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .card {
+    .card-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+
+      .title {
+        font-size: 16px;
+      }
+    }
+
+    .data-box {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      padding: 4px;
+    }
   }
 }
 </style>

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { NIcon } from 'naive-ui'
+import { NIcon, NButton } from 'naive-ui'
 import { PlayCircleOutline, PauseCircleOutline } from '@vicons/ionicons5'
 import { isVideo, isImage } from '../../utils'
 import type { FileItem } from '../../interface'
 import { useThemeVars } from 'naive-ui'
+import { useSystemConfigStore } from '@/core/stores/modules/systemConfig'
+
+const systemConfigStore = useSystemConfigStore()
 
 interface Props {
   url: string | null
@@ -121,6 +124,22 @@ const play = async () => {
 defineExpose({
   play
 })
+
+// 计算是否是暗色主题
+const isDarkTheme = computed(() => systemConfigStore.themeMode === 'dark')
+
+// 计算空状态样式
+const emptyStateStyles = computed(() => ({
+  color: isDarkTheme.value ? 'rgba(255, 255, 255, 0.82)' : '#666',
+}))
+
+// 计算容器阴影样式
+const containerShadow = computed(() => {
+  if (!props.showShadow) return 'none'
+  return isDarkTheme.value
+    ? '20px 20px 40px rgba(0, 0, 0, 0.5), -20px -20px 40px rgba(255, 255, 255, 0.05)'
+    : '20px 20px 40px rgba(0, 0, 0, 0.1), -20px -20px 40px rgba(255, 255, 255, 0.5)'
+})
 </script>
 
 <template>
@@ -172,7 +191,7 @@ defineExpose({
         <div class="describe">{{ data.descs || '描述' }}</div>
       </div>
     </template>
-    <div v-else class="empty-state">上传后即可预览效果</div>
+    <div v-else class="empty-state" :style="emptyStateStyles">上传后即可预览效果</div>
   </div>
 </template>
 
@@ -180,11 +199,10 @@ defineExpose({
 .preview-container {
   width: 300px;
   aspect-ratio: 9/16;
-  background-color: #f0f0f0;
   position: relative;
   overflow: hidden;
   border-radius: 24px;
-  box-shadow: v-bind('props.showShadow ? "20px 20px 40px #d1d1d1, -20px -20px 40px #ffffff" : "none"');
+  box-shadow: v-bind('containerShadow');
   border: none;
 }
 
@@ -283,10 +301,8 @@ defineExpose({
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #666;
   font-size: 14px;
   text-align: center;
-  text-shadow: 1px 1px 2px #ffffff;
 }
 
 .video-controls {

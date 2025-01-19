@@ -48,13 +48,22 @@
             </n-breadcrumb>
           </div>
           <div class="header-right">
-            <n-dropdown :options="userOptions" @select="handleUserAction">
-              <n-avatar
-                round
-                size="small"
-                src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-              />
-            </n-dropdown>
+            <n-space align="center" :size="12">
+              <n-dropdown :options="themeOptions" trigger="click" @select="handleThemeChange">
+                <n-button text style="font-size: 20px">
+                  <n-icon>
+                    <component :is="systemConfigStore.themeMode === 'dark' ? Moon : systemConfigStore.themeMode === 'light' ? LightModeOutlined : ComputerFilled" />
+                  </n-icon>
+                </n-button>
+              </n-dropdown>
+              <n-dropdown :options="userOptions" @select="handleUserAction">
+                <n-avatar
+                  round
+                  size="small"
+                  src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                />
+              </n-dropdown>
+            </n-space>
           </div>
         </div>
       </n-layout-header>
@@ -73,10 +82,12 @@ import { h, ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined } from '@vicons/antd'
-import { NBreadcrumb, NBreadcrumbItem, NIcon, NEllipsis } from 'naive-ui'
-import type { MenuOption } from 'naive-ui'
+import { LightModeOutlined, DarkModeOutlined as Moon, ComputerOutlined as ComputerFilled } from '@vicons/material'
+import { NBreadcrumb, NBreadcrumbItem, NIcon, NEllipsis, NSpace, NButton, NDropdown } from 'naive-ui'
+import type { MenuOption, DropdownOption } from 'naive-ui'
 import { useAuthStore } from '@/core/stores/modules/auth'
 import { useThemeVars } from 'naive-ui'
+import { useSystemConfigStore } from '@/core/stores/modules/systemConfig'
 
 const themeVars = useThemeVars()
 
@@ -89,6 +100,7 @@ interface CustomRouteMeta {
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const systemConfigStore = useSystemConfigStore()
 const isCollapse = ref(false)
 
 // 添加窗口大小监听
@@ -291,12 +303,36 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
   if (item.path === route.path) return
   router.push(item.path)
 }
+
+// 主题选项
+const themeOptions: DropdownOption[] = [
+  {
+    label: '明亮模式',
+    key: 'light',
+    icon: renderIcon(LightModeOutlined)
+  },
+  {
+    label: '暗黑模式',
+    key: 'dark',
+    icon: renderIcon(Moon)
+  },
+  {
+    label: '跟随系统',
+    key: 'system',
+    icon: renderIcon(ComputerFilled)
+  }
+]
+
+// 处理主题切换
+const handleThemeChange = (key: string) => {
+  systemConfigStore.themeMode = key as 'light' | 'dark' | 'system'
+}
 </script>
 
 <style scoped>
 .layout-sider {
   height: 100vh;
-  border-right: 1px solid #eee;
+  border-right: 1px solid v-bind('themeVars.borderColor');
 }
 
 .layout-container {
@@ -326,13 +362,13 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
 }
 
 .layout-content {
-  background-color: #f5f7fa;
+  background-color: v-bind('themeVars.bodyColor');
   min-height: calc(100vh - 64px);
 }
 
-:deep(.n-layout-header) {
+/* :deep(.n-layout-header) {
   background: #fff;
-}
+} */
 
 .collapse-icon {
   cursor: pointer;
@@ -369,7 +405,7 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
 
 .company-name {
   font-size: 14px;
-  color: #333;
+  color: v-bind('themeVars.textColor2');
   line-height: 1.5;
   width: 176px;
   margin: 0 auto;

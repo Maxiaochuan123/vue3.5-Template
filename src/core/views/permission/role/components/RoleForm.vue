@@ -7,12 +7,15 @@ import { permissionMenus } from '../../../../permissions-config/treeGenerator'
 import { roleApi, type RolePermission, type RoleForm } from '@/core/api/modules/role'
 import { useFormData } from '@/core/form/hooks/useFormData'
 import { type FormType } from '@/core/form/DrawerForm.vue'
+import { useThemeVars } from 'naive-ui'
 
 // 注入响应式的 formType 和 editData
 const formType = inject<Ref<FormType>>('formType')!
 const editData = inject<Ref<Partial<RoleForm>>>('editData')!
 
 const formRef = ref<FormInst | null>(null)
+
+const themeVars = useThemeVars()
 
 const { formData, initialData } = useFormData<RoleForm>({
   initialData: {
@@ -211,7 +214,6 @@ defineExpose({
               </template>
             </NSwitch>
             <NSwitch
-              v-if="checkAll"
               v-model:value="checkAllPermissions"
               :round="false"
               :disabled="isViewMode"
@@ -251,15 +253,15 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: #fff;
+  background: v-bind('themeVars.bodyColor');
   border-radius: 8px;
-  border: 1px solid #ebeef5;
+  border: 1px solid v-bind('themeVars.borderColor');
 }
 
 .tree-header {
   padding: 8px;
-  background-color: #f8f9fc;
-  border-bottom: 1px solid #ebeef5;
+  background-color: v-bind('themeVars.bodyColor');
+  border-bottom: 1px solid v-bind('themeVars.borderColor');
   border-radius: 8px 8px 0 0;
 }
 
@@ -279,14 +281,10 @@ defineExpose({
   border-radius: 0 0 8px 8px;
 }
 
-/* :deep(.n-form-item-feedback-wrapper) {
-  display: none !important;
-} */
-
 :deep(.n-switch__button) {
   height: 18px;
   width: 18px;
-  background-color: #fff;
+  background-color: v-bind('themeVars.bodyColor');
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -340,14 +338,6 @@ defineExpose({
 
 :deep(.n-tree-node) {
   width: 100%;
-}
-
-:deep(.n-tree .n-tree-node-content:hover) {
-  background-color: #f8f9fc;
-}
-
-:deep(.n-tree .n-tree-node--selected > .n-tree-node-content) {
-  background-color: #f0f7ff;
 }
 
 :deep(.n-checkbox.n-checkbox--checked .n-checkbox__label) {
