@@ -3,7 +3,7 @@
     <div class="login-box">
       <div class="login-header">
         <img 
-          src="http://download.moujiang.com/logo.png" 
+          src="https://file.moujiang.com/%E7%B4%A0%E6%9D%90/logo.png" 
           alt="谋将Logo" 
           class="login-logo"
         />

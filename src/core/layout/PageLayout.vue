@@ -12,7 +12,7 @@
     >
       <div class="logo-container">
         <img 
-          src="http://download.moujiang.com/logo.png" 
+          src="https://file.moujiang.com/%E7%B4%A0%E6%9D%90/logo.png" 
           alt="谋将Logo" 
           class="company-logo"
           :class="{ 'collapsed': isCollapse }"
@@ -48,14 +48,42 @@
             </n-breadcrumb>
           </div>
           <div class="header-right">
-            <n-space align="center" :size="12">
-              <n-dropdown :options="themeOptions" trigger="click" @select="handleThemeChange">
-                <n-button text style="font-size: 20px">
-                  <n-icon>
-                    <component :is="systemConfigStore.themeMode === 'dark' ? Moon : systemConfigStore.themeMode === 'light' ? LightModeOutlined : ComputerFilled" />
-                  </n-icon>
-                </n-button>
-              </n-dropdown>
+            <n-space align="center" :size="20">
+              <n-popover placement="bottom" :to="false">
+                <template #trigger>
+                  <n-button text style="font-size: 20px">
+                    <n-icon>
+                      <component :is="systemConfigStore.themeMode === 'dark' ? Moon : systemConfigStore.themeMode === 'light' ? LightModeOutlined : ComputerFilled" />
+                    </n-icon>
+                  </n-button>
+                </template>
+                <div class="theme-options">
+                  <div
+                    class="theme-option"
+                    :class="{ active: systemConfigStore.themeMode === 'light' }"
+                    @click="handleThemeChange('light')"
+                  >
+                    <n-icon><LightModeOutlined /></n-icon>
+                    <span>明亮模式</span>
+                  </div>
+                  <div
+                    class="theme-option"
+                    :class="{ active: systemConfigStore.themeMode === 'dark' }"
+                    @click="handleThemeChange('dark')"
+                  >
+                    <n-icon><Moon /></n-icon>
+                    <span>暗黑模式</span>
+                  </div>
+                  <div
+                    class="theme-option"
+                    :class="{ active: systemConfigStore.themeMode === 'system' }"
+                    @click="handleThemeChange('system')"
+                  >
+                    <n-icon><ComputerFilled /></n-icon>
+                    <span>跟随系统</span>
+                  </div>
+                </div>
+              </n-popover>
               <n-dropdown :options="userOptions" @select="handleUserAction">
                 <n-avatar
                   round
@@ -304,32 +332,13 @@ const handleBreadcrumbClick = (item: { path: string; title: string }) => {
   router.push(item.path)
 }
 
-// 主题选项
-const themeOptions: DropdownOption[] = [
-  {
-    label: '明亮模式',
-    key: 'light',
-    icon: renderIcon(LightModeOutlined)
-  },
-  {
-    label: '暗黑模式',
-    key: 'dark',
-    icon: renderIcon(Moon)
-  },
-  {
-    label: '跟随系统',
-    key: 'system',
-    icon: renderIcon(ComputerFilled)
-  }
-]
-
 // 处理主题切换
 const handleThemeChange = (key: string) => {
   systemConfigStore.themeMode = key as 'light' | 'dark' | 'system'
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .layout-sider {
   height: 100vh;
   border-right: 1px solid v-bind('themeVars.borderColor');
@@ -365,10 +374,6 @@ const handleThemeChange = (key: string) => {
   background-color: v-bind('themeVars.bodyColor');
   min-height: calc(100vh - 64px);
 }
-
-/* :deep(.n-layout-header) {
-  background: #fff;
-} */
 
 .collapse-icon {
   cursor: pointer;
@@ -465,5 +470,30 @@ const handleThemeChange = (key: string) => {
 .fade-slide-leave-to {
   opacity: 0;
   transform: scale(0.98);
+}
+
+.theme-options {
+  .theme-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    color: v-bind('themeVars.textColor2');
+
+    &:hover {
+      background-color: v-bind('themeVars.hoverColor');
+    }
+
+    &.active {
+      color: v-bind('themeVars.primaryColor');
+    }
+
+    .n-icon {
+      font-size: 18px;
+    }
+  }
 }
 </style>
