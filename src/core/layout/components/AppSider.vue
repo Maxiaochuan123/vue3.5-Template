@@ -11,7 +11,7 @@
   >
     <app-logo :collapsed="collapsed" />
     <n-divider />
-    <app-menu v-model="activeMenu" :collapsed="collapsed" />
+    <app-menu v-model="activeMenuValue" :collapsed="collapsed" />
   </n-layout-sider>
 </template>
 
@@ -35,13 +35,18 @@ defineEmits<{
 
 const route = useRoute()
 
-const activeMenu = computed(() => {
-  const currentRoute = route.matched.find((r) => r.meta?.hideInMenu)
-  if (currentRoute) {
-    const parentRoute = route.matched[route.matched.length - 2]
-    return parentRoute ? parentRoute.path : route.path
+const activeMenuValue = computed({
+  get() {
+    const currentRoute = route.matched.find((r) => r.meta?.hideInMenu)
+    if (currentRoute) {
+      const parentRoute = route.matched[route.matched.length - 2]
+      return parentRoute ? parentRoute.path : route.path
+    }
+    return route.path
+  },
+  set(value: string) {
+    // 这里不需要做任何事情，因为路由变化会自动更新计算属性
   }
-  return route.path
 })
 </script>
 

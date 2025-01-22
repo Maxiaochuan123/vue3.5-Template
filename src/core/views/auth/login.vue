@@ -22,8 +22,10 @@
 import { ref } from 'vue'
 import LoginForm from './components/LoginForm.vue'
 import RegisterForm from './components/RegisterForm.vue'
+import { useThemeVars } from 'naive-ui'
 
 const currentView = ref('LoginForm')
+const themeVars = useThemeVars()
 
 const handleViewChange = (view: string) => {
   currentView.value = view
@@ -65,7 +67,8 @@ const handleViewChange = (view: string) => {
   width: 100%;
   max-width: 440px;
   padding: 40px;
-  background: rgba(255, 255, 255, 0.9);
+  /* background: rgba(255, 255, 255, 0.9); */
+  background: v-bind('themeVars.bodyColor');
   border-radius: 16px;
   box-shadow: 0 8px 32px 0 rgba(24, 78, 119, 0.25);
   backdrop-filter: blur(4px);

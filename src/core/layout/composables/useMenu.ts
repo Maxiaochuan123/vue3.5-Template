@@ -29,14 +29,18 @@ export function useMenu() {
     if (!meta?.title || meta.hideInMenu) return null
 
     const fullPath = buildMenuPath(route, parentPath)
+    
+    // 过滤出非隐藏的子路由
+    const visibleChildren = route.children
+      ?.filter(child => !child.meta?.hideInMenu)
+      .map(child => buildMenuItem(child, fullPath))
+      .filter(Boolean) as MenuOption[] | undefined
+
     return {
       label: () => h(NEllipsis, null, { default: () => meta.title }),
       key: fullPath,
       icon: meta.icon ? renderIcon(meta.icon) : undefined,
-      children: route.children
-        ?.filter(child => !child.meta?.hideInMenu)
-        .map(child => buildMenuItem(child, fullPath))
-        .filter(Boolean) as MenuOption[] | undefined
+      children: visibleChildren && visibleChildren.length > 0 ? visibleChildren : undefined
     }
   }
 

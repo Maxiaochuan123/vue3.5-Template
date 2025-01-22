@@ -4,7 +4,7 @@
     :collapsed="collapsed"
     :options="menuOptions"
     :icon-size="24"
-    @update:value="$emit('update:modelValue', $event)"
+    @update:value="handleMenuClick"
     accordion
   />
 </template>
@@ -35,6 +35,10 @@ const menuOptions = computed<MenuOption[]>(() => {
     .map(route => buildMenuItem(route, ''))
     .filter(Boolean) as MenuOption[]
 })
+
+const handleMenuClick = (key: string) => {
+  router.push(key)
+}
 </script>
 
 <style lang="less">

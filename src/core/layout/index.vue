@@ -44,11 +44,6 @@ const toggleCollapse = () => {
 </script>
 
 <style scoped lang="less">
-// :deep(.n-menu.n-menu--collapsed) {
-//   .n-menu-item-content {
-//     padding-left: 20px !important;
-//   }
-// }
 
 .layout-container {
   min-width: 640px;
