@@ -54,5 +54,9 @@ const activeMenuValue = computed({
 .layout-sider {
   height: 100vh;
   border-right: 1px solid v-bind('themeVars.borderColor');
+
+  .n-divider {
+    margin: 9px 0;
+  }
 }
 </style> 

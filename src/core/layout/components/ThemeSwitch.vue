@@ -1,5 +1,5 @@
 <template>
-  <n-popover placement="bottom" :to="false">
+  <n-popover placement="bottom" trigger="click" :to="false">
     <template #trigger>
       <n-button text style="font-size: 20px">
         <n-icon>
@@ -57,7 +57,11 @@ const currentIcon = computed(() => {
 })
 </script>
 
-<style scoped lang="less">
+<style lang="less">
+.n-popover {
+  padding: 6px 6px !important;
+}
+
 .theme-options {
   .theme-option {
     display: flex;

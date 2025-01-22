@@ -3,6 +3,7 @@ import { useAuthStore } from '@/core/stores/modules/auth'
 import type { RolePermission } from '@/core/api/modules/role'
 import coreRoutes from '@/core/router/index'
 import { createDiscreteApi } from 'naive-ui'
+import appConfig from '@/core/config/appConfig'
 import {
   HomeOutline,
   WalletOutline,
@@ -122,7 +123,7 @@ const routes: RouteRecordRaw[] = [
       },
       
       // 从 coreRoutes 获取权限管理路由
-      ...coreRoutes.filter(route => route.name === 'permission'),
+      ...(appConfig.enablePermissionMode ? coreRoutes.filter(route => route.name === 'permission') : []),
     ],
   },
 ]
@@ -146,8 +147,8 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  // 检查权限
-  if (requiresAuth) {
+  // 根据配置决定是否启用权限检查
+  if (requiresAuth && appConfig.enablePermissionMode) {
     // 获取当前路由及其所有父级路由的 name（key），排除 Layout 和 hideInMenu 为 true 的路由
     const routeKeys = to.matched
       .filter(route => route.name && route.name !== 'Layout' && !route.meta?.hideInMenu)

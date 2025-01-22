@@ -129,8 +129,8 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
       // 转换参数（如果提供了转换函数）
       const finalParams = transformParams ? transformParams(requestParams) : requestParams;
       const { data: _data } = await fetchApi(finalParams as P);
-      data.value = _data.records;
-      pagination.itemCount = _data.total;
+      data.value = _data.records || [];
+      pagination.itemCount = _data.total || 0;
     } catch (error) {
       if (message) message.error(error instanceof Error ? error.message : '加载数据失败');
       data.value = [];
