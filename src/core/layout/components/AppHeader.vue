@@ -9,7 +9,7 @@
       </div>
       <div class="header-right">
         <n-space align="center" :size="20">
-          <theme-switch v-model:mode="themeMode" />
+          <theme-switch :mode="themeMode" @update:mode="handleThemeChange" />
           <user-dropdown />
         </n-space>
       </div>
@@ -34,7 +34,7 @@ defineEmits<{
   'toggle-collapse': []
 }>()
 
-const { themeMode } = useTheme()
+const { themeMode, handleThemeChange } = useTheme()
 const themeVars = useThemeVars()
 </script>
 

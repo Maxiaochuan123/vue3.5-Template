@@ -1,6 +1,6 @@
 <template>
   <n-layout has-sider>
-    <app-sider v-model:collapsed="isCollapse" />
+    <app-sider v-model="isCollapse" />
     <n-layout class="layout-container">
       <app-header :is-collapsed="isCollapse" @toggle-collapse="toggleCollapse" />
       <n-layout-content class="layout-content">

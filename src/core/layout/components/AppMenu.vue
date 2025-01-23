@@ -16,13 +16,10 @@ import { NMenu } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
 import { useMenu } from '../composables'
 
-defineProps<{
-  modelValue: string
-  collapsed: boolean
-}>()
+const modelValue = defineModel<string>()
 
-defineEmits<{
-  'update:modelValue': [value: string]
+defineProps<{
+  collapsed: boolean
 }>()
 
 const router = useRouter()

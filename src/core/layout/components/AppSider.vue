@@ -5,8 +5,8 @@
     :collapsed-width="64"
     :width="240"
     show-trigger
-    @collapse="$emit('update:collapsed', true)"
-    @expand="$emit('update:collapsed', false)"
+    @collapse="collapsed = true"
+    @expand="collapsed = false"
     class="layout-sider"
   >
     <app-logo :collapsed="collapsed" />
@@ -25,13 +25,7 @@ import AppMenu from './AppMenu.vue'
 
 const themeVars = useThemeVars()
 
-defineProps<{
-  collapsed: boolean
-}>()
-
-defineEmits<{
-  'update:collapsed': [value: boolean]
-}>()
+const collapsed = defineModel<boolean>({ default: false })
 
 const route = useRoute()
 
