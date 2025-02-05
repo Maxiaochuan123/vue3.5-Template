@@ -22,7 +22,7 @@
     <div class="form-footer">
       <a class="register-link" @click="handleRegisterClick">申请注册</a>
     </div>
-    <n-button type="primary" block @click="handleLogin" :loading="loading">
+    <n-button type="primary" size="large" block @click="handleLogin" :loading="loading">
       登录
     </n-button>
   </n-form>
