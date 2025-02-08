@@ -10,7 +10,7 @@ import TableActions, { type RowActionType } from '@/core/table/table-actions/ind
 import DialogForm, { type FormType } from '@/core/form/DialogForm.vue'
 import RoleForm from './components/RoleForm.vue'
 import { roleApi, type Role, type BaseRoleSearch, type RolePermission } from '@/core/api/modules/role'
-import { usePermissionRender } from '@/core/table/hooks/usePermissionRender'
+import { usePermissionRender } from '@/core/table/composables/usePermissionRender'
 import { permissionMenus } from '@/core/permissions-config/treeGenerator'
 import { mergePermissionTree, checkPermissionChanges, type PermissionChanges } from './components/RoleFormConfig'
 import PermissionChangeDialog from './components/PermissionChangeDialog.vue'

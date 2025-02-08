@@ -1,8 +1,8 @@
 <script setup lang="ts" name="DataTableWrapper">
 import { ref, onMounted, onUnmounted, nextTick, provide } from 'vue'
 import { useMessage, type DataTableInst, NDataTable } from 'naive-ui'
-import { useTableData } from './hooks/useTableData'
-import { useTableHeight, TABLE_HEIGHT_KEY } from './hooks/useTableHeight'
+import { useTableData } from './composables/useTableData'
+import { useTableHeight, TABLE_HEIGHT_KEY } from './composables/useTableHeight'
 import type { ListRequest,ListResponse } from '@/api/types'
 
 interface TableProps<T = any> {

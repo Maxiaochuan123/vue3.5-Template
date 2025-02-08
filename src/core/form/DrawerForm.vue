@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
 import { NDrawer, NDrawerContent, NButton, NIcon, NScrollbar } from 'naive-ui'
-import { useFormSubmit } from './hooks/useFormSubmit'
+import { useFormSubmit } from './composables/useFormSubmit'
 import { ArrowBack } from '@vicons/ionicons5'
 
 export type FormType = 'add' | 'edit' | 'view' | 'detail'

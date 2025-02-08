@@ -21,7 +21,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { NLayout, NLayoutContent } from 'naive-ui'
 import { useDebounceFn } from '@vueuse/core'
 import { useThemeVars } from 'naive-ui'
-import { AppSider, AppHeader } from './components'
+import AppSider from './components/AppSider.vue'
+import AppHeader from './components/AppHeader.vue'
 
 const isCollapse = ref(false)
 const themeVars = useThemeVars()

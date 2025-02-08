@@ -27,7 +27,7 @@ import { computed } from 'vue'
 import { NButton, NIcon, NPopover } from 'naive-ui'
 import { useThemeVars } from 'naive-ui'
 import { LightModeOutlined, DarkModeOutlined as Moon, ComputerOutlined as ComputerFilled } from '@vicons/material'
-import type { ThemeMode } from '../composables'
+import type { ThemeMode } from '../composables/useTheme'
 
 const props = defineProps<{
   mode: ThemeMode

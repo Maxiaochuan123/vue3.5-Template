@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provide, ref, watch, computed, toRef } from 'vue'
 import { NModal, NButton, NPopconfirm } from 'naive-ui'
-import { useFormSubmit } from './hooks/useFormSubmit'
+import { useFormSubmit } from './composables/useFormSubmit'
   
 export type FormType = 'add' | 'edit' | 'view'
 

@@ -2,8 +2,8 @@
 import { ref, onMounted, nextTick, inject } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { Search } from '@vicons/ionicons5'
-import { useSearch } from './hooks/useSearch'
-import { TABLE_HEIGHT_KEY } from './hooks/useTableHeight'
+import { useSearch } from './composables/useSearch'
+import { TABLE_HEIGHT_KEY } from './composables/useTableHeight'
 import { ChevronDown, ChevronUp } from '@vicons/ionicons5'
 
 const props = defineProps<{

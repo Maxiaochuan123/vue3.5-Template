@@ -14,7 +14,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NBreadcrumb, NBreadcrumbItem } from 'naive-ui'
-import type { CustomRouteMeta } from '../../composables'
+import type { CustomRouteMeta } from '../composables/useMenu'
 
 interface BreadcrumbItem {
   title: string

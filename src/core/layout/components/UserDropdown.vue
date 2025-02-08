@@ -13,7 +13,7 @@ import { NDropdown, NAvatar } from 'naive-ui'
 import { LogoutOutlined } from '@vicons/antd'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/core/stores/modules/auth'
-import { useMenu } from '../../composables'
+import { useMenu } from '../composables/useMenu'
 
 const router = useRouter()
 const authStore = useAuthStore()

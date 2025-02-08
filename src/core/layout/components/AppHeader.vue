@@ -20,11 +20,11 @@
 <script setup lang="ts">
 import { NLayoutHeader, NIcon, NSpace } from 'naive-ui'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@vicons/antd'
-import { useTheme } from '../composables'
+import { useTheme } from '../composables/useTheme'
 import { useThemeVars } from 'naive-ui'
-import HeaderBreadcrumb from './header/HeaderBreadcrumb.vue'
+import HeaderBreadcrumb from './HeaderBreadcrumb.vue'
 import ThemeSwitch from './ThemeSwitch.vue'
-import UserDropdown from './header/UserDropdown.vue'
+import UserDropdown from './UserDropdown.vue'
 
 defineProps<{
   isCollapsed: boolean

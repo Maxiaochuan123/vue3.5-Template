@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, inject, type Ref, computed } from 'vue'
 import type { FormInst } from 'naive-ui'
-import { useFormData } from '@/core/form/hooks/useFormData'
+import { useFormData } from '@/core/form/composables/useFormData'
 import { type CustomerSaveForm } from '@/api/modules/customer'
 import { getOptionLabel, genderOptions, auditStatusOptions } from '@/enum/options'
-import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
+import { useMediaUploaderValidator } from '@/core/form/composables/useUploaderValidator'
 import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
 import { useThemeVars } from 'naive-ui'
 

@@ -14,7 +14,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { NMenu } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
-import { useMenu } from '../composables'
+import { useMenu } from '../composables/useMenu'
 
 const modelValue = defineModel<string>()
 

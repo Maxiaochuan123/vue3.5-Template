@@ -2,9 +2,9 @@
 import { ref, inject, computed, type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { InformationCircleOutline } from '@vicons/ionicons5'
-import { useFormData } from '@/core/form/hooks/useFormData'
+import { useFormData } from '@/core/form/composables/useFormData'
 import { type AddContract } from '@/api/modules/customer'
-import { useMediaUploaderValidator } from '@/core/form/hooks/useUploaderValidator'
+import { useMediaUploaderValidator } from '@/core/form/composables/useUploaderValidator'
 import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
 
 // 注入响应式的数据
