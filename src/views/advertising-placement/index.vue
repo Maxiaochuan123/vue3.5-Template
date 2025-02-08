@@ -57,16 +57,20 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '广告类型',
     key: 'type',
+    width: 120,
     render: (row) => {
       return getOptionLabel(advertisingTypeOptions, row.type)
     },
+
   },
   {
     title: '投放金额',
     key: 'price',
+    width: 120,
     render: (row) => {
       return `￥${row.price}`
     }
+
   },
   {
     title: () => {
@@ -95,21 +99,26 @@ const columns: DataTableColumns<TableDataRecord> = [
         ]
       )
     },
+    width: 120,
     key: 'num',
   },
   {
     title: '状态',
     key: 'status',
+    width: 120,
     render: (row) => {
       return getOptionLabel(advertPlacementStatusOptions, row.type)
     },
+
   },
   {
     title: '结束时间',
     key: 'placeEndTime',
+    width: 180,
     render: (row) => {
       return row.placeEndTime ? row.placeEndTime : '--'
     }
+
   },
   {
     title: '操作',

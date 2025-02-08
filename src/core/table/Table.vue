@@ -44,7 +44,7 @@ const calculateMaxHeight = () => {
   if (!tableElRef.value) return
   const tableTop = tableElRef.value.getBoundingClientRect().top
   const viewportHeight = window.innerHeight
-  const bottomPadding = 120 // 预留底部空间（分页器等）
+  const bottomPadding = 122 // 预留底部空间（分页器等）
   maxTableHeight.value = viewportHeight - tableTop - bottomPadding
 }
 
@@ -70,8 +70,6 @@ const {
   data,
   pagination,
   loadData,
-  handlePageChange,
-  handlePageSizeChange,
   refresh,
   reset,
 } = useTableData({
@@ -106,12 +104,11 @@ useTableHeight(async () => {
       :data="data"
       :scroll-x="1000"
       :pagination="pagination"
+      remote
       :max-height="maxTableHeight"
       :row-key="(row: Record<string, any>) => row.id"
       :checked-row-keys="checkedRowKeys"
       @update:checked-row-keys="handleSelectionChange"
-      @update:page="handlePageChange"
-      @update:page-size="handlePageSizeChange"
     />
   </div>
 </template>

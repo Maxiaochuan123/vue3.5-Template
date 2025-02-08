@@ -35,6 +35,9 @@ interface PaginationProps {
   showSizePicker: boolean
   pageSizes: number[]
   itemCount: number
+  // pageCount: number
+  onChange: (page: number) => void
+  onUpdatePageSize: (pageSize: number) => void
   prefix?: (info: PaginationInfo) => VNodeChild
   [key: string]: any
 }
@@ -96,6 +99,14 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
     showSizePicker: true,
     pageSizes: [10, 20, 30, 40],
     itemCount: 0,
+    showQuickJumper: true,
+    onChange: (page: number) => {
+      handlePageChange(page);
+    },
+
+    onUpdatePageSize: (pageSize: number) => {
+      handlePageSizeChange(pageSize);
+    },
     prefix(info: PaginationInfo): VNodeChild {
       return `共 ${info.itemCount} 条`
     },
@@ -131,6 +142,13 @@ export function useTableData<T extends Record<string, any>, P = RequestParams>(
       const { data: _data } = await fetchApi(finalParams as P);
       data.value = _data.records || [];
       pagination.itemCount = _data.total || 0;
+      
+      console.log('Pagination data:', {
+        total: _data.total,
+        itemCount: pagination.itemCount,
+        currentPage: pagination.page,
+        pageSize: pagination.pageSize
+      });
     } catch (error) {
       if (message) message.error(error instanceof Error ? error.message : '加载数据失败');
       data.value = [];

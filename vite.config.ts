@@ -87,7 +87,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       include: ['vue', 'vue-router', 'pinia', 'axios', 'naive-ui']
     },
     esbuild: {
-      drop: ['console', 'debugger'],
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
       legalComments: 'none'
     }
   }

@@ -40,7 +40,8 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
   {
     title: '手机号',
-    key: 'mobile'
+    key: 'mobile',
+    width: 120,
   },
   {
     title: '累计充值',

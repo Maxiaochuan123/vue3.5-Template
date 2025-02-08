@@ -13,6 +13,7 @@ import AddContractForm from './components/AddContractForm.vue'
 import UpdatePassword from './components/UpdatePassword.vue'
 import AuditForm from './components/AuditForm.vue'
 import DialogForm from '@/core/form/DialogForm.vue'
+import { formatDateTime } from '@/utils/date'
 
 type TableDataRecord = Customer
 
@@ -55,14 +56,17 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '用户ID',
     key: 'id',
+    width: 80,
   },
   {
     title: '联系人',
     key: 'userName',
+    width: 120,
   },
   {
     title: '性别',
     key: 'gender',
+    width: 80,
     render: (row) => {
       return getOptionLabel(genderOptions, row.gender)
     }
@@ -70,14 +74,17 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '手机号',
     key: 'mobile',
+    width: 120,
   },
   {
     title: '归属地',
     key: 'address',
+    width: 160,
   },
   {
     title: '状态',
     key: 'status',
+    width: 100,
     render: (row) => {
       return getOptionLabel(auditStatusOptions, row.status)
     },
@@ -85,6 +92,8 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '申请注册时间',
     key: 'createTime',
+    width: 180,
+    render: (row) => formatDateTime(row.createTime)
   },
   {
     title: '操作',

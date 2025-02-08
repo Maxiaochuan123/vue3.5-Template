@@ -40,6 +40,7 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '手机号',
     key: 'mobile',
+    width: 120,
   },
   {
     title: '充值类型',
@@ -63,6 +64,7 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '申请时间',
     key: 'createTime',
+    width: 180
   },
   {
     title: '操作',
