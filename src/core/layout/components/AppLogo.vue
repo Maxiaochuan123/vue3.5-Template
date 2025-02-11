@@ -6,7 +6,7 @@
       class="company-logo"
       :class="{ 'collapsed': collapsed }"
     />
-    <div class="company-name" :class="{ 'collapsed': collapsed }">谋将 - 广告联盟平台</div>
+    <div class="company-name" :class="{ 'collapsed': collapsed }">广告联盟平台</div>
   </div>
 </template>
 

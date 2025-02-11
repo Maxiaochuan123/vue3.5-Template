@@ -18,10 +18,12 @@ export interface BalanceChange {
 
 export interface BaseBalanceChangeSearch {
   key?: string | null
+  mobile?: string | null
   dateRange?: [] | null
   status?: ChangeType | null
   type?: ChangeStatusType | null
 }
+
 
 export interface BalanceChangeSearch extends ListRequest, BaseBalanceChangeSearch {}
 

@@ -89,10 +89,12 @@ const handleClearBalance = (row: TableDataRecord) => {
 }
 
 const refreshList = () => {
+  console.log(tableRef.value)
   if (tableRef.value) {
     tableRef.value.refresh()
   }
 }
+
 </script>
 
 <template>
@@ -133,7 +135,7 @@ const refreshList = () => {
       confirm-message="该账户所有本金及赠送金额会清零！"
       :form-ref="clearBalanceFormRef"
       :add-api="advertiserManagementApi.clearBalance"
-      :on-success="refreshList"
+      :refresh-list="refreshList"
     >
       <ClearBalanceForm ref="clearBalanceFormRef" :row-data="rowData!" />
     </DialogForm>

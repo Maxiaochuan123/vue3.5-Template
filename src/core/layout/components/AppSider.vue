@@ -9,9 +9,15 @@
     @expand="collapsed = false"
     class="layout-sider"
   >
-    <app-logo :collapsed="collapsed" />
-    <n-divider />
-    <app-menu v-model="activeMenuValue" :collapsed="collapsed" />
+    <div class="sider-content">
+      <div class="logo-wrapper">
+        <app-logo :collapsed="collapsed" />
+        <n-divider />
+      </div>
+      <div class="menu-wrapper">
+        <app-menu v-model="activeMenuValue" :collapsed="collapsed" />
+      </div>
+    </div>
   </n-layout-sider>
 </template>
 
@@ -49,8 +55,39 @@ const activeMenuValue = computed({
   height: 100vh;
   border-right: 1px solid v-bind('themeVars.borderColor');
 
-  .n-divider {
-    margin: 9px 0;
+  .sider-content {
+    height: 100%;
+    padding-right: 2px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-wrapper {
+    flex-shrink: 0;
+
+    .n-divider {
+      margin: 9px 0;
+    }
+  }
+
+  .menu-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    // 自定义滚动条样式
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
   }
 }
 </style> 

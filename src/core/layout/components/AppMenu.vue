@@ -5,7 +5,7 @@
     :options="menuOptions"
     :icon-size="24"
     @update:value="handleMenuClick"
-    accordion
+    :accordion="false"
   />
 </template>
 
@@ -41,7 +41,10 @@ const handleMenuClick = (key: string) => {
 <style lang="less">
 .n-menu.n-menu--collapsed {
   .n-menu-item-content {
-    padding-left: 20px !important;
+    padding-left: 20px;
   }
+}
+.n-menu-item-content-header {
+  font-size: 16px;
 }
 </style> 

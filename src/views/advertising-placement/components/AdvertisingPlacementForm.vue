@@ -169,7 +169,11 @@ const validate = async () => {
     await formRef.value?.validate()
     if (!agreementChecked.value) {
       throw new Error('请先阅读并同意《媒体平台广告投放协议》')
-  }
+    }
+    if (!balance.value) {
+      throw new Error('当前账户余额不足')
+    }
+
   } catch (error) {
     throw error
   }
@@ -231,7 +235,11 @@ defineExpose({
            </NFormItem>
         <NFormItem label="投放金额">
           <div class="price">
-            <span class="balance-info">选择投放金额（当前账户余额：¥{{ formatPrice(balance || 0) }}）</span>
+            <span class="balance-info">选择投放金额（当前账户余额：
+              <span :class="{ 'balance-warning': (balance || 0) < 1000, 'balance-normal': (balance || 0) >= 1000 }">
+                ¥{{ formatPrice(balance || 0) }}
+              </span>
+            ）</span>
             <div class="price-options">
               <div 
                 v-for="price in priceOptions" 
@@ -393,5 +401,17 @@ defineExpose({
   display: flex;
   justify-content: center;
   margin-top: 24px;
+}
+
+.balance-info {
+  margin-top: 4px;
+  
+  .balance-warning {
+    color: red;
+  }
+  
+  .balance-normal {
+    color: v-bind('themeVars.primaryColor');
+  }
 }
 </style>

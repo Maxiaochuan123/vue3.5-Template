@@ -12,6 +12,7 @@ type TableDataRecord = BalanceChange
 // 定义默认搜索表单值
 const defaultSearchForm = reactive<BaseBalanceChangeSearch>({
   key: null,
+  mobile: null,
   type: null,
   dateRange: null,
 })
@@ -71,7 +72,8 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
   {
     title: '变动时间',
-    key: 'time'
+    key: 'time',
+    width: 180
   }
 ]
 
