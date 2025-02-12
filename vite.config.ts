@@ -8,6 +8,7 @@ import type { ConfigEnv, UserConfig } from 'vite'
 import { resolve } from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
+import { visualizer} from 'rollup-plugin-visualizer'
 
 // https://vitejs.cn/vite5-cn/config/
 export default ({ mode }: ConfigEnv): UserConfig => {
@@ -19,7 +20,18 @@ export default ({ mode }: ConfigEnv): UserConfig => {
   return {
     base: env.VITE_APP_PUBLIC_PATH,
     plugins: [
-      vue(),
+      vue({
+        script: {
+          defineModel: true,
+          propsDestructure: true
+        }
+      }),
+      visualizer({
+        open: true,
+        filename: "stats.html",
+        gzipSize: true,
+        brotliSize: true
+      }),
       svgLoader({
         svgoConfig: {
           multipass: true,
