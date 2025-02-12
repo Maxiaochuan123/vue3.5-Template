@@ -41,7 +41,7 @@ const handleMenuClick = (key: string) => {
 <style lang="less">
 .n-menu.n-menu--collapsed {
   .n-menu-item-content {
-    padding-left: 20px;
+    padding-left: 20px !important;
   }
 }
 .n-menu-item-content-header {

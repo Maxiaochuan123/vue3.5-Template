@@ -1,5 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
-import router from '@/router/index'
+import routes from '@/router/index'
 
 // 缓存生成的权限菜单树
 let cachedPermissionMenus: any = null
@@ -8,7 +8,7 @@ let cachedRouteConfig: string = ''
 // 从路由配置生成权限菜单
 const generatePermissionMenus = () => {
   // 获取当前路由配置的字符串表示
-  const currentRouteConfig = JSON.stringify(router.options.routes.map(route => ({
+  const currentRouteConfig = JSON.stringify(routes.map((route: RouteRecordRaw) => ({
     name: route.name,
     meta: route.meta,
     children: route.children
@@ -21,10 +21,9 @@ const generatePermissionMenus = () => {
 
   // console.log('\n=== 生成权限菜单 ===')
   const mainRoutes: RouteRecordRaw[] = []
-  const routes = router.options.routes
   
   // 获取所有路由
-  routes.forEach(route => {
+  routes.forEach((route: RouteRecordRaw) => {
     if (route.name === 'Layout' && route.children) {
       mainRoutes.push(...route.children)
     }
