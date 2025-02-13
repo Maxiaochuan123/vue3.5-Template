@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { h, ref, reactive } from 'vue'
 import { type DataTableColumns } from 'naive-ui'
-import TablePageLayout from '@/core/table/TableLayout.vue'
-import SearchForm from '@/core/table/SearchForm.vue'
-import Table from '@/core/table/Table.vue'
-import TableActions from '@/core/table/table-actions/index.vue'
+import TablePageLayout from '@/core/components/table/TableLayout.vue'
+import SearchForm from '@/core/components/table/SearchForm.vue'
+import Table from '@/core/components/table/Table.vue'
+import TableActions from '@/core/components/table/table-actions/index.vue'
 import { advertiserManagementApi, type BaseAdvertiserManagementSearch, type AdvertiserManagement } from '@/api/modules/advertiserManagement'
-import DialogForm from '@/core/form/DialogForm.vue'
+import DialogForm from '@/core/components/form/DialogForm.vue'
 import ClearBalanceForm from './components/ClearBalanceForm.vue'
 
 

@@ -5,8 +5,8 @@ import type { FormInst, FormRules } from 'naive-ui'
 import { useDebounceFn } from '@vueuse/core'
 import { permissionMenus } from '../../../../permissions-config/treeGenerator'
 import { roleApi, type RolePermission, type RoleForm } from '@/core/api/modules/role'
-import { useFormData } from '@/core/form/composables/useFormData'
-import { type FormType } from '@/core/form/DrawerForm.vue'
+import { useFormData } from '@/core/components/form/composables/useFormData'
+import { type FormType } from '@/core/components/form/DrawerForm.vue'
 import { useThemeVars } from 'naive-ui'
 
 // 注入响应式的 formType 和 editData

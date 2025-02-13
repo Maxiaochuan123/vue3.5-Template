@@ -2,11 +2,11 @@
 import { ref, computed, inject, type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { advertisingTypeOptions, type AdvertisingType } from '@/enum/options'
-import { useMediaUploaderValidator } from '@/core/form/composables/useUploaderValidator'
-import { useFormData } from '@/core/form/composables/useFormData'
-import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
-import MediaPreviewPhone from '@/core/upload/media-upload/preview/MediaPreviewPhone.vue'
-import { type FormType } from '@/core/form/DrawerForm.vue'
+import { useMediaUploaderValidator } from '@/core/components/form/composables/useUploaderValidator'
+import { useFormData } from '@/core/components/form/composables/useFormData'
+import MediaUpload from '@/core/components/upload/media-upload/MediaUpload.vue'
+import MediaPreviewPhone from '@/core/components/upload/media-upload/preview/MediaPreviewPhone.vue'
+import { type FormType } from '@/core/components/form/DrawerForm.vue'
 import { type AdvertisingFormState } from '@/api/modules/advertising'
 
 // 注入响应式数据

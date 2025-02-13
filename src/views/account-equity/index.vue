@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { type DataTableColumns } from 'naive-ui'
-import TablePageLayout from '@/core/table/TableLayout.vue'
-import SearchForm from '@/core/table/SearchForm.vue'
-import Table from '@/core/table/Table.vue'
+import TablePageLayout from '@/core/components/table/TableLayout.vue'
+import SearchForm from '@/core/components/table/SearchForm.vue'
+import Table from '@/core/components/table/Table.vue'
 import { changeStatusOptions, changeTypeOptions, getOptionLabel } from '@/enum/options'
 import { accountEquityApi, type BaseAccountEquitySearch, type AccountEquity } from '@/api/modules/accountEquity'
 

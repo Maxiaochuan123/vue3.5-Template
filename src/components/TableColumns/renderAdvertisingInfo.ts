@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import { NEllipsis } from 'naive-ui'
-import MediaPreviewCard from '@/core/upload/media-upload/preview/MediaPreviewCard.vue'
+import MediaPreviewCard from '@/core/components/upload/media-upload/preview/MediaPreviewCard.vue'
 
 export function renderAdvertisingInfo(row: Record<string, any>) {
   const mediaUrl = row.content || ''

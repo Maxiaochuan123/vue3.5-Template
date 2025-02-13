@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, inject,type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
-import { useFormData } from '@/core/form/composables/useFormData'
+import { useFormData } from '@/core/components/form/composables/useFormData'
 import { type RechargeApplyAuditForm } from '@/api/modules/rechargeApply'
 import { submitAuditStatusOptions, changeTypeOptions, getOptionLabel } from '@/enum/options'
 import { ImageOutline as ImageOutlineIcon } from '@vicons/ionicons5'

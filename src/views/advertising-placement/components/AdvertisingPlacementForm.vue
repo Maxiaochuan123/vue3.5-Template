@@ -3,13 +3,13 @@ import { ref, inject, type Ref, onMounted, computed } from 'vue'
 import { useThemeVars } from 'naive-ui'
 import type { FormInst, SelectOption } from 'naive-ui'
 import { advertisingTypeOptions, type AdvertisingType } from '@/enum/options'
-import { useFormData } from '@/core/form/composables/useFormData'
-import MediaPreviewPhone from '@/core/upload/media-upload/preview/MediaPreviewPhone.vue'
+import { useFormData } from '@/core/components/form/composables/useFormData'
+import MediaPreviewPhone from '@/core/components/upload/media-upload/preview/MediaPreviewPhone.vue'
 import { advertisingApi, type AdvertisingOptions } from '@/api/modules/advertising'
 import { advertisingPlacementApi, type BillingMethod } from '@/api/modules/advertisingPlacement'
 import { userApi } from '@/api/modules/user'
 import { type AdvertisingPlacementFormState } from '@/api/modules/advertisingPlacement'
-import { type FormType } from '@/core/form/DialogForm.vue'
+import { type FormType } from '@/core/components/form/DialogForm.vue'
 
 const themeVars = useThemeVars()
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, inject, type Ref, onMounted } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import { useFormData } from '@/core/form/composables/useFormData'
+import { useFormData } from '@/core/components/form/composables/useFormData'
 import type { Account, AccountFormState } from '@/core/api/modules/account'
-import { type FormType } from '@/core/form/DrawerForm.vue'
+import { type FormType } from '@/core/components/form/DrawerForm.vue'
 import { md5 } from '@/utils/crypto'
 import type { RoleOptions } from '@/core/api/modules/role'
 

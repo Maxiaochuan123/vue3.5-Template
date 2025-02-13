@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { FormInst, FormRules } from 'naive-ui'
-import MediaUpload from '@/core/upload/media-upload/MediaUpload.vue'
-import { useMediaUploaderValidator } from '@/core/form/composables/useUploaderValidator'
+import MediaUpload from '@/core/components/upload/media-upload/MediaUpload.vue'
+import { useMediaUploaderValidator } from '@/core/components/form/composables/useUploaderValidator'
 import { type SetAdvertAccountFormState } from '@/api/modules/advertising'
 
 const formRef = ref<FormInst | null>(null)
