@@ -64,7 +64,7 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '操作内容',
     key: 'message',
-    width: 200,
+    width: 300
   },
   {
     title: '创建时间',

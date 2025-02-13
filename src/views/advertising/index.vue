@@ -67,10 +67,7 @@ const columns: DataTableColumns<TableDataRecord> = [
   },
   {
     title: '创建人',
-    key: 'username',
-    ellipsis: {
-      tooltip: true,
-    },
+    key: 'username'
   },
   {
     title: '状态',

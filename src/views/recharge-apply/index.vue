@@ -6,7 +6,7 @@ import SearchForm from '@/core/table/SearchForm.vue'
 import Table from '@/core/table/Table.vue'
 import DrawerForm, { type FormType } from '@/core/form/DrawerForm.vue'
 import TableActions, { type RowActionType } from '@/core/table/table-actions/index.vue'
-import { getOptionLabel, rechargeApplyStatusOptions } from '@/enum/options'
+import { getOptionLabel, rechargeApplyStatusOptions, changeTypeOptions } from '@/enum/options'
 import { rechargeApplyApi, type BaseRechargeApplySearch, type RechargeApply } from '@/api/modules/rechargeApply'
 import RechargeForm from './components/RechargeForm.vue'
 
@@ -45,6 +45,9 @@ const columns: DataTableColumns<TableDataRecord> = [
   {
     title: '充值类型',
     key: 'type',
+    render: (row) => {
+      return getOptionLabel(changeTypeOptions, row.type)
+    },
   },
   {
     title: '充值本金',

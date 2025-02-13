@@ -3,7 +3,7 @@ import { ref, inject,type Ref } from 'vue'
 import type { FormInst } from 'naive-ui'
 import { useFormData } from '@/core/form/composables/useFormData'
 import { type RechargeApplyAuditForm } from '@/api/modules/rechargeApply'
-import { submitAuditStatusOptions } from '@/enum/options'
+import { submitAuditStatusOptions, changeTypeOptions, getOptionLabel } from '@/enum/options'
 import { ImageOutline as ImageOutlineIcon } from '@vicons/ionicons5'
 
 const props = defineProps<{
@@ -112,7 +112,7 @@ defineExpose({
                 <NDescriptionsItem label="充值对象">{{ editData?.realName }}</NDescriptionsItem>
                 <NDescriptionsItem label="公司名称">{{ editData?.companyName }}</NDescriptionsItem>
                 <NDescriptionsItem label="手机号">{{ editData?.mobile }}</NDescriptionsItem>
-                <NDescriptionsItem label="充值类型">{{ editData?.types }}</NDescriptionsItem>
+                <NDescriptionsItem label="充值类型">{{ getOptionLabel(changeTypeOptions, editData?.types) }}</NDescriptionsItem>
                 <NDescriptionsItem label="充值本金">{{ editData?.rechargePrincipal }}</NDescriptionsItem>
                 <NDescriptionsItem label="赠送金额">{{ editData?.rechargeGift }}</NDescriptionsItem>
               </NDescriptions>

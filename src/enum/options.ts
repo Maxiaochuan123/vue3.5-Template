@@ -72,9 +72,9 @@ export type RechargeApplyStatusType = ExtractOptionsValue<typeof rechargeApplySt
 
 // 变动类型选项
 export const changeTypeOptions = [
-  { label: '归零', value: 1 },
+  { label: '归零', value: 0 },
+  { label: '充值', value: 1 },
   { label: '广告投放', value: 2 },
-  { label: '充值', value: 3 },
 ]
 // 导出状态类型
 export type ChangeType = ExtractOptionsValue<typeof changeTypeOptions>
