@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { authApi } from '@/core/api/modules/auth'
-import commonApi from '@/api/modules/common'
 import type { RolePermission } from '@/core/api/modules/role'
 import appConfig from '@/core/config/appConfig'
 
@@ -9,20 +8,6 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref('')
   const permissions = ref<RolePermission[]>([])
   const uploadToken = ref('')
-
-  // 获取上传凭证
-  const getUploadToken = async () => {
-    try {
-      const uploadTokenResponse = await commonApi.uploadToken()
-      if (uploadTokenResponse.code === 200) {
-        uploadToken.value = uploadTokenResponse.data
-        return uploadToken.value
-      }
-      throw new Error(uploadTokenResponse.msg)
-    } catch (error) {
-      throw error
-    }
-  }
 
   const login = async (userName: string, password: string) => {
     try {
@@ -49,9 +34,6 @@ export const useAuthStore = defineStore('auth', () => {
           permissions.value = []
         }
 
-        // 获取上传凭证
-        await getUploadToken()
-
         return loginResponse
       } else {
         throw new Error(loginResponse.msg)
@@ -72,8 +54,7 @@ export const useAuthStore = defineStore('auth', () => {
     permissions,
     uploadToken,
     login,
-    logout,
-    getUploadToken
+    logout
   }
 }, {
   persist: true

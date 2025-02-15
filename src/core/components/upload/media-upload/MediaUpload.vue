@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { ref, computed, onBeforeUnmount, onMounted, watch } from 'vue'
   import { useMessage, useThemeVars } from 'naive-ui'
-  import { isImage, isVideo, parseBytes } from '../utils'
+  import { isImage, isVideo, parseBytes, compressImage, compressVideo } from '../utils'
   import { qiniuUploader } from '../plugins/qiniuUpload'
   import type { FileItem } from '../interface'
-  // import commonApi from '@/api/modules/common'
+  import commonApi from '@/api/modules/common'
   import { useAuthStore } from '@/core/stores/modules/auth'
   import MediaPreviewMask from './preview/MediaPreviewMask.vue'
   import AddSVG from '../icons/Add.svg'
@@ -55,14 +55,6 @@
   const fileList = ref<FileItem[]>([])
   const previewVisible = ref(false)
   const currentPreviewFile = ref<{ url: string; file?: File }>()
-
-  // 获取上传凭证
-  // const token = ref<string>('')
-  // const getUploadToken = async () => {
-  //   const { data: uploadToken  } = await commonApi.uploadToken()
-  //   token.value = uploadToken 
-  // }
-  // getUploadToken()
 
   // 重置组件状态的方法
   const reset = () => {
@@ -216,8 +208,7 @@
       try {
         // 先订阅状态变化
         const unsubscribe = qiniuUploader.subscribe((files) => {
-          // console.log('上传状态更新:', files)
-          const uploadFile = files.find((f) => f.file === file)
+          const uploadFile = files.find((f) => f.file === fileItem.file)
           if (uploadFile?.status === 'success' && uploadFile.url) {
             URL.revokeObjectURL(fileItem.url!)
             fileItem.url = uploadFile.url
@@ -228,12 +219,12 @@
             } else {
               modelValue.value = [...(Array.isArray(modelValue.value) ? modelValue.value : []), uploadFile.url]
             }
+            message.success('文件上传成功')
             emit('upload-success')
             unsubscribe()
           } else if (uploadFile?.status === 'error') {
             URL.revokeObjectURL(fileItem.url!)
             fileItem.status = 'error'
-            // 从 fileList 中移除失败的文件
             const index = fileList.value.indexOf(fileItem)
             if (index !== -1) {
               fileList.value.splice(index, 1)
@@ -248,26 +239,44 @@
         // 添加到文件列表
         fileList.value.push(fileItem)
         
-        // 开始上传，如果token过期会自动刷新重试
-        let currentToken = authStore.uploadToken
+        // 压缩文件
+        let compressedFile = file
         try {
-          await qiniuUploader.upload(file, currentToken)
-        } catch (error: any) {
-          // 如果是token过期错误，尝试刷新token并重新上传
-          if (error?.message?.includes('token expired') || error?.message?.includes('invalid token')) {
-            try {
-              currentToken = await authStore.getUploadToken()
-              await qiniuUploader.upload(file, currentToken)
-            } catch (refreshError) {
-              throw refreshError
-            }
-          } else {
-            throw error
+          if (isImage(fileItem)) {
+            message.info('图片压缩中...')
+            compressedFile = await compressImage(file, {
+              maxWidth: 1920,
+              maxHeight: 1080,
+              quality: 0.8
+            })
+          } else if (isVideo(fileItem)) {
+            message.info('视频压缩中，请耐心等待...')
+            compressedFile = await compressVideo(file, {
+              quality: 'high'
+            })
           }
+          fileItem.file = compressedFile // 更新压缩后的文件
+        } catch (error) {
+          console.warn('Compression failed, using original file:', error)
+          message.info('压缩失败，正在使用原文件上传...')
+          fileItem.file = file // 确保使用原文件
         }
+
+        // 获取新的上传凭证并开始上传
+        try {
+          const uploadTokenResponse = await commonApi.uploadToken()
+          if (uploadTokenResponse.code !== 200) {
+            throw new Error(uploadTokenResponse.msg || '获取上传凭证失败')
+          }
+          const token = uploadTokenResponse.data
+          
+          await qiniuUploader.upload(compressedFile, token)
+        } catch (error) {
+          throw error
+        }
+
       } catch (error) {
         URL.revokeObjectURL(fileItem.url!)
-        // 从 fileList 中移除失败的文件
         const index = fileList.value.indexOf(fileItem)
         if (index !== -1) {
           fileList.value.splice(index, 1)
