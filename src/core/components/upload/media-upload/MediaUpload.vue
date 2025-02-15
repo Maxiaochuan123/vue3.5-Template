@@ -203,7 +203,6 @@
 
       if (file.size > parseBytes(props.maxSize)) {
         message.warning(`文件 ${file.name} 大小不能超过 ${props.maxSize}`)
-
         continue
       }
 
@@ -239,6 +238,7 @@
             if (index !== -1) {
               fileList.value.splice(index, 1)
             }
+            message.error('上传失败，请重试')
             unsubscribe()
           } else if (uploadFile?.status === 'uploading') {
             fileItem.progress = uploadFile.progress
@@ -248,8 +248,23 @@
         // 添加到文件列表
         fileList.value.push(fileItem)
         
-        // 开始上传
-        await qiniuUploader.upload(file, authStore.uploadToken)
+        // 开始上传，如果token过期会自动刷新重试
+        let currentToken = authStore.uploadToken
+        try {
+          await qiniuUploader.upload(file, currentToken)
+        } catch (error: any) {
+          // 如果是token过期错误，尝试刷新token并重新上传
+          if (error?.message?.includes('token expired') || error?.message?.includes('invalid token')) {
+            try {
+              currentToken = await authStore.getUploadToken()
+              await qiniuUploader.upload(file, currentToken)
+            } catch (refreshError) {
+              throw refreshError
+            }
+          } else {
+            throw error
+          }
+        }
       } catch (error) {
         URL.revokeObjectURL(fileItem.url!)
         // 从 fileList 中移除失败的文件
@@ -257,6 +272,7 @@
         if (index !== -1) {
           fileList.value.splice(index, 1)
         }
+        message.error('上传失败：' + (error as Error).message)
       }
     }
   }

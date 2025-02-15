@@ -108,6 +108,10 @@ class QiniuUploader {
    * @param {string} token - 上传凭证
    */
   private async uploadFile(uploadFile: UploadFile, token?: string): Promise<void> {
+    if (!token) {
+      throw new Error('Upload token is required')
+    }
+
     try {
       // 生成唯一的文件名
       const key = `moujiang/${Date.now()}-${uploadFile.file.name}`
@@ -128,37 +132,39 @@ class QiniuUploader {
       const observable = qiniu.upload(
         uploadFile.file,
         key,
-        token || '',
+        token,
         putExtra,
         this.config.uploadConfig
       )
 
       // 订阅上传状态
-      observable.subscribe({
-        // 上传进度回调
-        next: (res: { total: { percent: number } }) => {
-          uploadFile.status = 'uploading'
-          uploadFile.progress = res.total.percent
-          this.notifySubscribers()
-        },
-        // 上传错误回调
-        error: (err) => {
-          uploadFile.status = 'error'
-          uploadFile.error = err
-          this.notifySubscribers()
-        },
-        // 上传完成回调
-        complete: (res) => {
-          uploadFile.status = 'success'
-          uploadFile.url = `${this.config.domain}${res.key}`
-          uploadFile.progress = 100
-          this.notifySubscribers()
-        },
+      return new Promise((resolve, reject) => {
+        observable.subscribe({
+          next: (res: { total: { percent: number } }) => {
+            uploadFile.status = 'uploading'
+            uploadFile.progress = res.total.percent
+            this.notifySubscribers()
+          },
+          error: (err) => {
+            uploadFile.status = 'error'
+            uploadFile.error = err
+            this.notifySubscribers()
+            reject(err)
+          },
+          complete: (res) => {
+            uploadFile.status = 'success'
+            uploadFile.url = `${this.config.domain}${res.key}`
+            uploadFile.progress = 100
+            this.notifySubscribers()
+            resolve()
+          },
+        })
       })
     } catch (error) {
       uploadFile.status = 'error'
       uploadFile.error = error as Error
       this.notifySubscribers()
+      throw error
     }
   }
 

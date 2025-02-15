@@ -10,6 +10,20 @@ export const useAuthStore = defineStore('auth', () => {
   const permissions = ref<RolePermission[]>([])
   const uploadToken = ref('')
 
+  // 获取上传凭证
+  const getUploadToken = async () => {
+    try {
+      const uploadTokenResponse = await commonApi.uploadToken()
+      if (uploadTokenResponse.code === 200) {
+        uploadToken.value = uploadTokenResponse.data
+        return uploadToken.value
+      }
+      throw new Error(uploadTokenResponse.msg)
+    } catch (error) {
+      throw error
+    }
+  }
+
   const login = async (userName: string, password: string) => {
     try {
       // 登录获取 token
@@ -36,10 +50,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
 
         // 获取上传凭证
-        const uploadTokenResponse = await commonApi.uploadToken()
-        if (uploadTokenResponse.code === 200) {
-          uploadToken.value = uploadTokenResponse.data
-        }
+        await getUploadToken()
 
         return loginResponse
       } else {
@@ -62,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
     uploadToken,
     login,
     logout,
+    getUploadToken
   }
 }, {
   persist: true
