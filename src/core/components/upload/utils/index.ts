@@ -17,8 +17,6 @@ export function parseBytes(str: string) {
 
 // 文件类型判断
 export function isImage(file: FileItem | null) {
-  // console.log(file)
-
   if (!file) return false
 
   // 如果有 file 对象，先检查 MIME 类型
@@ -151,111 +149,6 @@ export function compressImage(file: File, options: {
     }
     reader.onerror = () => {
       reject(new Error('Failed to read file'))
-    }
-  })
-}
-
-/**
- * 压缩视频
- * @param file - 视频文件
- * @param options - 压缩选项
- * @returns Promise<File>
- */
-export async function compressVideo(file: File, options: {
-  quality?: 'low' | 'medium' | 'high'; // 压缩质量 low: 压缩到原大小的 20%, medium: 40%, high: 60%
-} = {}): Promise<File> {
-  const startTime = Date.now()
-  const { quality = 'medium' } = options
-
-  // 创建视频元素
-  const video = document.createElement('video')
-  video.src = URL.createObjectURL(file)
-  
-  return new Promise((resolve, reject) => {
-    video.onloadedmetadata = async () => {
-      URL.revokeObjectURL(video.src)
-
-    try {
-        // 使用 MediaRecorder 压缩视频
-        const stream = (video as any).captureStream?.() // 某些浏览器可能不支持
-        if (!stream) {
-          console.warn('Video compression not supported in this browser')
-          resolve(file) // 如果不支持压缩，返回原文件
-          return
-        }
-
-        // 根据原文件大小计算目标比特率
-        const compressionRatios = {
-          low: 0.4,    // 压缩到原大小的 40%
-          medium: 0.6, // 压缩到原大小的 60%
-          high: 0.8    // 压缩到原大小的 80%
-        }
-
-        // 计算目标比特率（bits per second）
-        const targetSize = file.size * compressionRatios[quality] // 目标文件大小（bytes）
-        const duration = video.duration // 视频时长（秒）
-        const targetBitrate = Math.floor((targetSize * 8) / duration) // 目标比特率（bps）
-
-        // 设置编码器选项
-        const options = {
-          mimeType: 'video/webm;codecs=vp9',
-          videoBitsPerSecond: targetBitrate
-      }
-
-        const mediaRecorder = new MediaRecorder(stream, options)
-        const chunks: Blob[] = []
-
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) {
-            chunks.push(e.data)
-          }
-        }
-
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(chunks, { type: 'video/webm' })
-          const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webm'), {
-            type: 'video/webm',
-            lastModified: Date.now()
-          })
-          
-          // 输出压缩信息
-          console.log('Video compression result:', {
-            // 原文件大小
-            originalSize: (file.size / 1024 / 1024).toFixed(2) + 'MB',
-            // 压缩后文件大小
-            compressedSize: (compressedFile.size / 1024 / 1024).toFixed(2) + 'MB',
-            // 压缩比例
-            compressionRatio: ((compressedFile.size / file.size) * 100).toFixed(1) + '%',
-            // 视频时长
-            duration: video.duration.toFixed(1) + 's',
-            // 目标比特率
-            bitrate: (targetBitrate / 1024 / 1024).toFixed(2) + 'Mbps',
-            // 压缩时间
-            timeUsed: ((Date.now() - startTime) / 1000).toFixed(2) + 's'
-          })
-
-          resolve(compressedFile)
-      }
-
-        // 开始录制
-        mediaRecorder.start()
-        video.play()
-
-        // 录制视频时长
-        setTimeout(() => {
-          mediaRecorder.stop()
-          video.pause()
-        }, video.duration * 1000)
-    } catch (error) {
-        console.warn('Video compression failed:', error)
-        resolve(file) // 如果压缩失败，返回原文件
-      }
-    }
-
-    video.onerror = () => {
-      URL.revokeObjectURL(video.src)
-      console.warn('Failed to load video')
-      resolve(file) // 如果加载失败，返回原文件
     }
   })
 }

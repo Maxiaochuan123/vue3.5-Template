@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref, computed, onBeforeUnmount, onMounted, watch } from 'vue'
   import { useMessage, useThemeVars } from 'naive-ui'
-  import { isImage, isVideo, parseBytes, compressImage, compressVideo } from '../utils'
+  import { isImage, isVideo, parseBytes, compressImage } from '../utils'
   import { qiniuUploader } from '../plugins/qiniuUpload'
   import type { FileItem } from '../interface'
   import commonApi from '@/api/modules/common'
@@ -248,11 +248,6 @@
               maxWidth: 1920,
               maxHeight: 1080,
               quality: 0.8
-            })
-          } else if (isVideo(fileItem)) {
-            message.info('视频压缩中，请耐心等待...')
-            compressedFile = await compressVideo(file, {
-              quality: 'high'
             })
           }
           fileItem.file = compressedFile // 更新压缩后的文件
